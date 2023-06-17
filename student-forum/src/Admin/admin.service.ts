@@ -7,7 +7,9 @@ import { ModeratorDto } from 'src/Moderator/dto/Moderator.dto';
 
 @Injectable()
 export class AdminService {
-  addStudent(student: StudentDto): any {}
+  addStudent(student: StudentDto): any {
+    return 'Added';
+  }
   adminLogin(admin: AdminLoginDto): any {}
   getAllStudent(): any {}
   updateStudent(id: number, student: StudentDto): any {}
