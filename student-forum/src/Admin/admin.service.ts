@@ -8,13 +8,27 @@ import { ModeratorDto } from 'src/Moderator/dto/Moderator.dto';
 @Injectable()
 export class AdminService {
   addStudent(student: StudentDto): any {
-    return 'Added';
+    return student;
   }
-  adminLogin(admin: AdminLoginDto): any {}
-  getAllStudent(): any {}
-  updateStudent(id: number, student: StudentDto): any {}
-  deleteStudent(id: number) {}
-  getAllModerator(): any {}
-  updateModerator(id: number, moderator: ModeratorDto): any {}
-  addModerator(moderator: ModeratorDto): any {}
+  adminLogin(admin: AdminLoginDto): any {
+    return admin;
+  }
+  getAllStudent(): any {
+    return 'All student';
+  }
+  updateStudent(id: number, student: StudentDto): any {
+    return student;
+  }
+  deleteStudent(id: number) {
+    return 'Student Deleted';
+  }
+  getAllModerator(): any {
+    return 'All Moderator';
+  }
+  updateModerator(id: number, moderator: ModeratorDto): any {
+    return moderator;
+  }
+  addModerator(moderator: ModeratorDto): any {
+    return moderator;
+  }
 }

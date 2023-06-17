@@ -4,12 +4,28 @@ import { PostDto } from 'src/Student/dto/Post.dto';
 
 @Injectable()
 export class HrService {
-  getPost(): any {}
-  addHr(hr: HrDto): any {}
-  loginHr(hr: HrLoginDto): any {}
-  myProfile(name: string): any {}
-  updateProfile(name: string, hr: HrDto): any {}
-  deleteProfile(id: number): any {}
-  addPost(post: PostDto): any {}
-  updatePost(id: number, post: PostDto): any {}
+  getPost(): any {
+    return 'All Post';
+  }
+  addHr(hr: HrDto): any {
+    return hr;
+  }
+  loginHr(hr: HrLoginDto): any {
+    return hr;
+  }
+  myProfile(name: string): any {
+    return name;
+  }
+  updateProfile(name: string, hr: HrDto): any {
+    return hr;
+  }
+  deleteProfile(id: number): any {
+    return 'Deleted';
+  }
+  addPost(post: PostDto): any {
+    return 'Post added';
+  }
+  updatePost(id: number, post: PostDto): any {
+    return 'Post updated';
+  }
 }

@@ -6,7 +6,7 @@ export declare class AdminService {
     adminLogin(admin: AdminLoginDto): any;
     getAllStudent(): any;
     updateStudent(id: number, student: StudentDto): any;
-    deleteStudent(id: number): void;
+    deleteStudent(id: number): string;
     getAllModerator(): any;
     updateModerator(id: number, moderator: ModeratorDto): any;
     addModerator(moderator: ModeratorDto): any;

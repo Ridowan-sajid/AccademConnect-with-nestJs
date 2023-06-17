@@ -10,15 +10,29 @@ exports.AdminService = void 0;
 const common_1 = require("@nestjs/common");
 let AdminService = exports.AdminService = class AdminService {
     addStudent(student) {
-        return 'Added';
+        return student;
     }
-    adminLogin(admin) { }
-    getAllStudent() { }
-    updateStudent(id, student) { }
-    deleteStudent(id) { }
-    getAllModerator() { }
-    updateModerator(id, moderator) { }
-    addModerator(moderator) { }
+    adminLogin(admin) {
+        return admin;
+    }
+    getAllStudent() {
+        return 'All student';
+    }
+    updateStudent(id, student) {
+        return student;
+    }
+    deleteStudent(id) {
+        return 'Student Deleted';
+    }
+    getAllModerator() {
+        return 'All Moderator';
+    }
+    updateModerator(id, moderator) {
+        return moderator;
+    }
+    addModerator(moderator) {
+        return moderator;
+    }
 };
 exports.AdminService = AdminService = __decorate([
     (0, common_1.Injectable)()
