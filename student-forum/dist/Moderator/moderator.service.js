@@ -9,14 +9,30 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ModeratorService = void 0;
 const common_1 = require("@nestjs/common");
 let ModeratorService = exports.ModeratorService = class ModeratorService {
-    getDashboard() { }
-    addModerator(moderator) { }
-    loginModerator(moderator) { }
-    myProfile(id) { }
-    editProfile(name, moderator) { }
-    deleteProfile(id) { }
-    deleteStudent(id) { }
-    createPost(post) { }
+    getDashboard() {
+        return 'All User';
+    }
+    addModerator(moderator) {
+        return moderator;
+    }
+    loginModerator(moderator) {
+        return moderator;
+    }
+    myProfile(id) {
+        return id;
+    }
+    editProfile(name, moderator) {
+        return moderator;
+    }
+    deleteProfile(id) {
+        return 'deleted';
+    }
+    deleteStudent(id) {
+        return 'student deleted';
+    }
+    createPost(post) {
+        return 'post created';
+    }
 };
 exports.ModeratorService = ModeratorService = __decorate([
     (0, common_1.Injectable)()

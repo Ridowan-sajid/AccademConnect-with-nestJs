@@ -9,14 +9,30 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.StudentService = void 0;
 const common_1 = require("@nestjs/common");
 let StudentService = exports.StudentService = class StudentService {
-    getDashboard() { }
-    addStudent(student) { }
-    loginStudent(student) { }
-    myProfile(id) { }
-    editProfile(id, student) { }
-    deleteProfile(id) { }
-    addPost(post) { }
-    updatePost(id, post) { }
+    getDashboard() {
+        return 'Dashboard';
+    }
+    addStudent(student) {
+        return student;
+    }
+    loginStudent(student) {
+        return student;
+    }
+    myProfile(id) {
+        return id;
+    }
+    editProfile(id, student) {
+        return student;
+    }
+    deleteProfile(id) {
+        return 'deleted';
+    }
+    addPost(post) {
+        return 'Post added';
+    }
+    updatePost(id, post) {
+        return post;
+    }
 };
 exports.StudentService = StudentService = __decorate([
     (0, common_1.Injectable)()
