@@ -19,7 +19,9 @@ const Student_dto_1 = require("./dto/Student.dto");
 const StudentLogin_dto_1 = require("./dto/StudentLogin.dto");
 const platform_express_1 = require("@nestjs/platform-express");
 const multer_1 = require("multer");
-const Post_dto_1 = require("./dto/Post.dto");
+const post_dto_1 = require("../Post/dto/post.dto");
+const updateStudent_dto_1 = require("./dto/updateStudent.dto");
+const updatePost_dto_1 = require("../Post/dto/updatePost.dto");
 let StudentController = exports.StudentController = class StudentController {
     constructor(studentService) {
         this.studentService = studentService;
@@ -28,7 +30,8 @@ let StudentController = exports.StudentController = class StudentController {
         student.profileImg = myfileobj.filename;
         return this.studentService.addStudent(student);
     }
-    loginStudent(student) {
+    loginStudent(student, session) {
+        session.email = student.email;
         return this.studentService.loginStudent(student);
     }
     myProfile(id) {
@@ -40,14 +43,32 @@ let StudentController = exports.StudentController = class StudentController {
     deleteProfile(id) {
         return this.studentService.deleteProfile(id);
     }
+    changePassword(id, student) {
+        return this.studentService.passwordChange(id, student);
+    }
+    forgetPassword(id, student) {
+        return this.studentService.forgetpassword(id, student);
+    }
     getDashboard() {
         return this.studentService.getDashboard();
     }
-    addPost(data) {
-        return this.studentService.addPost(data);
+    deletePost(id) {
+        return this.studentService.deletePost(id);
     }
-    updatePost(data, id) {
-        return this.studentService.updatePost(id, data);
+    myPost(id) {
+        return this.studentService.myPost(id);
+    }
+    addPost(id, data) {
+        return this.studentService.addPost(data, id);
+    }
+    getPostByStudentId(id) {
+        return this.studentService.getPostByStudentId(id);
+    }
+    deletePostByStudentId(id, session) {
+        return this.studentService.deletePostByStudentId(id, session.email);
+    }
+    updatePost(data, id, session) {
+        return this.studentService.updatePost(id, data, session.email);
     }
 };
 __decorate([
@@ -76,28 +97,50 @@ __decorate([
 ], StudentController.prototype, "addStudent", null);
 __decorate([
     (0, common_1.Post)('/login'),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Session)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [StudentLogin_dto_1.StudentLoginDto]),
+    __metadata("design:paramtypes", [StudentLogin_dto_1.StudentLoginDto, Object]),
     __metadata("design:returntype", Object)
 ], StudentController.prototype, "loginStudent", null);
 __decorate([
-    (0, common_1.Get)('/myprofile'),
+    (0, common_1.Get)('/myprofile/:id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Student_dto_1.StudentDto)
 ], StudentController.prototype, "myProfile", null);
 __decorate([
-    (0, common_1.Put)('/updateprofile'),
+    (0, common_1.Put)('/updateprofile/:id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Student_dto_1.StudentDto]),
+    __metadata("design:paramtypes", [Number, updateStudent_dto_1.UpdateStudentDto]),
     __metadata("design:returntype", Student_dto_1.StudentDto)
 ], StudentController.prototype, "updateProfile", null);
 __decorate([
-    (0, common_1.Delete)('/deleteProfile'),
+    (0, common_1.Delete)('/deleteProfile/:id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Student_dto_1.StudentDto)
 ], StudentController.prototype, "deleteProfile", null);
+__decorate([
+    (0, common_1.Patch)('/changePassword/:id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Student_dto_1.PasswordChangeStudentDto]),
+    __metadata("design:returntype", Student_dto_1.StudentDto)
+], StudentController.prototype, "changePassword", null);
+__decorate([
+    (0, common_1.Patch)('/forgetPassword/:id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Student_dto_1.ForgetPassStudentDto]),
+    __metadata("design:returntype", Student_dto_1.StudentDto)
+], StudentController.prototype, "forgetPassword", null);
 __decorate([
     (0, common_1.Get)('/'),
     __metadata("design:type", Function),
@@ -105,18 +148,49 @@ __decorate([
     __metadata("design:returntype", Object)
 ], StudentController.prototype, "getDashboard", null);
 __decorate([
-    (0, common_1.Post)('/createpost'),
-    __param(0, (0, common_1.Body)()),
+    (0, common_1.Delete)('/deletepost/:id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Post_dto_1.PostDto]),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", void 0)
+], StudentController.prototype, "deletePost", null);
+__decorate([
+    (0, common_1.Get)('/myPost/:id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", void 0)
+], StudentController.prototype, "myPost", null);
+__decorate([
+    (0, common_1.Post)('/createpost/:id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, post_dto_1.PostDto]),
     __metadata("design:returntype", void 0)
 ], StudentController.prototype, "addPost", null);
 __decorate([
-    (0, common_1.Put)('/updatepost/:id'),
+    (0, common_1.Get)('/PostwithStudent/:id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Object)
+], StudentController.prototype, "getPostByStudentId", null);
+__decorate([
+    (0, common_1.Delete)('/PostwithStudent/:id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Session)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", Object)
+], StudentController.prototype, "deletePostByStudentId", null);
+__decorate([
+    (0, common_1.Put)('/PostwithStudent/:id'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(2, (0, common_1.Session)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Post_dto_1.PostDto, Number]),
+    __metadata("design:paramtypes", [updatePost_dto_1.UpdatePostDto, Number, Object]),
     __metadata("design:returntype", void 0)
 ], StudentController.prototype, "updatePost", null);
 exports.StudentController = StudentController = __decorate([

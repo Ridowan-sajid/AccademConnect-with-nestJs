@@ -5,16 +5,25 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Put,
+  Session,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { HrService } from './hr.service';
-import { PostDto } from 'src/Student/dto/Post.dto';
+import { PostDto } from 'src/Post/dto/post.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MulterError, diskStorage } from 'multer';
-import { HrDto, HrLoginDto } from './dto/hr.dto';
+import {
+  ForgetPassHrDto,
+  HrDto,
+  HrLoginDto,
+  PasswordChangeHrDto,
+} from './dto/hr.dto';
+import { JobDto } from 'src/Job/dto/job.dto';
+import { UpdateJobDto } from 'src/Job/dto/updateJob.dto';
 
 @Controller('hr')
 export class HrController {
@@ -49,37 +58,74 @@ export class HrController {
   }
 
   @Post('/login')
-  loginHr(hr: HrLoginDto): any {
+  loginHr(@Body() hr: HrLoginDto): any {
     return this.hrService.loginHr(hr);
   }
 
   @Get('/')
   getDashboard(): any {
-    return this.hrService.getPost();
+    return this.hrService.dashboard();
   }
 
-  @Get('/myprofile')
-  myProfile(name: string): HrDto {
-    return this.hrService.myProfile(name);
+  @Get('/myprofile/:id')
+  myProfile(@Param('id', ParseIntPipe) id: number): HrDto {
+    return this.hrService.myProfile(id);
   }
 
-  @Put('/updateprofile')
-  updateProfile(name: string, hr: HrDto): HrDto {
-    return this.hrService.updateProfile(name, hr);
+  @Put('/updateprofile/:id')
+  updateProfile(@Param('id', ParseIntPipe) id: number, hr: HrDto): HrDto {
+    return this.hrService.updateProfile(id, hr);
   }
 
-  @Delete('/deleteProfile')
-  deleteProfile(id: number): any {
+  @Delete('/deleteProfile/:id')
+  deleteProfile(@Param('id', ParseIntPipe) id: number): any {
     return this.hrService.deleteProfile(id);
   }
 
-  @Post('/createpost')
-  addPost(@Body() data: PostDto) {
-    return this.hrService.addPost(data);
+  @Patch('/changePassword/:id')
+  changePassword(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() data: PasswordChangeHrDto,
+  ): any {
+    return this.hrService.passwordChange(id, data);
   }
 
-  @Put('/updatepost/:id')
-  updatePost(@Body() data: PostDto, @Param('id', ParseIntPipe) id: number) {
-    return this.hrService.updatePost(id, data);
+  @Patch('/forgetPassword/:id')
+  forgetPassword(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() data: ForgetPassHrDto,
+  ): any {
+    return this.hrService.forgetpassword(id, data);
+  }
+
+  @Delete('/deleteJob/:id')
+  deleteJob(@Param('id', ParseIntPipe) id: number) {
+    return this.hrService.deleteJob(id);
+  }
+
+  @Post('/createjob/:id')
+  addJob(@Param('id', ParseIntPipe) id: number, @Body() data: JobDto) {
+    return this.hrService.addJob(data, id);
+  }
+  @Get('/jobWithHr/:id')
+  getJobByHrId(@Param('id', ParseIntPipe) id: number): any {
+    return this.hrService.getJobByHrId(id);
+  }
+
+  @Delete('/jobWithHr/:id')
+  deleteJobByHrId(
+    @Param('id', ParseIntPipe) id: number,
+    @Session() session,
+  ): any {
+    return this.hrService.deleteJobByHrId(id, session.email);
+  }
+
+  @Put('/jobWithHr/:id')
+  updateJobByHrId(
+    @Body() data: UpdateJobDto,
+    @Param('id', ParseIntPipe) id: number,
+    @Session() session,
+  ) {
+    return this.hrService.updateJob(id, data, session.email);
   }
 }

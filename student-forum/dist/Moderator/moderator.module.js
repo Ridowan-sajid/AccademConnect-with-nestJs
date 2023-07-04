@@ -10,11 +10,12 @@ exports.ModeratorModule = void 0;
 const common_1 = require("@nestjs/common");
 const moderator_controller_1 = require("./moderator.controller");
 const moderator_service_1 = require("./moderator.service");
+const db_module_1 = require("../Db/db.module");
 let ModeratorModule = exports.ModeratorModule = class ModeratorModule {
 };
 exports.ModeratorModule = ModeratorModule = __decorate([
     (0, common_1.Module)({
-        imports: [],
+        imports: [db_module_1.DbModule],
         controllers: [moderator_controller_1.ModeratorController],
         providers: [moderator_service_1.ModeratorService],
     })

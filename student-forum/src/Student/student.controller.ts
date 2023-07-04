@@ -5,17 +5,25 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Put,
+  Session,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { StudentService } from './student.service';
-import { StudentDto } from './dto/Student.dto';
+import {
+  ForgetPassStudentDto,
+  PasswordChangeStudentDto,
+  StudentDto,
+} from './dto/Student.dto';
 import { StudentLoginDto } from './dto/StudentLogin.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MulterError, diskStorage } from 'multer';
-import { PostDto } from './dto/Post.dto';
+import { PostDto } from '../Post/dto/post.dto';
+import { UpdateStudentDto } from './dto/updateStudent.dto';
+import { UpdatePostDto } from 'src/Post/dto/updatePost.dto';
 
 @Controller('student')
 export class StudentController {
@@ -50,22 +58,42 @@ export class StudentController {
   }
 
   @Post('/login')
-  loginStudent(student: StudentLoginDto): any {
+  loginStudent(@Body() student: StudentLoginDto, @Session() session): any {
+    session.email = student.email;
     return this.studentService.loginStudent(student);
   }
-  @Get('/myprofile')
-  myProfile(id: number): StudentDto {
+  @Get('/myprofile/:id')
+  myProfile(@Param('id', ParseIntPipe) id: number): StudentDto {
     return this.studentService.myProfile(id);
   }
 
-  @Put('/updateprofile')
-  updateProfile(id: number, student: StudentDto): StudentDto {
+  @Put('/updateprofile/:id')
+  updateProfile(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() student: UpdateStudentDto,
+  ): StudentDto {
     return this.studentService.editProfile(id, student);
   }
 
-  @Delete('/deleteProfile')
-  deleteProfile(id: number): StudentDto {
+  @Delete('/deleteProfile/:id')
+  deleteProfile(@Param('id', ParseIntPipe) id: number): StudentDto {
     return this.studentService.deleteProfile(id);
+  }
+
+  @Patch('/changePassword/:id')
+  changePassword(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() student: PasswordChangeStudentDto,
+  ): StudentDto {
+    return this.studentService.passwordChange(id, student);
+  }
+
+  @Patch('/forgetPassword/:id')
+  forgetPassword(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() student: ForgetPassStudentDto,
+  ): StudentDto {
+    return this.studentService.forgetpassword(id, student);
   }
 
   @Get('/')
@@ -73,13 +101,39 @@ export class StudentController {
     return this.studentService.getDashboard();
   }
 
-  @Post('/createpost')
-  addPost(@Body() data: PostDto) {
-    return this.studentService.addPost(data);
+  @Delete('/deletepost/:id')
+  deletePost(@Param('id', ParseIntPipe) id: number) {
+    return this.studentService.deletePost(id);
   }
 
-  @Put('/updatepost/:id')
-  updatePost(@Body() data: PostDto, @Param('id', ParseIntPipe) id: number) {
-    return this.studentService.updatePost(id, data);
+  @Get('/myPost/:id')
+  myPost(@Param('id', ParseIntPipe) id: number) {
+    return this.studentService.myPost(id);
+  }
+
+  @Post('/createpost/:id')
+  addPost(@Param('id', ParseIntPipe) id: number, @Body() data: PostDto) {
+    return this.studentService.addPost(data, id);
+  }
+  @Get('/PostwithStudent/:id')
+  getPostByStudentId(@Param('id', ParseIntPipe) id: number): any {
+    return this.studentService.getPostByStudentId(id);
+  }
+
+  @Delete('/PostwithStudent/:id')
+  deletePostByStudentId(
+    @Param('id', ParseIntPipe) id: number,
+    @Session() session,
+  ): any {
+    return this.studentService.deletePostByStudentId(id, session.email);
+  }
+
+  @Put('/PostwithStudent/:id')
+  updatePost(
+    @Body() data: UpdatePostDto,
+    @Param('id', ParseIntPipe) id: number,
+    @Session() session,
+  ) {
+    return this.studentService.updatePost(id, data, session.email);
   }
 }

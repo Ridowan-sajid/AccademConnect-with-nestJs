@@ -10,11 +10,12 @@ exports.HrModule = void 0;
 const common_1 = require("@nestjs/common");
 const hr_controller_1 = require("./hr.controller");
 const hr_service_1 = require("./hr.service");
+const db_module_1 = require("../Db/db.module");
 let HrModule = exports.HrModule = class HrModule {
 };
 exports.HrModule = HrModule = __decorate([
     (0, common_1.Module)({
-        imports: [],
+        imports: [db_module_1.DbModule],
         controllers: [hr_controller_1.HrController],
         providers: [hr_service_1.HrService],
     })

@@ -1,13 +1,25 @@
 export declare class ModeratorDto {
     name: string;
-    age: number;
-    gmail: string;
+    age: string;
     phone: string;
-    dob: Date;
+    email: string;
+    gender: string;
+    createdDate: Date;
+    education: string;
+    updatedDate: Date;
     password: string;
     profileImg: string;
+    status: string;
+    createdBy: number;
 }
 export declare class ModeratorLoginDto {
-    name: string;
+    email: string;
     password: string;
+}
+export declare class PasswordChangeModeratorDto {
+    oldPassword: string;
+    newPassword: string;
+}
+export declare class ForgetPassModeratorDto {
+    email: string;
 }

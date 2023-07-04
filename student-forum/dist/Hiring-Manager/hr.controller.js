@@ -15,10 +15,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.HrController = void 0;
 const common_1 = require("@nestjs/common");
 const hr_service_1 = require("./hr.service");
-const Post_dto_1 = require("../Student/dto/Post.dto");
 const platform_express_1 = require("@nestjs/platform-express");
 const multer_1 = require("multer");
 const hr_dto_1 = require("./dto/hr.dto");
+const job_dto_1 = require("../Job/dto/job.dto");
+const updateJob_dto_1 = require("../Job/dto/updateJob.dto");
 let HrController = exports.HrController = class HrController {
     constructor(hrService) {
         this.hrService = hrService;
@@ -31,22 +32,37 @@ let HrController = exports.HrController = class HrController {
         return this.hrService.loginHr(hr);
     }
     getDashboard() {
-        return this.hrService.getPost();
+        return this.hrService.dashboard();
     }
-    myProfile(name) {
-        return this.hrService.myProfile(name);
+    myProfile(id) {
+        return this.hrService.myProfile(id);
     }
-    updateProfile(name, hr) {
-        return this.hrService.updateProfile(name, hr);
+    updateProfile(id, hr) {
+        return this.hrService.updateProfile(id, hr);
     }
     deleteProfile(id) {
         return this.hrService.deleteProfile(id);
     }
-    addPost(data) {
-        return this.hrService.addPost(data);
+    changePassword(id, data) {
+        return this.hrService.passwordChange(id, data);
     }
-    updatePost(data, id) {
-        return this.hrService.updatePost(id, data);
+    forgetPassword(id, data) {
+        return this.hrService.forgetpassword(id, data);
+    }
+    deleteJob(id) {
+        return this.hrService.deleteJob(id);
+    }
+    addJob(id, data) {
+        return this.hrService.addJob(data, id);
+    }
+    getJobByHrId(id) {
+        return this.hrService.getJobByHrId(id);
+    }
+    deleteJobByHrId(id, session) {
+        return this.hrService.deleteJobByHrId(id, session.email);
+    }
+    updateJobByHrId(data, id, session) {
+        return this.hrService.updateJob(id, data, session.email);
     }
 };
 __decorate([
@@ -75,6 +91,7 @@ __decorate([
 ], HrController.prototype, "addHr", null);
 __decorate([
     (0, common_1.Post)('/login'),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [hr_dto_1.HrLoginDto]),
     __metadata("design:returntype", Object)
@@ -86,38 +103,81 @@ __decorate([
     __metadata("design:returntype", Object)
 ], HrController.prototype, "getDashboard", null);
 __decorate([
-    (0, common_1.Get)('/myprofile'),
+    (0, common_1.Get)('/myprofile/:id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", hr_dto_1.HrDto)
 ], HrController.prototype, "myProfile", null);
 __decorate([
-    (0, common_1.Put)('/updateprofile'),
+    (0, common_1.Put)('/updateprofile/:id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, hr_dto_1.HrDto]),
+    __metadata("design:paramtypes", [Number, hr_dto_1.HrDto]),
     __metadata("design:returntype", hr_dto_1.HrDto)
 ], HrController.prototype, "updateProfile", null);
 __decorate([
-    (0, common_1.Delete)('/deleteProfile'),
+    (0, common_1.Delete)('/deleteProfile/:id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Object)
 ], HrController.prototype, "deleteProfile", null);
 __decorate([
-    (0, common_1.Post)('/createpost'),
-    __param(0, (0, common_1.Body)()),
+    (0, common_1.Patch)('/changePassword/:id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Post_dto_1.PostDto]),
-    __metadata("design:returntype", void 0)
-], HrController.prototype, "addPost", null);
+    __metadata("design:paramtypes", [Number, hr_dto_1.PasswordChangeHrDto]),
+    __metadata("design:returntype", Object)
+], HrController.prototype, "changePassword", null);
 __decorate([
-    (0, common_1.Put)('/updatepost/:id'),
+    (0, common_1.Patch)('/forgetPassword/:id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, hr_dto_1.ForgetPassHrDto]),
+    __metadata("design:returntype", Object)
+], HrController.prototype, "forgetPassword", null);
+__decorate([
+    (0, common_1.Delete)('/deleteJob/:id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", void 0)
+], HrController.prototype, "deleteJob", null);
+__decorate([
+    (0, common_1.Post)('/createjob/:id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, job_dto_1.JobDto]),
+    __metadata("design:returntype", void 0)
+], HrController.prototype, "addJob", null);
+__decorate([
+    (0, common_1.Get)('/jobWithHr/:id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Object)
+], HrController.prototype, "getJobByHrId", null);
+__decorate([
+    (0, common_1.Delete)('/jobWithHr/:id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Session)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", Object)
+], HrController.prototype, "deleteJobByHrId", null);
+__decorate([
+    (0, common_1.Put)('/jobWithHr/:id'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(2, (0, common_1.Session)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Post_dto_1.PostDto, Number]),
+    __metadata("design:paramtypes", [updateJob_dto_1.UpdateJobDto, Number, Object]),
     __metadata("design:returntype", void 0)
-], HrController.prototype, "updatePost", null);
+], HrController.prototype, "updateJobByHrId", null);
 exports.HrController = HrController = __decorate([
     (0, common_1.Controller)('hr'),
     __metadata("design:paramtypes", [hr_service_1.HrService])

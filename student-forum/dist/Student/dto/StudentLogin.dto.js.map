@@ -1,1 +1,1 @@
-{"version":3,"file":"StudentLogin.dto.js","sourceRoot":"","sources":["../../../src/Student/dto/StudentLogin.dto.ts"],"names":[],"mappings":";;;AAAA,MAAa,eAAe;CAG3B;AAHD,0CAGC"}
+{"version":3,"file":"StudentLogin.dto.js","sourceRoot":"","sources":["../../../src/Student/dto/StudentLogin.dto.ts"],"names":[],"mappings":";;;;;;;;;;;;AAAA,qDAAoD;AAEpD,MAAa,eAAe;CAK3B;AALD,0CAKC;AAHC;IADC,IAAA,yBAAO,EAAC,EAAE,EAAE,EAAE,OAAO,EAAE,oBAAoB,EAAE,CAAC;;8CACjC;AAEd;IADC,IAAA,0BAAQ,EAAC,EAAE,OAAO,EAAE,qBAAqB,EAAE,CAAC;;iDAC5B"}
