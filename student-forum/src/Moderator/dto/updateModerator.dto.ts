@@ -6,21 +6,25 @@ import {
   IsPhoneNumber,
   IsString,
   Length,
+  Matches,
   MinLength,
-  minLength,
 } from 'class-validator';
 
 export class UpdateModeratorDto {
   @IsString()
-  name: string;
-  @IsNumber()
-  age: string;
-  // age: number;
   @IsNotEmpty()
+  @Matches(/^[A-Z][A-Za-z0-9_]+$/)
+  name: string;
+  //@IsNumber()
+  age: string;
+  @IsNotEmpty()
+  @Length(11)
   phone: string;
   @IsString()
   gender: string;
-  // @IsDate()
-  // updatedDate: Date;
+  @IsString()
+  education: string;
+  @IsDate()
+  updatedDate: Date;
   profileImg: string;
 }

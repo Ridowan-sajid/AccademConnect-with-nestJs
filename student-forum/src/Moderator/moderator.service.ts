@@ -19,7 +19,11 @@ import { UpdateStudentDto } from 'src/Student/dto/updateStudent.dto';
 export class ModeratorService {
   async deleteStudentByModeratorId(id: number, email: string): Promise<any> {
     const mod = await this.moderatorRepo.findOneBy({ email: email });
-    return this.studentRepo.delete({ id: id, createdBy: mod.id });
+    if (mod) {
+      return this.studentRepo.delete({ id: id, createdByModerator: mod.id });
+    } else {
+      return 'Should be a moderator';
+    }
   }
   async updateStudentByModeratorId(
     id: number,
@@ -27,7 +31,10 @@ export class ModeratorService {
     email: string,
   ): Promise<any> {
     const mod = await this.moderatorRepo.findOneBy({ email: email });
-    return this.studentRepo.update({ id: id, createdBy: mod.id }, student);
+    return this.studentRepo.update(
+      { id: id, createdByModerator: mod.id },
+      student,
+    );
   }
   async getStudentByModeratorId(id: number): Promise<any> {
     return this.moderatorRepo.find({
@@ -42,14 +49,12 @@ export class ModeratorService {
     @InjectRepository(Student) private studentRepo: Repository<Student>,
   ) {}
 
-  async addStudent(student: StudentDto): Promise<Student> {
+  async addStudent(student: StudentDto, email: string): Promise<Student> {
     {
-      const moderator = await this.moderatorRepo.findOneBy({ id: 1 });
-      student.type = 'Student';
-      student.createdBy = moderator.id;
+      const moderator = await this.moderatorRepo.findOneBy({ email: email });
+      student.createdByModerator = moderator.id;
       student.createdDate = new Date();
       student.updatedDate = new Date();
-      student.createdType = 'Moderator';
 
       const salt = await bcrypt.genSalt();
       const hassedpassed = await bcrypt.hash(student.password, salt);
@@ -82,8 +87,12 @@ export class ModeratorService {
   myProfile(id: number): any {
     return '';
   }
-  loginModerator(moderator: ModeratorLoginDto): any {
-    return '';
+  async loginModerator(moderator: ModeratorLoginDto): Promise<any> {
+    const mod = await this.moderatorRepo.findOneBy({ email: moderator.email });
+    if (mod) {
+      const isMatch = await bcrypt.compare(moderator.password, mod.password);
+      if (isMatch) return 'Successfully Logged In';
+    }
   }
   addModerator(moderator: ModeratorDto): any {
     return '';

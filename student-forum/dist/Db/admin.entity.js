@@ -12,6 +12,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Admin = void 0;
 const typeorm_1 = require("typeorm");
 const moderator_entity_1 = require("./moderator.entity");
+const student_entity_1 = require("./student.entity");
+const hiring_entity_1 = require("./hiring.entity");
 let Admin = exports.Admin = class Admin {
 };
 __decorate([
@@ -58,6 +60,14 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => moderator_entity_1.Moderator, (moderator) => moderator.createdBy),
     __metadata("design:type", Array)
 ], Admin.prototype, "moderators", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => student_entity_1.Student, (student) => student.createdByAdmin),
+    __metadata("design:type", Array)
+], Admin.prototype, "students", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => hiring_entity_1.Hr, (hr) => hr.createdByAdmin),
+    __metadata("design:type", Array)
+], Admin.prototype, "hrs", void 0);
 exports.Admin = Admin = __decorate([
     (0, typeorm_1.Entity)('admin')
 ], Admin);

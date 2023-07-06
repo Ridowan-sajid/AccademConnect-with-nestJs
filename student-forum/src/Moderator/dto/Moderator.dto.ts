@@ -6,27 +6,29 @@ import {
   IsPhoneNumber,
   IsString,
   Length,
+  Matches,
   MinLength,
-  minLength,
 } from 'class-validator';
-import { Admin } from 'src/Db/admin.entity';
 
 export class ModeratorDto {
   @IsString()
+  @IsNotEmpty()
+  @Matches(/^[A-Z][A-Za-z0-9_]+$/)
   name: string;
   //@IsNumber()
   age: string;
   @IsNotEmpty()
+  @Length(11)
   phone: string;
   @IsEmail({}, { message: 'Email is not correct' })
   email: string;
   @IsString()
   gender: string;
-  // @IsDate()
+  @IsDate()
   createdDate: Date;
   @IsString()
   education: string;
-  // @IsDate()
+  @IsDate()
   updatedDate: Date;
   @MinLength(7)
   password: string;
@@ -38,7 +40,7 @@ export class ModeratorDto {
 export class ModeratorLoginDto {
   @IsEmail({}, { message: 'It is not an email' })
   email: string;
-  @IsString({ message: 'It is not an string' })
+  @IsString({ message: 'It is not a string' })
   password: string;
 }
 export class PasswordChangeModeratorDto {

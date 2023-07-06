@@ -18,8 +18,8 @@ export declare class ModeratorController {
     forgetPassword(id: number, moderator: ForgetPassModeratorDto): any;
     deletStudent(id: number): string;
     deletHr(id: number): string;
-    addStudent(student: StudentDto, myfileobj: Express.Multer.File): any;
-    getModeratorByModeratorId(id: number): any;
+    addStudent(student: StudentDto, myfileobj: Express.Multer.File, session: any): any;
+    getStudentByModeratorId(id: number): any;
     deleteStudentByModeratorId(id: number, session: any): any;
     updateStudentByModeratorId(id: number, student: UpdateStudentDto, myfileobj: Express.Multer.File, session: any): any;
 }

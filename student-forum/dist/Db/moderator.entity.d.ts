@@ -1,4 +1,6 @@
 import { Student } from './student.entity';
+import { Hr } from './hiring.entity';
+import { Report } from './report.entity';
 export declare class Moderator {
     id: number;
     name: string;
@@ -14,4 +16,6 @@ export declare class Moderator {
     status: string;
     createdBy: number;
     students: Student[];
+    hrs: Hr[];
+    handledReports: Report[];
 }

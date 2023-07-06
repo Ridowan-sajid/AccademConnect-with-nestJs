@@ -2,8 +2,9 @@ export declare class Comment {
     id: number;
     text: string;
     createdDate: Date;
-    authorType: string;
-    postId: number;
-    authorId: number;
-    rootId: number;
+    post: number;
+    hr: number;
+    student: number;
+    parentComment: Comment;
+    childComments: Comment[];
 }

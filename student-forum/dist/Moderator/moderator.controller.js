@@ -31,6 +31,7 @@ let ModeratorController = exports.ModeratorController = class ModeratorControlle
         return this.moderatorService.addModerator(moderator);
     }
     loginModerator(moderator, session) {
+        console.log(moderator);
         session.email = moderator.email;
         return this.moderatorService.loginModerator(moderator);
     }
@@ -58,11 +59,11 @@ let ModeratorController = exports.ModeratorController = class ModeratorControlle
     deletHr(id) {
         return this.moderatorService.deleteHr(id);
     }
-    addStudent(student, myfileobj) {
+    addStudent(student, myfileobj, session) {
         student.profileImg = myfileobj.filename;
-        return this.moderatorService.addStudent(student);
+        return this.moderatorService.addStudent(student, session.email);
     }
-    getModeratorByModeratorId(id) {
+    getStudentByModeratorId(id) {
         return this.moderatorService.getStudentByModeratorId(id);
     }
     deleteStudentByModeratorId(id, session) {
@@ -99,6 +100,7 @@ __decorate([
 ], ModeratorController.prototype, "addModerator", null);
 __decorate([
     (0, common_1.Post)('/login'),
+    __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Session)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Moderator_dto_2.ModeratorLoginDto, Object]),
@@ -181,8 +183,9 @@ __decorate([
     (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.UploadedFile)()),
+    __param(2, (0, common_1.Session)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Student_dto_1.StudentDto, Object]),
+    __metadata("design:paramtypes", [Student_dto_1.StudentDto, Object, Object]),
     __metadata("design:returntype", Object)
 ], ModeratorController.prototype, "addStudent", null);
 __decorate([
@@ -191,7 +194,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Object)
-], ModeratorController.prototype, "getModeratorByModeratorId", null);
+], ModeratorController.prototype, "getStudentByModeratorId", null);
 __decorate([
     (0, common_1.Delete)('/studentwithModerator/:id'),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),

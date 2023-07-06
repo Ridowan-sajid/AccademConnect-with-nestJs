@@ -62,7 +62,12 @@ export class ModeratorController {
   }
 
   @Post('/login')
-  loginModerator(moderator: ModeratorLoginDto, @Session() session): any {
+  loginModerator(
+    @Body() moderator: ModeratorLoginDto,
+    @Session() session,
+  ): any {
+    console.log(moderator);
+
     session.email = moderator.email;
     return this.moderatorService.loginModerator(moderator);
   }
@@ -144,13 +149,15 @@ export class ModeratorController {
     @Body()
     student: StudentDto,
     @UploadedFile() myfileobj: Express.Multer.File,
+    @Session() session,
   ): any {
     student.profileImg = myfileobj.filename;
-    return this.moderatorService.addStudent(student);
+
+    return this.moderatorService.addStudent(student, session.email);
   }
 
   @Get('/studentwithModerator/:id')
-  getModeratorByModeratorId(@Param('id', ParseIntPipe) id: number): any {
+  getStudentByModeratorId(@Param('id', ParseIntPipe) id: number): any {
     return this.moderatorService.getStudentByModeratorId(id);
   }
 

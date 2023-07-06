@@ -1,4 +1,9 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Hr } from './hiring.entity';
+import { Student } from './student.entity';
+import { Post } from './post.entity';
+import { Job } from './job.entity';
+import { Moderator } from './moderator.entity';
 
 @Entity('Report')
 export class Report {
@@ -10,18 +15,19 @@ export class Report {
   details: string;
   @Column()
   createdDate: Date;
-  @Column()
-  authorType: string;
   //
-  @Column()
-  userId: number;
+  @ManyToOne(() => Hr, (hr) => hr.reports)
+  hr: number;
   //
-  @Column()
-  postId: number;
+  @ManyToOne(() => Student, (student) => student.reports)
+  student: number;
   //
-  @Column()
-  jobId: number;
+  @ManyToOne(() => Post, (post) => post.reports)
+  post: number;
   //
-  @Column()
+  @ManyToOne(() => Job, (job) => job.reports)
+  job: number;
+  //
+  @ManyToOne(() => Moderator, (moderator) => moderator.handledReports)
   handledBy: number;
 }

@@ -1,4 +1,10 @@
-import { Injectable, ParseIntPipe } from '@nestjs/common';
+import {
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { PostDto } from 'src/Post/dto/post.dto';
 import { StudentDto } from 'src/Student/dto/Student.dto';
 import { AdminLoginDto } from './dto/adminLogin.dto';
@@ -14,20 +20,28 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Admin } from 'src/Db/admin.entity';
 import * as bcrypt from 'bcrypt';
+import { Student } from 'src/Db/student.entity';
 
 @Injectable()
 export class AdminService {
+  // async changePass(password: string): Promise<any> {
+  //   const salt = await bcrypt.genSalt();
+  //   password = await bcrypt.hash(password, salt);
+  //   return password;
+  // }
   constructor(
     @InjectRepository(Admin) private adminRepo: Repository<Admin>,
     @InjectRepository(Moderator)
     private moderatorRepo: Repository<Moderator>,
+    @InjectRepository(Student)
+    private studentRepo: Repository<Student>,
   ) {}
 
-  async getModeratorByAdminId(id: number): Promise<Admin[]> {
+  async getStudentByAdminId(email: string): Promise<Admin[]> {
     return this.adminRepo.find({
-      where: { id: id },
+      where: { email: email },
       relations: {
-        moderators: true,
+        students: true,
       },
     });
   }
@@ -82,7 +96,16 @@ export class AdminService {
     return this.moderatorRepo.save(moderator);
   }
   getAllStudent(): any {
-    return '';
+    const res = this.studentRepo.find();
+
+    if (res) {
+      return res;
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'There is something wrong',
+      });
+    }
   }
   updateStudent(id: number, student: UpdateStudentDto): any {
     return '';
@@ -90,14 +113,45 @@ export class AdminService {
   getStudentById(): any {
     return '';
   }
-  addStudent(student: StudentDto): any {
-    return '';
+  async addStudent(student: StudentDto, email: string): Promise<any> {
+    const salt = await bcrypt.genSalt();
+    student.password = await bcrypt.hash(student.password, salt);
+    const adm = await this.studentRepo.findOneBy({ email: email });
+    student.createdByAdmin = adm.id;
+    const res = await this.studentRepo.save(student);
+
+    if (res) {
+      return res;
+    } else {
+      throw new InternalServerErrorException({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'There is something wrong',
+      });
+    }
   }
-  updateAdmin(id: number, admin: UpdateAdminDTO): any {
-    return '';
+  async updateAdmin(email: string, admin: UpdateAdminDTO): Promise<any> {
+    const res = await this.adminRepo.update({ email: email }, admin);
+
+    if (res) {
+      return res;
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'Admin not found',
+      });
+    }
   }
-  adminLogin(admin: AdminLoginDto): any {
-    return '';
+  async adminLogin(admin: AdminLoginDto): Promise<any> {
+    const adm = await this.adminRepo.findOneBy({ email: admin.email });
+    if (adm) {
+      const isMatch: boolean = await bcrypt.compare(
+        admin.password,
+        adm.password,
+      );
+      if (isMatch) return isMatch;
+    } else {
+      return false;
+    }
   }
   async deleteModeratorByAdminId(id: number): Promise<any> {
     return this.moderatorRepo.delete({ id: id, createdBy: 1 });

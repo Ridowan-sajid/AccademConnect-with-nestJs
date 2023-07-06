@@ -19,7 +19,7 @@ import { DbModule } from './Db/db.module';
       port: 5432,
       username: 'postgres',
       password: '788881137',
-      database: 'studentForum', //Change to your database name
+      database: 'studentForum',
       autoLoadEntities: true,
       synchronize: true,
     }),

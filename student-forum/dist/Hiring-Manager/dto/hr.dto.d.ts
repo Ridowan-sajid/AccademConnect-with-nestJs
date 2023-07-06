@@ -4,10 +4,12 @@ export declare class HrDto {
     phone: string;
     email: string;
     gender: string;
-    connection: string[];
+    createdDate: Date;
+    updatedDate: Date;
     password: string;
     profileImg: string;
-    createdBy: number;
+    createdByAdmin: number;
+    createdByModerator: number;
 }
 export declare class HrLoginDto {
     email: string;

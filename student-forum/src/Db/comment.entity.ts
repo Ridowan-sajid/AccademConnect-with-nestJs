@@ -1,4 +1,14 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Post } from './post.entity';
+import { Hr } from './hiring.entity';
+import { Student } from './student.entity';
 
 @Entity('comment')
 export class Comment {
@@ -6,18 +16,25 @@ export class Comment {
   id: number;
   @Column()
   text: string;
-  @Column()
+  @CreateDateColumn()
   createdDate: Date;
-  @Column()
-  authorType: string;
 
   //
-  @Column()
-  postId: number;
+  @ManyToOne(() => Post, (post) => post.comments)
+  post: number;
   //
-  @Column()
-  authorId: number;
+  @ManyToOne(() => Hr, (hr) => hr.comments)
+  hr: number;
   //
-  @Column()
-  rootId: number;
+  @ManyToOne(() => Student, (student) => student.comments)
+  student: number;
+  //
+
+  @ManyToOne(() => Comment, (comment) => comment.childComments, {
+    nullable: true,
+  })
+  parentComment: Comment;
+
+  @OneToMany(() => Comment, (comment) => comment.parentComment)
+  childComments: Comment[];
 }

@@ -1,4 +1,7 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Student } from './student.entity';
+import { Job } from './job.entity';
+import { Hr } from './hiring.entity';
 
 @Entity('Offer')
 export class Offer {
@@ -12,10 +15,10 @@ export class Offer {
   createdDate: Date;
 
   //
-  @Column()
+  @ManyToOne(() => Student, (student) => student.letters)
   studentId: number;
-  @Column()
+  @ManyToOne(() => Job, (job) => job.letters)
   jobId: number;
-  @Column()
+  @ManyToOne(() => Hr, (hr) => hr.letters)
   hrId: number;
 }

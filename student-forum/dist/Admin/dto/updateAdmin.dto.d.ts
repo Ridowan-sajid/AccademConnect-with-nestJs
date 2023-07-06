@@ -3,7 +3,6 @@ export declare class UpdateAdminDTO {
     age: number;
     phone: string;
     gender: string;
-    createdDate: Date;
     updatedDate: Date;
     profileImg: string;
 }

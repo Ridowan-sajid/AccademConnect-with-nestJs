@@ -5,6 +5,8 @@ import {
   IsNumber,
   IsPhoneNumber,
   IsString,
+  Length,
+  MinLength,
 } from 'class-validator';
 
 export class UpdateAdminDTO {
@@ -12,15 +14,11 @@ export class UpdateAdminDTO {
   name: string;
   @IsNumber()
   age: number;
-  @IsNotEmpty()
+  @Length(11)
   phone: string;
-  // @IsEmail({}, { message: 'Email is not correct' })
-  // email: string;
   @IsString()
   gender: string;
-  @IsDate()
-  createdDate: Date;
-  @IsDate()
+  //@IsDate()
   updatedDate: Date;
   profileImg: string;
 }

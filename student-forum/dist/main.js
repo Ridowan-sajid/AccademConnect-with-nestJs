@@ -9,7 +9,11 @@ async function bootstrap() {
         secret: 'my-secret',
         resave: false,
         saveUninitialized: false,
+        cookie: {
+            maxAge: 30000,
+        },
     }));
+    app.enableCors();
     await app.listen(3000);
 }
 bootstrap();

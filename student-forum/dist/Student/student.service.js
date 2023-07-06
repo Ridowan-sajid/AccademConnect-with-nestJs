@@ -54,7 +54,7 @@ let StudentService = exports.StudentService = class StudentService {
     addPost(data, id) {
         data.createdDate = new Date();
         data.updatedDate = new Date();
-        data.student = id;
+        data.studentId = id;
         return this.postRepo.save(data);
     }
     getDashboard() {

@@ -16,18 +16,25 @@ class UpdateModeratorDto {
 exports.UpdateModeratorDto = UpdateModeratorDto;
 __decorate([
     (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.Matches)(/^[A-Z][A-Za-z0-9_]+$/),
     __metadata("design:type", String)
 ], UpdateModeratorDto.prototype, "name", void 0);
 __decorate([
-    (0, class_validator_1.IsNumber)(),
-    __metadata("design:type", String)
-], UpdateModeratorDto.prototype, "age", void 0);
-__decorate([
     (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.Length)(11),
     __metadata("design:type", String)
 ], UpdateModeratorDto.prototype, "phone", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], UpdateModeratorDto.prototype, "gender", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], UpdateModeratorDto.prototype, "education", void 0);
+__decorate([
+    (0, class_validator_1.IsDate)(),
+    __metadata("design:type", Date)
+], UpdateModeratorDto.prototype, "updatedDate", void 0);
 //# sourceMappingURL=updateModerator.dto.js.map

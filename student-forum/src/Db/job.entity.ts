@@ -1,5 +1,13 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Hr } from './hiring.entity';
+import { Offer } from './offer.entity';
+import { Report } from './report.entity';
 
 @Entity('Job')
 export class Job {
@@ -9,16 +17,13 @@ export class Job {
   title: string;
   @Column()
   details: string;
-  @Column()
-  type: string;
-  //   @Column()
-  //   keyword: string[];
-
-  //
 
   @ManyToOne(() => Hr, (hr) => hr.jobs)
   hr: number;
-  //
-  //   @Column()
-  //   letterId: string;
+
+  @OneToMany(() => Offer, (offer) => offer.jobId)
+  letters: Offer[];
+
+  @OneToMany(() => Report, (report) => report.job)
+  reports: Report[];
 }

@@ -16,10 +16,17 @@ class HrDto {
 exports.HrDto = HrDto;
 __decorate([
     (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.Matches)(/^[A-Z][A-Za-z0-9_]+$/),
     __metadata("design:type", String)
 ], HrDto.prototype, "name", void 0);
 __decorate([
     (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], HrDto.prototype, "age", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.Length)(11),
     __metadata("design:type", String)
 ], HrDto.prototype, "phone", void 0);
 __decorate([
@@ -30,6 +37,14 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], HrDto.prototype, "gender", void 0);
+__decorate([
+    (0, class_validator_1.IsDate)(),
+    __metadata("design:type", Date)
+], HrDto.prototype, "createdDate", void 0);
+__decorate([
+    (0, class_validator_1.IsDate)(),
+    __metadata("design:type", Date)
+], HrDto.prototype, "updatedDate", void 0);
 __decorate([
     (0, class_validator_1.MinLength)(7),
     __metadata("design:type", String)
@@ -56,7 +71,7 @@ class ForgetPassHrDto {
 }
 exports.ForgetPassHrDto = ForgetPassHrDto;
 __decorate([
-    (0, class_validator_1.IsEmail)(),
+    (0, class_validator_1.IsEmail)({}, { message: 'Entered a wrong email' }),
     __metadata("design:type", String)
 ], ForgetPassHrDto.prototype, "email", void 0);
 //# sourceMappingURL=hr.dto.js.map

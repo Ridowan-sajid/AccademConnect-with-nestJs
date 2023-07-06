@@ -1,4 +1,6 @@
 import { Moderator } from './moderator.entity';
+import { Student } from './student.entity';
+import { Hr } from './hiring.entity';
 export declare class Admin {
     id: number;
     name: string;
@@ -11,4 +13,6 @@ export declare class Admin {
     profileImg: string;
     password: string;
     moderators: Moderator[];
+    students: Student[];
+    hrs: Hr[];
 }

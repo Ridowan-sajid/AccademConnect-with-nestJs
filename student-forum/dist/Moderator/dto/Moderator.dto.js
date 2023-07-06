@@ -16,10 +16,13 @@ class ModeratorDto {
 exports.ModeratorDto = ModeratorDto;
 __decorate([
     (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.Matches)(/^[A-Z][A-Za-z0-9_]+$/),
     __metadata("design:type", String)
 ], ModeratorDto.prototype, "name", void 0);
 __decorate([
     (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.Length)(11),
     __metadata("design:type", String)
 ], ModeratorDto.prototype, "phone", void 0);
 __decorate([
@@ -31,9 +34,17 @@ __decorate([
     __metadata("design:type", String)
 ], ModeratorDto.prototype, "gender", void 0);
 __decorate([
+    (0, class_validator_1.IsDate)(),
+    __metadata("design:type", Date)
+], ModeratorDto.prototype, "createdDate", void 0);
+__decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], ModeratorDto.prototype, "education", void 0);
+__decorate([
+    (0, class_validator_1.IsDate)(),
+    __metadata("design:type", Date)
+], ModeratorDto.prototype, "updatedDate", void 0);
 __decorate([
     (0, class_validator_1.MinLength)(7),
     __metadata("design:type", String)
@@ -46,7 +57,7 @@ __decorate([
     __metadata("design:type", String)
 ], ModeratorLoginDto.prototype, "email", void 0);
 __decorate([
-    (0, class_validator_1.IsString)({ message: 'It is not an string' }),
+    (0, class_validator_1.IsString)({ message: 'It is not a string' }),
     __metadata("design:type", String)
 ], ModeratorLoginDto.prototype, "password", void 0);
 class PasswordChangeModeratorDto {

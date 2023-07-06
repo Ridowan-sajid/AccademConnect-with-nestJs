@@ -13,6 +13,8 @@ exports.Moderator = void 0;
 const typeorm_1 = require("typeorm");
 const admin_entity_1 = require("./admin.entity");
 const student_entity_1 = require("./student.entity");
+const hiring_entity_1 = require("./hiring.entity");
+const report_entity_1 = require("./report.entity");
 let Moderator = exports.Moderator = class Moderator {
 };
 __decorate([
@@ -68,9 +70,17 @@ __decorate([
     __metadata("design:type", Number)
 ], Moderator.prototype, "createdBy", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => student_entity_1.Student, (student) => student.createdBy),
+    (0, typeorm_1.OneToMany)(() => student_entity_1.Student, (student) => student.createdByModerator),
     __metadata("design:type", Array)
 ], Moderator.prototype, "students", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => hiring_entity_1.Hr, (hr) => hr.createdByModerator),
+    __metadata("design:type", Array)
+], Moderator.prototype, "hrs", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => report_entity_1.Report, (report) => report.handledBy),
+    __metadata("design:type", Array)
+], Moderator.prototype, "handledReports", void 0);
 exports.Moderator = Moderator = __decorate([
     (0, typeorm_1.Entity)('Moderator')
 ], Moderator);

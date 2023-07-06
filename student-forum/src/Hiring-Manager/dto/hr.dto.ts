@@ -3,34 +3,36 @@ import {
   IsEmail,
   IsNotEmpty,
   IsNumber,
-  IsPhoneNumber,
   IsString,
   Length,
+  Matches,
   MinLength,
-  minLength,
 } from 'class-validator';
 
 export class HrDto {
   @IsString()
+  @IsNotEmpty()
+  @Matches(/^[A-Z][A-Za-z0-9_]+$/)
   name: string;
   // @IsNumber()
+  @IsNotEmpty()
   age: string;
   @IsNotEmpty()
+  @Length(11)
   phone: string;
   @IsEmail({}, { message: 'Email is not correct' })
   email: string;
   @IsString()
   gender: string;
-  // @IsDate()
-  // createdDate: Date;
-  // @IsDate()
-  // updatedDate: Date;
-  connection: string[];
+  @IsDate()
+  createdDate: Date;
+  @IsDate()
+  updatedDate: Date;
   @MinLength(7)
   password: string;
   profileImg: string;
-  // type: string;
-  createdBy: number;
+  createdByAdmin: number;
+  createdByModerator: number;
 }
 
 export class HrLoginDto {
@@ -46,6 +48,6 @@ export class PasswordChangeHrDto {
 }
 
 export class ForgetPassHrDto {
-  @IsEmail()
+  @IsEmail({}, { message: 'Entered a wrong email' })
   email: string;
 }

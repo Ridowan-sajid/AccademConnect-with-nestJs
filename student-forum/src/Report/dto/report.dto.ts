@@ -1,6 +1,15 @@
+import { IsDate, IsString } from 'class-validator';
+
 export class ReportDto {
+  @IsString()
   title: string;
+  @IsString()
   details: string;
+  @IsDate()
   createdDate: Date;
-  author: string;
+  hrId: number;
+  studentId: number;
+  postId: number;
+  jobId: number;
+  handledById: number;
 }

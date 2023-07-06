@@ -12,7 +12,7 @@ export declare class ModeratorService {
     updateStudentByModeratorId(id: number, student: UpdateStudentDto, email: string): Promise<any>;
     getStudentByModeratorId(id: number): Promise<any>;
     constructor(moderatorRepo: Repository<Moderator>, studentRepo: Repository<Student>);
-    addStudent(student: StudentDto): Promise<Student>;
+    addStudent(student: StudentDto, email: string): Promise<Student>;
     deleteHr(id: number): string;
     deleteStudent(id: number): string;
     forgetPassword(id: number, moderator: ForgetPassModeratorDto): any;
@@ -21,6 +21,6 @@ export declare class ModeratorService {
     deleteProfile(id: number): any;
     editProfile(id: number, moderator: UpdateModeratorDto): any;
     myProfile(id: number): any;
-    loginModerator(moderator: ModeratorLoginDto): any;
+    loginModerator(moderator: ModeratorLoginDto): Promise<any>;
     addModerator(moderator: ModeratorDto): any;
 }

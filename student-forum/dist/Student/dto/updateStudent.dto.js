@@ -16,6 +16,7 @@ class UpdateStudentDto {
 exports.UpdateStudentDto = UpdateStudentDto;
 __decorate([
     (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Matches)(/^[A-Z][A-Za-z0-9_]+$/),
     __metadata("design:type", String)
 ], UpdateStudentDto.prototype, "name", void 0);
 __decorate([
@@ -26,8 +27,4 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], UpdateStudentDto.prototype, "gender", void 0);
-__decorate([
-    (0, class_validator_1.IsDate)(),
-    __metadata("design:type", String)
-], UpdateStudentDto.prototype, "profileImg", void 0);
 //# sourceMappingURL=updateStudent.dto.js.map

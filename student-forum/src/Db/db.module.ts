@@ -13,13 +13,13 @@ import { Student } from './student.entity';
   imports: [
     TypeOrmModule.forFeature([
       Admin,
-      //Comment,
+      Comment,
       Hr,
       Job,
       Moderator,
-      //Offer,
+      Offer,
       Post,
-      //Report,
+      Report,
       Student,
     ]),
   ],

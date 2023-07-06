@@ -12,6 +12,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Hr = void 0;
 const typeorm_1 = require("typeorm");
 const job_entity_1 = require("./job.entity");
+const moderator_entity_1 = require("./moderator.entity");
+const admin_entity_1 = require("./admin.entity");
+const student_entity_1 = require("./student.entity");
+const comment_entity_1 = require("./comment.entity");
+const report_entity_1 = require("./report.entity");
+const offer_entity_1 = require("./offer.entity");
 let Hr = exports.Hr = class Hr {
 };
 __decorate([
@@ -55,9 +61,33 @@ __decorate([
     __metadata("design:type", String)
 ], Hr.prototype, "password", void 0);
 __decorate([
+    (0, typeorm_1.ManyToOne)(() => moderator_entity_1.Moderator, (moderator) => moderator.students),
+    __metadata("design:type", Number)
+], Hr.prototype, "createdByModerator", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => admin_entity_1.Admin, (admin) => admin.students),
+    __metadata("design:type", Number)
+], Hr.prototype, "createdByAdmin", void 0);
+__decorate([
     (0, typeorm_1.OneToMany)(() => job_entity_1.Job, (moderator) => moderator.hr),
     __metadata("design:type", Array)
 ], Hr.prototype, "jobs", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => comment_entity_1.Comment, (comment) => comment.hr),
+    __metadata("design:type", Array)
+], Hr.prototype, "comments", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => report_entity_1.Report, (report) => report.hr),
+    __metadata("design:type", Array)
+], Hr.prototype, "reports", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => offer_entity_1.Offer, (offer) => offer.hrId),
+    __metadata("design:type", Array)
+], Hr.prototype, "letters", void 0);
+__decorate([
+    (0, typeorm_1.ManyToMany)(() => student_entity_1.Student, (student) => student.connection),
+    __metadata("design:type", Array)
+], Hr.prototype, "connection", void 0);
 exports.Hr = Hr = __decorate([
     (0, typeorm_1.Entity)('Hr')
 ], Hr);

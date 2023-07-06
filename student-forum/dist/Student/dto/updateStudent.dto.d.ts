@@ -3,5 +3,6 @@ export declare class UpdateStudentDto {
     age: string;
     phone: string;
     gender: string;
+    updatedDate: Date;
     profileImg: string;
 }

@@ -55,7 +55,7 @@ export class StudentService {
   addPost(data: PostDto, id: number) {
     data.createdDate = new Date();
     data.updatedDate = new Date();
-    data.student = id;
+    data.studentId = id;
 
     return this.postRepo.save(data);
   }

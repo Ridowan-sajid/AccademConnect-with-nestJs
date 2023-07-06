@@ -1,5 +1,6 @@
-import { IsString, IsNumber } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class ModeratorAccessDto {
+  @IsString()
   status: string;
 }

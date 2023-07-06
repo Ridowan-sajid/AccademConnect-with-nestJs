@@ -16,14 +16,25 @@ class UpdateHrDto {
 exports.UpdateHrDto = UpdateHrDto;
 __decorate([
     (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.Matches)(/^[A-Z][A-Za-z0-9_]+$/),
     __metadata("design:type", String)
 ], UpdateHrDto.prototype, "name", void 0);
 __decorate([
     (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], UpdateHrDto.prototype, "age", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.Length)(11),
     __metadata("design:type", String)
 ], UpdateHrDto.prototype, "phone", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], UpdateHrDto.prototype, "gender", void 0);
+__decorate([
+    (0, class_validator_1.IsDate)(),
+    __metadata("design:type", Date)
+], UpdateHrDto.prototype, "updatedDate", void 0);
 //# sourceMappingURL=updatehr.dto.js.map

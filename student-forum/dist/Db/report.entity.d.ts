@@ -3,9 +3,9 @@ export declare class Report {
     title: string;
     details: string;
     createdDate: Date;
-    authorType: string;
-    userId: number;
-    postId: number;
-    jobId: number;
+    hr: number;
+    student: number;
+    post: number;
+    job: number;
     handledBy: number;
 }

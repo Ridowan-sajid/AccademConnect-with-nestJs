@@ -10,10 +10,13 @@ exports.DbModule = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const admin_entity_1 = require("./admin.entity");
+const comment_entity_1 = require("./comment.entity");
 const hiring_entity_1 = require("./hiring.entity");
 const job_entity_1 = require("./job.entity");
 const moderator_entity_1 = require("./moderator.entity");
+const offer_entity_1 = require("./offer.entity");
 const post_entity_1 = require("./post.entity");
+const report_entity_1 = require("./report.entity");
 const student_entity_1 = require("./student.entity");
 let DbModule = exports.DbModule = class DbModule {
 };
@@ -22,10 +25,13 @@ exports.DbModule = DbModule = __decorate([
         imports: [
             typeorm_1.TypeOrmModule.forFeature([
                 admin_entity_1.Admin,
+                comment_entity_1.Comment,
                 hiring_entity_1.Hr,
                 job_entity_1.Job,
                 moderator_entity_1.Moderator,
+                offer_entity_1.Offer,
                 post_entity_1.Post,
+                report_entity_1.Report,
                 student_entity_1.Student,
             ]),
         ],

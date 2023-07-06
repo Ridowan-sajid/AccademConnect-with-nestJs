@@ -1,8 +1,8 @@
 export declare class OfferDTO {
     title: string;
-    offerLetter: string;
+    letter: string;
     createdDate: Date;
     studentId: number;
     jobId: number;
-    author: string;
+    hrId: string;
 }

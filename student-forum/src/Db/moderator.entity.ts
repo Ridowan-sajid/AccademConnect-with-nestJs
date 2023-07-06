@@ -7,6 +7,8 @@ import {
 } from 'typeorm';
 import { Admin } from './admin.entity';
 import { Student } from './student.entity';
+import { Hr } from './hiring.entity';
+import { Report } from './report.entity';
 
 @Entity('Moderator')
 export class Moderator {
@@ -16,8 +18,6 @@ export class Moderator {
   name: string;
   @Column()
   age: string;
-  //   @Column()
-  //   age: number;
   @Column()
   phone: string;
   @Column()
@@ -37,10 +37,15 @@ export class Moderator {
   @Column()
   status: string;
 
-  //
   @ManyToOne(() => Admin, (admin) => admin.moderators)
   createdBy: number;
 
-  @OneToMany(() => Student, (student) => student.createdBy)
+  @OneToMany(() => Student, (student) => student.createdByModerator)
   students: Student[];
+
+  @OneToMany(() => Hr, (hr) => hr.createdByModerator)
+  hrs: Hr[];
+
+  @OneToMany(() => Report, (report) => report.handledBy)
+  handledReports: Report[];
 }

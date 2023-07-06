@@ -10,11 +10,13 @@ import { UpdateStudentDto } from 'src/Student/dto/updateStudent.dto';
 import { Moderator } from 'src/Db/moderator.entity';
 import { Repository } from 'typeorm';
 import { Admin } from 'src/Db/admin.entity';
+import { Student } from 'src/Db/student.entity';
 export declare class AdminService {
     private adminRepo;
     private moderatorRepo;
-    constructor(adminRepo: Repository<Admin>, moderatorRepo: Repository<Moderator>);
-    getModeratorByAdminId(id: number): Promise<Admin[]>;
+    private studentRepo;
+    constructor(adminRepo: Repository<Admin>, moderatorRepo: Repository<Moderator>, studentRepo: Repository<Student>);
+    getStudentByAdminId(email: string): Promise<Admin[]>;
     adminProfile(id: number): any;
     accessControl(id: number, access: ModeratorAccessDto): any;
     deleteHr(id: number): any;
@@ -31,9 +33,9 @@ export declare class AdminService {
     getAllStudent(): any;
     updateStudent(id: number, student: UpdateStudentDto): any;
     getStudentById(): any;
-    addStudent(student: StudentDto): any;
-    updateAdmin(id: number, admin: UpdateAdminDTO): any;
-    adminLogin(admin: AdminLoginDto): any;
+    addStudent(student: StudentDto, email: string): Promise<any>;
+    updateAdmin(email: string, admin: UpdateAdminDTO): Promise<any>;
+    adminLogin(admin: AdminLoginDto): Promise<any>;
     deleteModeratorByAdminId(id: number): Promise<any>;
     updateModeratorByAdminId(id: number, moderator: UpdateModeratorDto): Promise<any>;
 }

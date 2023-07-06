@@ -6,12 +6,14 @@ import {
   IsPhoneNumber,
   IsString,
   Length,
+  Matches,
   MinLength,
   minLength,
 } from 'class-validator';
 
 export class StudentDto {
   @IsString()
+  @Matches(/^[A-Z][A-Za-z0-9_]+$/)
   name: string;
   //@IsNumber()
   age: string;
@@ -22,17 +24,15 @@ export class StudentDto {
   email: string;
   @IsString()
   gender: string;
-  @IsDate()
+  //@IsDate()
   createdDate: Date;
-  @IsDate()
+  //@IsDate()
   updatedDate: Date;
-  // connection: string[];
   @MinLength(7)
   password: string;
   profileImg: string;
-  createdType: string;
-  type: string;
-  createdBy: number;
+  createdByAdmin: number;
+  createdByModerator: number;
 }
 
 export class PasswordChangeStudentDto {

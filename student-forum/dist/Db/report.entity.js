@@ -11,6 +11,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Report = void 0;
 const typeorm_1 = require("typeorm");
+const hiring_entity_1 = require("./hiring.entity");
+const student_entity_1 = require("./student.entity");
+const post_entity_1 = require("./post.entity");
+const job_entity_1 = require("./job.entity");
+const moderator_entity_1 = require("./moderator.entity");
 let Report = exports.Report = class Report {
 };
 __decorate([
@@ -30,23 +35,23 @@ __decorate([
     __metadata("design:type", Date)
 ], Report.prototype, "createdDate", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], Report.prototype, "authorType", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.ManyToOne)(() => hiring_entity_1.Hr, (hr) => hr.reports),
     __metadata("design:type", Number)
-], Report.prototype, "userId", void 0);
+], Report.prototype, "hr", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.ManyToOne)(() => student_entity_1.Student, (student) => student.reports),
     __metadata("design:type", Number)
-], Report.prototype, "postId", void 0);
+], Report.prototype, "student", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.ManyToOne)(() => post_entity_1.Post, (post) => post.reports),
     __metadata("design:type", Number)
-], Report.prototype, "jobId", void 0);
+], Report.prototype, "post", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.ManyToOne)(() => job_entity_1.Job, (job) => job.reports),
+    __metadata("design:type", Number)
+], Report.prototype, "job", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => moderator_entity_1.Moderator, (moderator) => moderator.handledReports),
     __metadata("design:type", Number)
 ], Report.prototype, "handledBy", void 0);
 exports.Report = Report = __decorate([

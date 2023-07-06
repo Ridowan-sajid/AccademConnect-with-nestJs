@@ -19,16 +19,18 @@ const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const admin_entity_1 = require("../Db/admin.entity");
 const bcrypt = require("bcrypt");
+const student_entity_1 = require("../Db/student.entity");
 let AdminService = exports.AdminService = class AdminService {
-    constructor(adminRepo, moderatorRepo) {
+    constructor(adminRepo, moderatorRepo, studentRepo) {
         this.adminRepo = adminRepo;
         this.moderatorRepo = moderatorRepo;
+        this.studentRepo = studentRepo;
     }
-    async getModeratorByAdminId(id) {
+    async getStudentByAdminId(email) {
         return this.adminRepo.find({
-            where: { id: id },
+            where: { email: email },
             relations: {
-                moderators: true,
+                students: true,
             },
         });
     }
@@ -80,7 +82,16 @@ let AdminService = exports.AdminService = class AdminService {
         return this.moderatorRepo.save(moderator);
     }
     getAllStudent() {
-        return '';
+        const res = this.studentRepo.find();
+        if (res) {
+            return res;
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'There is something wrong',
+            });
+        }
     }
     updateStudent(id, student) {
         return '';
@@ -88,14 +99,44 @@ let AdminService = exports.AdminService = class AdminService {
     getStudentById() {
         return '';
     }
-    addStudent(student) {
-        return '';
+    async addStudent(student, email) {
+        const salt = await bcrypt.genSalt();
+        student.password = await bcrypt.hash(student.password, salt);
+        const adm = await this.studentRepo.findOneBy({ email: email });
+        student.createdByAdmin = adm.id;
+        const res = await this.studentRepo.save(student);
+        if (res) {
+            return res;
+        }
+        else {
+            throw new common_1.InternalServerErrorException({
+                status: common_1.HttpStatus.INTERNAL_SERVER_ERROR,
+                message: 'There is something wrong',
+            });
+        }
     }
-    updateAdmin(id, admin) {
-        return '';
+    async updateAdmin(email, admin) {
+        const res = await this.adminRepo.update({ email: email }, admin);
+        if (res) {
+            return res;
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'Admin not found',
+            });
+        }
     }
-    adminLogin(admin) {
-        return '';
+    async adminLogin(admin) {
+        const adm = await this.adminRepo.findOneBy({ email: admin.email });
+        if (adm) {
+            const isMatch = await bcrypt.compare(admin.password, adm.password);
+            if (isMatch)
+                return isMatch;
+        }
+        else {
+            return false;
+        }
     }
     async deleteModeratorByAdminId(id) {
         return this.moderatorRepo.delete({ id: id, createdBy: 1 });
@@ -108,7 +149,9 @@ exports.AdminService = AdminService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(admin_entity_1.Admin)),
     __param(1, (0, typeorm_1.InjectRepository)(moderator_entity_1.Moderator)),
+    __param(2, (0, typeorm_1.InjectRepository)(student_entity_1.Student)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository])
 ], AdminService);
 //# sourceMappingURL=admin.service.js.map

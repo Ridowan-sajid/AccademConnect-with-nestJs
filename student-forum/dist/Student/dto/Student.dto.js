@@ -16,6 +16,7 @@ class StudentDto {
 exports.StudentDto = StudentDto;
 __decorate([
     (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Matches)(/^[A-Z][A-Za-z0-9_]+$/),
     __metadata("design:type", String)
 ], StudentDto.prototype, "name", void 0);
 __decorate([
@@ -30,14 +31,6 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], StudentDto.prototype, "gender", void 0);
-__decorate([
-    (0, class_validator_1.IsDate)(),
-    __metadata("design:type", Date)
-], StudentDto.prototype, "createdDate", void 0);
-__decorate([
-    (0, class_validator_1.IsDate)(),
-    __metadata("design:type", Date)
-], StudentDto.prototype, "updatedDate", void 0);
 __decorate([
     (0, class_validator_1.MinLength)(7),
     __metadata("design:type", String)

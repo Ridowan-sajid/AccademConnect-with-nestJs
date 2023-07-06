@@ -8,9 +8,8 @@ export declare class StudentDto {
     updatedDate: Date;
     password: string;
     profileImg: string;
-    createdType: string;
-    type: string;
-    createdBy: number;
+    createdByAdmin: number;
+    createdByModerator: number;
 }
 export declare class PasswordChangeStudentDto {
     oldPassword: string;

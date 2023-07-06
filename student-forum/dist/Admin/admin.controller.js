@@ -30,24 +30,43 @@ let AdminController = exports.AdminController = class AdminController {
     constructor(adminService) {
         this.adminService = adminService;
     }
-    adminLogin(admin) {
-        return this.adminService.adminLogin(admin);
+    async adminLogin(admin, session) {
+        const res = this.adminService.adminLogin(admin);
+        if ((await res) === true) {
+            session.email = admin.email;
+            console.log(session.email);
+            return res;
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'Admin not found',
+            });
+        }
     }
-    updateAdmin(id, admin) {
-        return this.adminService.updateAdmin(id, admin);
+    updateAdmin(admin, session, myfileobj) {
+        admin.updatedDate = new Date();
+        console.log(session.email);
+        return this.adminService.updateAdmin(session.email, admin);
     }
-    addStudent(student, myfileobj) {
+    addStudent(student, myfileobj, session) {
         student.profileImg = myfileobj.filename;
-        return this.adminService.addStudent(student);
+        student.createdDate = new Date();
+        student.updatedDate = new Date();
+        return this.adminService.addStudent(student, session.email);
     }
     getAllStudent() {
         return this.adminService.getAllStudent();
     }
+    getStudentByAdminId(session) {
+        return this.adminService.getStudentByAdminId(session.email);
+    }
     getStudentById(id) {
         return this.adminService.getStudentById();
     }
-    getModeratorByAdminId(id) {
-        return this.adminService.getModeratorByAdminId(id);
+    addModerator(moderator, myfileobj) {
+        moderator.profileImg = myfileobj.filename;
+        return this.adminService.addModerator(moderator);
     }
     deleteModeratorByAdminId(id) {
         return this.adminService.deleteModeratorByAdminId(id);
@@ -61,10 +80,6 @@ let AdminController = exports.AdminController = class AdminController {
     }
     deleteStudent(id) {
         return this.adminService.deleteStudent(id);
-    }
-    addModerator(moderator, myfileobj) {
-        moderator.profileImg = myfileobj.filename;
-        return this.adminService.addModerator(moderator);
     }
     getAllModerator() {
         return this.adminService.getAllModerator();
@@ -105,21 +120,13 @@ __decorate([
     (0, common_1.Post)('/login'),
     (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Session)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [adminLogin_dto_1.AdminLoginDto]),
-    __metadata("design:returntype", Object)
+    __metadata("design:paramtypes", [adminLogin_dto_1.AdminLoginDto, Object]),
+    __metadata("design:returntype", Promise)
 ], AdminController.prototype, "adminLogin", null);
 __decorate([
-    (0, common_1.Post)('/update/:id'),
-    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
-    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, updateAdmin_dto_1.UpdateAdminDTO]),
-    __metadata("design:returntype", Object)
-], AdminController.prototype, "updateAdmin", null);
-__decorate([
-    (0, common_1.Post)('/registerStudent'),
+    (0, common_1.Put)('/update'),
     (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('myfile', {
         fileFilter: (req, file, cb) => {
             if (file.originalname.match(/^.*\.(jpg|webp|png|jpeg)$/))
@@ -130,7 +137,79 @@ __decorate([
         },
         limits: { fileSize: 2000000 },
         storage: (0, multer_1.diskStorage)({
-            destination: './uploads',
+            destination: './uploads/admin',
+            filename: function (req, file, cb) {
+                cb(null, Date.now() + file.originalname);
+            },
+        }),
+    })),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Session)()),
+    __param(2, (0, common_1.UploadedFile)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [updateAdmin_dto_1.UpdateAdminDTO, Object, Object]),
+    __metadata("design:returntype", Object)
+], AdminController.prototype, "updateAdmin", null);
+__decorate([
+    (0, common_1.Post)('/addStudent'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('myfile', {
+        fileFilter: (req, file, cb) => {
+            if (file.originalname.match(/^.*\.(jpg|webp|png|jpeg)$/))
+                cb(null, true);
+            else {
+                cb(new multer_1.MulterError('LIMIT_UNEXPECTED_FILE', 'image'), false);
+            }
+        },
+        limits: { fileSize: 2000000 },
+        storage: (0, multer_1.diskStorage)({
+            destination: './uploads/students',
+            filename: function (req, file, cb) {
+                cb(null, Date.now() + file.originalname);
+            },
+        }),
+    })),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.UploadedFile)()),
+    __param(2, (0, common_1.Session)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Student_dto_1.StudentDto, Object, Object]),
+    __metadata("design:returntype", Object)
+], AdminController.prototype, "addStudent", null);
+__decorate([
+    (0, common_1.Get)('/student'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Object)
+], AdminController.prototype, "getAllStudent", null);
+__decorate([
+    (0, common_1.Get)('/studentwithAdmin'),
+    __param(0, (0, common_1.Session)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Object)
+], AdminController.prototype, "getStudentByAdminId", null);
+__decorate([
+    (0, common_1.Get)('/student/:id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Object)
+], AdminController.prototype, "getStudentById", null);
+__decorate([
+    (0, common_1.Post)('/RegisterModerator'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('myfile', {
+        fileFilter: (req, file, cb) => {
+            if (file.originalname.match(/^.*\.(jpg|webp|png|jpeg)$/))
+                cb(null, true);
+            else {
+                cb(new multer_1.MulterError('LIMIT_UNEXPECTED_FILE', 'image'), false);
+            }
+        },
+        limits: { fileSize: 200000 },
+        storage: (0, multer_1.diskStorage)({
+            destination: './uploads/moderator',
             filename: function (req, file, cb) {
                 cb(null, Date.now() + file.originalname);
             },
@@ -140,29 +219,9 @@ __decorate([
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.UploadedFile)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Student_dto_1.StudentDto, Object]),
-    __metadata("design:returntype", Student_dto_1.StudentDto)
-], AdminController.prototype, "addStudent", null);
-__decorate([
-    (0, common_1.Get)('/student'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Moderator_dto_1.ModeratorDto, Object]),
     __metadata("design:returntype", Object)
-], AdminController.prototype, "getAllStudent", null);
-__decorate([
-    (0, common_1.Get)('/student/:id'),
-    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", Object)
-], AdminController.prototype, "getStudentById", null);
-__decorate([
-    (0, common_1.Get)('/moderatorwithAdmin/:id'),
-    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", Object)
-], AdminController.prototype, "getModeratorByAdminId", null);
+], AdminController.prototype, "addModerator", null);
 __decorate([
     (0, common_1.Delete)('/moderatorwithAdmin/:id'),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
@@ -211,31 +270,6 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Object)
 ], AdminController.prototype, "deleteStudent", null);
-__decorate([
-    (0, common_1.Post)('/RegisterModerator'),
-    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('myfile', {
-        fileFilter: (req, file, cb) => {
-            if (file.originalname.match(/^.*\.(jpg|webp|png|jpeg)$/))
-                cb(null, true);
-            else {
-                cb(new multer_1.MulterError('LIMIT_UNEXPECTED_FILE', 'image'), false);
-            }
-        },
-        limits: { fileSize: 200000 },
-        storage: (0, multer_1.diskStorage)({
-            destination: './uploads/moderator',
-            filename: function (req, file, cb) {
-                cb(null, Date.now() + file.originalname);
-            },
-        }),
-    })),
-    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
-    __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.UploadedFile)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Moderator_dto_1.ModeratorDto, Object]),
-    __metadata("design:returntype", Object)
-], AdminController.prototype, "addModerator", null);
 __decorate([
     (0, common_1.Get)('/moderator'),
     __metadata("design:type", Function),
