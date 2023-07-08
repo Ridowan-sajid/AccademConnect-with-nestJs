@@ -16,7 +16,7 @@ class UpdateStudentDto {
 exports.UpdateStudentDto = UpdateStudentDto;
 __decorate([
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Matches)(/^[A-Z][A-Za-z0-9_]+$/),
+    (0, class_validator_1.Matches)(/^[A-Z][A-Za-z ]+$/),
     __metadata("design:type", String)
 ], UpdateStudentDto.prototype, "name", void 0);
 __decorate([

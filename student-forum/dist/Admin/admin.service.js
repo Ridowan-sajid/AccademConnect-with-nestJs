@@ -20,69 +20,40 @@ const typeorm_2 = require("typeorm");
 const admin_entity_1 = require("../Db/admin.entity");
 const bcrypt = require("bcrypt");
 const student_entity_1 = require("../Db/student.entity");
+const hiring_entity_1 = require("../Db/hiring.entity");
 let AdminService = exports.AdminService = class AdminService {
-    constructor(adminRepo, moderatorRepo, studentRepo) {
+    constructor(adminRepo, moderatorRepo, studentRepo, hrRepo) {
         this.adminRepo = adminRepo;
         this.moderatorRepo = moderatorRepo;
         this.studentRepo = studentRepo;
+        this.hrRepo = hrRepo;
+    }
+    async changePassword(changedPass, email) {
+        const admin = await this.adminRepo.findOneBy({
+            email: email,
+        });
+        const isMatch = await bcrypt.compare(changedPass.oldPassword, admin.password);
+        console.log(changedPass.oldPassword);
+        if (isMatch) {
+            const salt = await bcrypt.genSalt();
+            admin.password = await bcrypt.hash(changedPass.newPassword, salt);
+            const res = await this.adminRepo.update(admin.id, admin);
+            return res;
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'Not found the user',
+            });
+        }
     }
     async getStudentByAdminId(email) {
-        return this.adminRepo.find({
+        const res = await this.adminRepo.find({
             where: { email: email },
             relations: {
                 students: true,
             },
         });
-    }
-    adminProfile(id) {
-        return '';
-    }
-    accessControl(id, access) {
-        return '';
-    }
-    deleteHr(id) {
-        return '';
-    }
-    updateHr(id, hr) {
-        return '';
-    }
-    getHrById(id) {
-        return '';
-    }
-    getAllHr() {
-        return '';
-    }
-    addHr(hr) {
-        return '';
-    }
-    deleteModerator(id) {
-        return '';
-    }
-    deleteStudent(id) {
-        return '';
-    }
-    updateModerator(id, moderator) {
-        return '';
-    }
-    getModeratorById(id) {
-        return '';
-    }
-    getAllModerator() {
-        return '';
-    }
-    async addModerator(moderator) {
-        const admin = await this.adminRepo.findOneBy({ id: 1 });
-        moderator.status = 'Inactive';
-        moderator.createdBy = admin.id;
-        moderator.createdDate = new Date();
-        moderator.updatedDate = new Date();
-        const salt = await bcrypt.genSalt();
-        const hassedpassed = await bcrypt.hash(moderator.password, salt);
-        moderator.password = hassedpassed;
-        return this.moderatorRepo.save(moderator);
-    }
-    getAllStudent() {
-        const res = this.studentRepo.find();
         if (res) {
             return res;
         }
@@ -93,11 +64,310 @@ let AdminService = exports.AdminService = class AdminService {
             });
         }
     }
-    updateStudent(id, student) {
-        return '';
+    async adminProfile(email) {
+        const admin = await this.adminRepo.findOneBy({ email: email });
+        if (admin) {
+            return admin;
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'Not found the user',
+            });
+        }
     }
-    getStudentById() {
-        return '';
+    async accessControl(id, access, email) {
+        const admin = await this.adminRepo.findOneBy({ email: email });
+        if (admin) {
+            const res = await this.moderatorRepo.update(id, access);
+            if (res) {
+                return res;
+            }
+            else {
+                throw new common_1.NotFoundException({
+                    status: common_1.HttpStatus.NOT_FOUND,
+                    message: 'Not found the user',
+                });
+            }
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'You are not the valid admin',
+            });
+        }
+    }
+    async deleteHr(id, email) {
+        const admin = await this.adminRepo.findOneBy({ email: email });
+        if (admin) {
+            const res = await this.hrRepo.delete(id);
+            if (res) {
+                return res;
+            }
+            else {
+                throw new common_1.NotFoundException({
+                    status: common_1.HttpStatus.NOT_FOUND,
+                    message: 'There is something wrong',
+                });
+            }
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'You are not the valid admin',
+            });
+        }
+    }
+    async updateHr(id, hr, email) {
+        const admin = await this.adminRepo.findOneBy({ email: email });
+        if (admin) {
+            const res = await this.hrRepo.update(id, hr);
+            if (res) {
+                return res;
+            }
+            else {
+                throw new common_1.NotFoundException({
+                    status: common_1.HttpStatus.NOT_FOUND,
+                    message: 'Not found the user',
+                });
+            }
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'You are not the valid admin',
+            });
+        }
+    }
+    async getHrById(id, email) {
+        const admin = await this.adminRepo.findOneBy({ email: email });
+        console.log(email);
+        if (admin) {
+            const res = await this.hrRepo.findOneBy({ id: id });
+            if (res) {
+                return res;
+            }
+            else {
+                throw new common_1.NotFoundException({
+                    status: common_1.HttpStatus.NOT_FOUND,
+                    message: 'Not found the user',
+                });
+            }
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'You are not the valid admin',
+            });
+        }
+    }
+    async getAllHr(email) {
+        const admin = await this.adminRepo.findOneBy({ email: email });
+        if (admin) {
+            const res = await this.hrRepo.find();
+            if (res) {
+                return res;
+            }
+            else {
+                throw new common_1.NotFoundException({
+                    status: common_1.HttpStatus.NOT_FOUND,
+                    message: 'There is something wrong',
+                });
+            }
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'You are not an admin',
+            });
+        }
+    }
+    async addHr(hr, email) {
+        const admin = await this.adminRepo.findOneBy({ email: email });
+        if (admin) {
+            hr.createdByAdmin = admin.id;
+            const salt = await bcrypt.genSalt();
+            const hassedpassed = await bcrypt.hash(hr.password, salt);
+            hr.password = hassedpassed;
+            const res = this.hrRepo.save(hr);
+            if (res) {
+                return res;
+            }
+            else {
+                throw new common_1.ServiceUnavailableException({
+                    status: common_1.HttpStatus.SERVICE_UNAVAILABLE,
+                    message: 'There is something wrong',
+                });
+            }
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'You are not an admin',
+            });
+        }
+    }
+    async deleteStudent(id, email) {
+        const admin = await this.adminRepo.findOneBy({ email: email });
+        if (admin) {
+            const res = await this.studentRepo.delete(id);
+            if (res) {
+                return res;
+            }
+            else {
+                throw new common_1.NotFoundException({
+                    status: common_1.HttpStatus.NOT_FOUND,
+                    message: 'There is something wrong',
+                });
+            }
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'You are not the valid admin',
+            });
+        }
+    }
+    async getModeratorByAdminId(email) {
+        const res = await this.adminRepo.find({
+            where: { email: email },
+            relations: {
+                moderators: true,
+            },
+        });
+        if (res) {
+            return res;
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'There is something wrong',
+            });
+        }
+    }
+    async getModeratorById(id, email) {
+        const admin = await this.adminRepo.findOneBy({ email: email });
+        if (admin) {
+            const res = await this.moderatorRepo.findOneBy({ id: id });
+            if (res) {
+                return res;
+            }
+            else {
+                throw new common_1.NotFoundException({
+                    status: common_1.HttpStatus.NOT_FOUND,
+                    message: 'Not found the user',
+                });
+            }
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'You are not the valid admin',
+            });
+        }
+    }
+    async getAllModerator(email) {
+        const admin = await this.adminRepo.findOneBy({ email: email });
+        if (admin) {
+            const res = await this.moderatorRepo.find();
+            if (res) {
+                return res;
+            }
+            else {
+                throw new common_1.NotFoundException({
+                    status: common_1.HttpStatus.NOT_FOUND,
+                    message: 'There is something wrong',
+                });
+            }
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'You are not an admin',
+            });
+        }
+    }
+    async addModerator(moderator, email) {
+        const admin = await this.adminRepo.findOneBy({ email: email });
+        if (admin) {
+            moderator.status = 'Inactive';
+            moderator.createdBy = admin.id;
+            const salt = await bcrypt.genSalt();
+            const hassedpassed = await bcrypt.hash(moderator.password, salt);
+            moderator.password = hassedpassed;
+            const res = await this.moderatorRepo.save(moderator);
+            if (res) {
+                return res;
+            }
+            else {
+                throw new common_1.ServiceUnavailableException({
+                    status: common_1.HttpStatus.SERVICE_UNAVAILABLE,
+                    message: 'There is something wrong',
+                });
+            }
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'You are not an admin',
+            });
+        }
+    }
+    async getAllStudent() {
+        const res = await this.studentRepo.find();
+        if (res) {
+            return res;
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'There is something wrong',
+            });
+        }
+    }
+    async updateStudent(id, student, email) {
+        const admin = await this.adminRepo.findOneBy({ email: email });
+        console.log(email);
+        if (admin) {
+            const res = await this.studentRepo.update(id, student);
+            if (res) {
+                return res;
+            }
+            else {
+                throw new common_1.NotFoundException({
+                    status: common_1.HttpStatus.NOT_FOUND,
+                    message: 'Not found the user',
+                });
+            }
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'You are not the valid admin',
+            });
+        }
+    }
+    async getStudentById(id, email) {
+        const admin = await this.adminRepo.findOneBy({ email: email });
+        console.log(email);
+        if (admin) {
+            const res = await this.studentRepo.findOneBy({ id: id });
+            if (res) {
+                return res;
+            }
+            else {
+                throw new common_1.NotFoundException({
+                    status: common_1.HttpStatus.NOT_FOUND,
+                    message: 'Not found the user',
+                });
+            }
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'You are not the valid admin',
+            });
+        }
     }
     async addStudent(student, email) {
         const salt = await bcrypt.genSalt();
@@ -138,19 +408,92 @@ let AdminService = exports.AdminService = class AdminService {
             return false;
         }
     }
-    async deleteModeratorByAdminId(id) {
-        return this.moderatorRepo.delete({ id: id, createdBy: 1 });
+    async deleteModeratorByAdminId(id, email) {
+        const admin = await this.adminRepo.findOneBy({ email: email });
+        if (admin) {
+            const res = await this.moderatorRepo.delete(id);
+            if (res) {
+                return res;
+            }
+            else {
+                throw new common_1.NotFoundException({
+                    status: common_1.HttpStatus.NOT_FOUND,
+                    message: 'There is something wrong',
+                });
+            }
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'You are not the valid admin',
+            });
+        }
     }
-    async updateModeratorByAdminId(id, moderator) {
-        return this.moderatorRepo.update({ id: id, createdBy: 1 }, moderator);
+    async updateModeratorByAdminId(id, moderator, email) {
+        const admin = await this.adminRepo.findOneBy({ email: email });
+        if (admin) {
+            const res = await this.moderatorRepo.update(id, moderator);
+            if (res) {
+                return res;
+            }
+            else {
+                throw new common_1.NotFoundException({
+                    status: common_1.HttpStatus.NOT_FOUND,
+                    message: 'Not found the user',
+                });
+            }
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'You are not the valid admin',
+            });
+        }
+    }
+    async getHrWithAdmin(email) {
+        const res = await this.adminRepo.find({
+            where: { email: email },
+            relations: {
+                hrs: true,
+            },
+        });
+        if (res) {
+            return res;
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'There is something wrong',
+            });
+        }
+    }
+    async getImages(res, email) {
+        const admin = await this.adminRepo.findOneBy({ email: email });
+        if (admin) {
+            res.sendFile(admin.profileImg, { root: './uploads/admin' });
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'There is something wrong',
+            });
+        }
     }
 };
+__decorate([
+    __param(0, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], AdminService.prototype, "getImages", null);
 exports.AdminService = AdminService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(admin_entity_1.Admin)),
     __param(1, (0, typeorm_1.InjectRepository)(moderator_entity_1.Moderator)),
     __param(2, (0, typeorm_1.InjectRepository)(student_entity_1.Student)),
+    __param(3, (0, typeorm_1.InjectRepository)(hiring_entity_1.Hr)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository])
 ], AdminService);

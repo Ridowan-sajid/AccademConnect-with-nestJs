@@ -1,1 +1,1 @@
-{"version":3,"file":"moderatorAccess.dto.js","sourceRoot":"","sources":["../../../src/Moderator/dto/moderatorAccess.dto.ts"],"names":[],"mappings":";;;;;;;;;;;;AAAA,qDAA2C;AAE3C,MAAa,kBAAkB;CAG9B;AAHD,gDAGC;AADC;IADC,IAAA,0BAAQ,GAAE;;kDACI"}
+{"version":3,"file":"moderatorAccess.dto.js","sourceRoot":"","sources":["../../../src/Moderator/dto/moderatorAccess.dto.ts"],"names":[],"mappings":";;;AAAA,MAAa,kBAAkB;CAE9B;AAFD,gDAEC"}

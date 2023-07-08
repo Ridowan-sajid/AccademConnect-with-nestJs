@@ -21,5 +21,5 @@ export declare class ModeratorController {
     addStudent(student: StudentDto, myfileobj: Express.Multer.File, session: any): any;
     getStudentByModeratorId(id: number): any;
     deleteStudentByModeratorId(id: number, session: any): any;
-    updateStudentByModeratorId(id: number, student: UpdateStudentDto, myfileobj: Express.Multer.File, session: any): any;
+    updateStudentByModeratorId(id: number, student: UpdateStudentDto, session: any): any;
 }

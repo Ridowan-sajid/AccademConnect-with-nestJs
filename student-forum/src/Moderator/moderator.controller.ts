@@ -170,31 +170,12 @@ export class ModeratorController {
   }
 
   @Put('/studentwithModerator/:id')
-  @UseInterceptors(
-    FileInterceptor('myfile', {
-      fileFilter: (req, file, cb) => {
-        if (file.originalname.match(/^.*\.(jpg|webp|png|jpeg)$/))
-          cb(null, true);
-        else {
-          cb(new MulterError('LIMIT_UNEXPECTED_FILE', 'image'), false);
-        }
-      },
-      limits: { fileSize: 2000000 },
-      storage: diskStorage({
-        destination: './uploads/student',
-        filename: function (req, file, cb) {
-          cb(null, Date.now() + file.originalname);
-        },
-      }),
-    }),
-  )
   updateStudentByModeratorId(
     @Param('id', ParseIntPipe) id: number,
     @Body() student: UpdateStudentDto,
-    @UploadedFile() myfileobj: Express.Multer.File,
+
     @Session() session,
   ): any {
-    student.profileImg = myfileobj.filename;
     return this.moderatorService.updateStudentByModeratorId(
       id,
       student,

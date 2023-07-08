@@ -14,7 +14,7 @@ import {
 export class UpdateHrDto {
   @IsString()
   @IsNotEmpty()
-  @Matches(/^[A-Z][A-Za-z0-9_]+$/)
+  @Matches(/^[A-Z][A-Za-z ]+$/)
   name: string;
   // @IsNumber()
   @IsNotEmpty()
@@ -24,7 +24,7 @@ export class UpdateHrDto {
   phone: string;
   @IsString()
   gender: string;
-  @IsDate()
+  //@IsDate()
   updatedDate: Date;
   profileImg: string;
 }

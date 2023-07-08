@@ -37,7 +37,7 @@ __decorate([
     __metadata("design:type", Date)
 ], Post.prototype, "updatedDate", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => student_entity_1.Student, (student) => student.posts),
+    (0, typeorm_1.ManyToOne)(() => student_entity_1.Student, (student) => student.posts, { nullable: false }),
     __metadata("design:type", Number)
 ], Post.prototype, "student", void 0);
 __decorate([

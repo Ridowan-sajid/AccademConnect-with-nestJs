@@ -18,26 +18,88 @@ const typeorm_1 = require("@nestjs/typeorm");
 const student_entity_1 = require("../Db/student.entity");
 const typeorm_2 = require("typeorm");
 const post_entity_1 = require("../Db/post.entity");
+const bcrypt = require("bcrypt");
 let StudentService = exports.StudentService = class StudentService {
-    async deletePostByStudentId(id, email) {
-        const stud = await this.studentRepo.findOneBy({ email: email });
-        return this.postRepo.delete({ id: id, student: stud.id });
+    async getDetailsPost(id, email) {
+        const std = await this.studentRepo.findOneBy({ email: email });
+        if (std) {
+            const res = await this.postRepo.findOneBy({ id: id });
+            if (res) {
+                return res;
+            }
+            else {
+                throw new common_1.NotFoundException({
+                    status: common_1.HttpStatus.NOT_FOUND,
+                    message: 'Post Not Found',
+                });
+            }
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'There is something wrong',
+            });
+        }
     }
-    async getPostByStudentId(id) {
-        return this.studentRepo.find({
-            where: { id: id },
-            relations: {
-                posts: true,
-            },
-        });
-    }
-    async updatePost(id, data, email) {
-        const stud = await this.studentRepo.findOneBy({ email: email });
-        return this.postRepo.update({ id: id, student: stud.id }, data);
+    async getAllPost(email) {
+        const res = await this.postRepo.find();
+        if (res) {
+            return res;
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'There is something wrong',
+            });
+        }
     }
     constructor(studentRepo, postRepo) {
         this.studentRepo = studentRepo;
         this.postRepo = postRepo;
+    }
+    async deletePostByStudentId(id, email) {
+        const stud = await this.studentRepo.findOneBy({ email: email });
+        if (stud) {
+            const res = await this.postRepo.delete({ id: id, student: stud.id });
+            return res;
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'Not found the post',
+            });
+        }
+    }
+    async getMyPost(email) {
+        const res = await this.studentRepo.find({
+            where: { email: email },
+            relations: {
+                posts: true,
+            },
+        });
+        if (res) {
+            return res;
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'There is something wrong',
+            });
+        }
+    }
+    async updatePost(id, data, email) {
+        const stud = await this.studentRepo.findOneBy({ email: email });
+        if (stud) {
+            data.updatedDate = new Date();
+            const res = await this.postRepo.update({ id: id, student: stud.id }, data);
+            return res;
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'Not found the post',
+            });
+        }
     }
     myPost(id) {
         return '';
@@ -45,17 +107,42 @@ let StudentService = exports.StudentService = class StudentService {
     forgetpassword(id, student) {
         return '';
     }
-    passwordChange(id, student) {
-        return '';
+    async passwordChange(changedPass, email) {
+        const student = await this.studentRepo.findOneBy({
+            email: email,
+        });
+        const isMatch = await bcrypt.compare(changedPass.oldPassword, student.password);
+        if (isMatch) {
+            const salt = await bcrypt.genSalt();
+            student.password = await bcrypt.hash(changedPass.newPassword, salt);
+            const res = await this.studentRepo.update(student.id, student);
+            return res;
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'Not found the user',
+            });
+        }
     }
-    deletePost(id) {
-        return '';
-    }
-    addPost(data, id) {
-        data.createdDate = new Date();
-        data.updatedDate = new Date();
-        data.studentId = id;
-        return this.postRepo.save(data);
+    async addPost(data, email) {
+        const student = await this.studentRepo.findOneBy({ email: email });
+        if (student) {
+            data.createdDate = new Date();
+            data.updatedDate = new Date();
+            data.student = student.id;
+            console.log(data.student);
+            const res = await this.postRepo.save(data);
+            if (res) {
+                return res;
+            }
+            else {
+                throw new common_1.InternalServerErrorException({
+                    status: common_1.HttpStatus.INTERNAL_SERVER_ERROR,
+                    message: 'There is something wrong',
+                });
+            }
+        }
     }
     getDashboard() {
         return '';
@@ -63,19 +150,74 @@ let StudentService = exports.StudentService = class StudentService {
     deleteProfile(id) {
         return '';
     }
-    editProfile(id, student) {
-        return '';
+    async editProfile(student, email) {
+        const res = await this.studentRepo.update({ email: email }, student);
+        if (res) {
+            return res;
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'User not found',
+            });
+        }
     }
-    myProfile(id) {
-        return '';
+    async myProfile(email) {
+        const student = await this.studentRepo.findOneBy({ email: email });
+        if (student) {
+            return student;
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'Not found the user',
+            });
+        }
     }
-    loginStudent(student) {
-        return '';
+    async loginStudent(student) {
+        const res = await this.studentRepo.findOneBy({ email: student.email });
+        if (res) {
+            const isMatch = await bcrypt.compare(student.password, res.password);
+            if (isMatch)
+                return isMatch;
+        }
+        else {
+            return false;
+        }
     }
-    addStudent(student) {
-        return '';
+    async addStudent(student) {
+        const salt = await bcrypt.genSalt();
+        student.password = await bcrypt.hash(student.password, salt);
+        const res = await this.studentRepo.save(student);
+        if (res) {
+            return res;
+        }
+        else {
+            throw new common_1.InternalServerErrorException({
+                status: common_1.HttpStatus.INTERNAL_SERVER_ERROR,
+                message: 'There is something wrong',
+            });
+        }
+    }
+    async getImages(res, email) {
+        const admin = await this.studentRepo.findOneBy({ email: email });
+        if (admin) {
+            res.sendFile(admin.profileImg, { root: './uploads/student' });
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'There is something wrong',
+            });
+        }
     }
 };
+__decorate([
+    __param(0, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], StudentService.prototype, "getImages", null);
 exports.StudentService = StudentService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(student_entity_1.Student)),

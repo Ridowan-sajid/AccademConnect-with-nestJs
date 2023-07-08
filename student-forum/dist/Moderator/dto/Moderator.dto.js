@@ -34,17 +34,9 @@ __decorate([
     __metadata("design:type", String)
 ], ModeratorDto.prototype, "gender", void 0);
 __decorate([
-    (0, class_validator_1.IsDate)(),
-    __metadata("design:type", Date)
-], ModeratorDto.prototype, "createdDate", void 0);
-__decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], ModeratorDto.prototype, "education", void 0);
-__decorate([
-    (0, class_validator_1.IsDate)(),
-    __metadata("design:type", Date)
-], ModeratorDto.prototype, "updatedDate", void 0);
 __decorate([
     (0, class_validator_1.MinLength)(7),
     __metadata("design:type", String)

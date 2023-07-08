@@ -17,7 +17,7 @@ exports.HrDto = HrDto;
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.Matches)(/^[A-Z][A-Za-z0-9_]+$/),
+    (0, class_validator_1.Matches)(/^[A-Z][A-Za-z ]+$/),
     __metadata("design:type", String)
 ], HrDto.prototype, "name", void 0);
 __decorate([
@@ -37,14 +37,6 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], HrDto.prototype, "gender", void 0);
-__decorate([
-    (0, class_validator_1.IsDate)(),
-    __metadata("design:type", Date)
-], HrDto.prototype, "createdDate", void 0);
-__decorate([
-    (0, class_validator_1.IsDate)(),
-    __metadata("design:type", Date)
-], HrDto.prototype, "updatedDate", void 0);
 __decorate([
     (0, class_validator_1.MinLength)(7),
     __metadata("design:type", String)

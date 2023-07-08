@@ -36,6 +36,7 @@ export class StudentDto {
 }
 
 export class PasswordChangeStudentDto {
+  @IsString()
   oldPassword: string;
   @MinLength(7)
   newPassword: string;

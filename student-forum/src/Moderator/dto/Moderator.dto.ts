@@ -24,11 +24,11 @@ export class ModeratorDto {
   email: string;
   @IsString()
   gender: string;
-  @IsDate()
+  //@IsDate()
   createdDate: Date;
   @IsString()
   education: string;
-  @IsDate()
+  //@IsDate()
   updatedDate: Date;
   @MinLength(7)
   password: string;

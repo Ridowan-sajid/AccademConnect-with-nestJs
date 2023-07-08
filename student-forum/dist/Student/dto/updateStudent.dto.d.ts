@@ -4,5 +4,4 @@ export declare class UpdateStudentDto {
     phone: string;
     gender: string;
     updatedDate: Date;
-    profileImg: string;
 }

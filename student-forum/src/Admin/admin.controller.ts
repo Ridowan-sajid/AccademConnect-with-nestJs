@@ -10,8 +10,11 @@ import {
   Patch,
   Post,
   Put,
+  Res,
   Session,
+  UnauthorizedException,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
   UsePipes,
   ValidationPipe,
@@ -28,6 +31,8 @@ import { HrDto } from 'src/Hiring-Manager/dto/hr.dto';
 import { UpdateHrDto } from 'src/Hiring-Manager/dto/updatehr.dto';
 import { ModeratorAccessDto } from 'src/Moderator/dto/moderatorAccess.dto';
 import { UpdateStudentDto } from 'src/Student/dto/updateStudent.dto';
+import { SessionGuard } from 'src/Guards/session.guard';
+import { PasswordChangeAdminDto } from './dto/changePassAdmin.dto';
 
 @Controller('admin')
 export class AdminController {
@@ -60,6 +65,7 @@ export class AdminController {
   // }
 
   @Put('/update')
+  @UseGuards(SessionGuard)
   @UseInterceptors(
     FileInterceptor('myfile', {
       fileFilter: (req, file, cb) => {
@@ -92,6 +98,7 @@ export class AdminController {
   }
 
   @Post('/addStudent')
+  @UseGuards(SessionGuard)
   @UseInterceptors(
     FileInterceptor('myfile', {
       fileFilter: (req, file, cb) => {
@@ -103,7 +110,7 @@ export class AdminController {
       },
       limits: { fileSize: 2000000 },
       storage: diskStorage({
-        destination: './uploads/students',
+        destination: './uploads/student',
         filename: function (req, file, cb) {
           cb(null, Date.now() + file.originalname);
         },
@@ -125,21 +132,48 @@ export class AdminController {
   }
 
   @Get('/student')
+  @UseGuards(SessionGuard)
   getAllStudent(): any {
     return this.adminService.getAllStudent();
   }
 
   @Get('/studentwithAdmin')
+  @UseGuards(SessionGuard)
   getStudentByAdminId(@Session() session): any {
     return this.adminService.getStudentByAdminId(session.email);
   }
 
   @Get('/student/:id')
-  getStudentById(@Param('id', ParseIntPipe) id: number): any {
-    return this.adminService.getStudentById();
+  @UseGuards(SessionGuard)
+  getStudentById(
+    @Param('id', ParseIntPipe) id: number,
+    @Session() session,
+  ): any {
+    return this.adminService.getStudentById(id, session.email);
   }
 
-  @Post('/RegisterModerator')
+  @Put('/Student/:id')
+  @UseGuards(SessionGuard)
+  @UsePipes(new ValidationPipe())
+  updateStudent(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() student: UpdateStudentDto,
+    @Session() session,
+  ): any {
+    return this.adminService.updateStudent(id, student, session.email);
+  }
+
+  @Delete('/student/:id')
+  @UseGuards(SessionGuard)
+  deleteStudent(
+    @Param('id', ParseIntPipe) id: number,
+    @Session() session,
+  ): any {
+    return this.adminService.deleteStudent(id, session.email);
+  }
+
+  @Post('/addModerator')
+  @UseGuards(SessionGuard)
   @UseInterceptors(
     FileInterceptor('myfile', {
       fileFilter: (req, file, cb) => {
@@ -163,89 +197,65 @@ export class AdminController {
     @Body()
     moderator: ModeratorDto,
     @UploadedFile() myfileobj: Express.Multer.File,
+    @Session() session,
   ): any {
     moderator.profileImg = myfileobj.filename;
-    return this.adminService.addModerator(moderator);
-  }
+    moderator.createdDate = new Date();
+    moderator.updatedDate = new Date();
 
-  // @Get('/moderatorwithAdmin/:id')
-  // getModeratorByAdminId(@Param('id', ParseIntPipe) id: number): any {
-  //   return this.adminService.getModeratorByAdminId(id);
-  // }
-
-  @Delete('/moderatorwithAdmin/:id')
-  deleteModeratorByAdminId(@Param('id', ParseIntPipe) id: number): any {
-    return this.adminService.deleteModeratorByAdminId(id);
-  }
-
-  @Put('/moderatorwithAdmin/:id')
-  @UseInterceptors(
-    FileInterceptor('myfile', {
-      fileFilter: (req, file, cb) => {
-        if (file.originalname.match(/^.*\.(jpg|webp|png|jpeg)$/))
-          cb(null, true);
-        else {
-          cb(new MulterError('LIMIT_UNEXPECTED_FILE', 'image'), false);
-        }
-      },
-      limits: { fileSize: 2000000 },
-      storage: diskStorage({
-        destination: './uploads/moderator',
-        filename: function (req, file, cb) {
-          cb(null, Date.now() + file.originalname);
-        },
-      }),
-    }),
-  )
-  updateModeratorByAdminId(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() moderator: UpdateModeratorDto,
-    @UploadedFile() myfileobj: Express.Multer.File,
-  ): any {
-    moderator.profileImg = myfileobj.filename;
-    return this.adminService.updateModeratorByAdminId(id, moderator);
-  }
-
-  @Put('/updateStudent/:id')
-  @UsePipes(new ValidationPipe())
-  updateStudent(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() student: UpdateStudentDto,
-  ): any {
-    return this.adminService.updateStudent(id, student);
-  }
-
-  @Delete('/deleteStudent/:id')
-  deleteStudent(@Param('id', ParseIntPipe) id: number): any {
-    return this.adminService.deleteStudent(id);
+    return this.adminService.addModerator(moderator, session.email);
   }
 
   @Get('/moderator')
-  getAllModerator(): any {
-    return this.adminService.getAllModerator();
+  @UseGuards(SessionGuard)
+  getModerator(@Session() session): any {
+    return this.adminService.getAllModerator(session.email);
   }
+
+  @Get('/moderatorwithAdmin')
+  @UseGuards(SessionGuard)
+  getModeratorByAdminId(@Session() session): any {
+    return this.adminService.getModeratorByAdminId(session.email);
+  }
+
   @Get('/moderator/:id')
-  getModeratorById(@Param('id', ParseIntPipe) id: number): any {
-    return this.adminService.getModeratorById(id);
+  @UseGuards(SessionGuard)
+  getModeratorById(
+    @Param('id', ParseIntPipe) id: number,
+    @Session() session,
+  ): any {
+    return this.adminService.getModeratorById(id, session.email);
   }
 
   @Put('/moderator/:id')
+  @UseGuards(SessionGuard)
   @UsePipes(new ValidationPipe())
-  updateModerator(
+  updateModeratorByAdminId(
     @Param('id', ParseIntPipe) id: number,
-    moderator: UpdateModeratorDto,
-  ): ModeratorDto {
-    return this.adminService.updateModerator(id, moderator);
+    @Body() moderator: UpdateModeratorDto,
+    @Session() session,
+  ): any {
+    moderator.updatedDate = new Date();
+    return this.adminService.updateModeratorByAdminId(
+      id,
+      moderator,
+      session.email,
+    );
   }
 
   @Delete('/moderator/:id')
-  deleteModerator(@Param('id', ParseIntPipe) id: number): any {
-    return this.adminService.deleteModerator(id);
+  @UseGuards(SessionGuard)
+  deleteModeratorByAdminId(
+    @Param('id', ParseIntPipe) id: number,
+    @Session() session,
+  ): any {
+    return this.adminService.deleteModeratorByAdminId(id, session.email);
   }
 
   //Hr
 
-  @Post('/RegisterHr')
+  @Post('/addHr')
+  @UseGuards(SessionGuard)
   @UseInterceptors(
     FileInterceptor('myfile', {
       fileFilter: (req, file, cb) => {
@@ -257,7 +267,7 @@ export class AdminController {
       },
       limits: { fileSize: 2000000 },
       storage: diskStorage({
-        destination: './uploads',
+        destination: './uploads/hr',
         filename: function (req, file, cb) {
           cb(null, Date.now() + file.originalname);
         },
@@ -269,40 +279,90 @@ export class AdminController {
     @Body()
     hr: HrDto,
     @UploadedFile() myfileobj: Express.Multer.File,
+    @Session() session,
   ): any {
     hr.profileImg = myfileobj.filename;
-    return this.adminService.addHr(hr);
+    hr.createdDate = new Date();
+    hr.updatedDate = new Date();
+    return this.adminService.addHr(hr, session.email);
   }
 
   @Get('/hr')
-  getAllHr(): any {
-    return this.adminService.getAllHr();
+  @UseGuards(SessionGuard)
+  getHr(@Session() session): any {
+    return this.adminService.getAllHr(session.email);
   }
+
+  @Get('/hrwithAdmin')
+  @UseGuards(SessionGuard)
+  getHrwithAdmin(@Session() session): any {
+    return this.adminService.getHrWithAdmin(session.email);
+  }
+
   @Get('/hr/:id')
-  getHrById(@Param('id', ParseIntPipe) id: number): any {
-    return this.adminService.getHrById(id);
+  @UseGuards(SessionGuard)
+  getHrById(@Param('id', ParseIntPipe) id: number, @Session() session): any {
+    return this.adminService.getHrById(id, session.email);
   }
 
   @Put('/hr/:id')
+  @UseGuards(SessionGuard)
   @UsePipes(new ValidationPipe())
-  updateHr(@Param('id', ParseIntPipe) id: number, hr: UpdateHrDto): any {
-    return this.adminService.updateHr(id, hr);
+  updateHrByAdminId(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() hr: UpdateHrDto,
+    @Session() session,
+  ): any {
+    hr.updatedDate = new Date();
+    console.log(hr);
+
+    return this.adminService.updateHr(id, hr, session.email);
   }
 
   @Delete('/hr/:id')
-  deleteHr(@Param('id', ParseIntPipe) id: number): any {
-    return this.adminService.deleteHr(id);
+  @UseGuards(SessionGuard)
+  deleteHr(@Param('id', ParseIntPipe) id: number, @Session() session): any {
+    return this.adminService.deleteHr(id, session.email);
   }
   @Patch('moderatorAccess/:id')
+  @UseGuards(SessionGuard)
   moderatorAccess(
     @Param('id', ParseIntPipe) id: number,
-    access: ModeratorAccessDto,
+    @Body() access: ModeratorAccessDto,
+    @Session() session,
   ): any {
-    return this.adminService.accessControl(id, access);
+    access.status = 'active';
+    return this.adminService.accessControl(id, access, session.email);
   }
 
-  @Get('/profile/:id')
-  adminProfile(@Param('id', ParseIntPipe) id: number): any {
-    return this.adminService.adminProfile(id);
+  @Get('/profile')
+  @UseGuards(SessionGuard)
+  adminProfile(@Session() session): any {
+    return this.adminService.adminProfile(session.email);
+  }
+
+  @Get('/logout')
+  @UseGuards(SessionGuard)
+  adminLogout(@Session() session): any {
+    if (session.destroy()) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  @Post('/changePassword')
+  @UseGuards(SessionGuard)
+  changePassword(
+    @Body() changedPass: PasswordChangeAdminDto,
+    @Session() session,
+  ): any {
+    return this.adminService.changePassword(changedPass, session.email);
+  }
+
+  @Get('/getimage')
+  @UseGuards(SessionGuard)
+  async getting(@Res() res, @Session() session): Promise<any> {
+    await this.adminService.getImages(res, session.email);
   }
 }

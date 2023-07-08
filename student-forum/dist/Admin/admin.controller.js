@@ -26,6 +26,8 @@ const hr_dto_1 = require("../Hiring-Manager/dto/hr.dto");
 const updatehr_dto_1 = require("../Hiring-Manager/dto/updatehr.dto");
 const moderatorAccess_dto_1 = require("../Moderator/dto/moderatorAccess.dto");
 const updateStudent_dto_1 = require("../Student/dto/updateStudent.dto");
+const session_guard_1 = require("../Guards/session.guard");
+const changePassAdmin_dto_1 = require("./dto/changePassAdmin.dto");
 let AdminController = exports.AdminController = class AdminController {
     constructor(adminService) {
         this.adminService = adminService;
@@ -61,59 +63,80 @@ let AdminController = exports.AdminController = class AdminController {
     getStudentByAdminId(session) {
         return this.adminService.getStudentByAdminId(session.email);
     }
-    getStudentById(id) {
-        return this.adminService.getStudentById();
+    getStudentById(id, session) {
+        return this.adminService.getStudentById(id, session.email);
     }
-    addModerator(moderator, myfileobj) {
+    updateStudent(id, student, session) {
+        return this.adminService.updateStudent(id, student, session.email);
+    }
+    deleteStudent(id, session) {
+        return this.adminService.deleteStudent(id, session.email);
+    }
+    addModerator(moderator, myfileobj, session) {
         moderator.profileImg = myfileobj.filename;
-        return this.adminService.addModerator(moderator);
+        moderator.createdDate = new Date();
+        moderator.updatedDate = new Date();
+        return this.adminService.addModerator(moderator, session.email);
     }
-    deleteModeratorByAdminId(id) {
-        return this.adminService.deleteModeratorByAdminId(id);
+    getModerator(session) {
+        return this.adminService.getAllModerator(session.email);
     }
-    updateModeratorByAdminId(id, moderator, myfileobj) {
-        moderator.profileImg = myfileobj.filename;
-        return this.adminService.updateModeratorByAdminId(id, moderator);
+    getModeratorByAdminId(session) {
+        return this.adminService.getModeratorByAdminId(session.email);
     }
-    updateStudent(id, student) {
-        return this.adminService.updateStudent(id, student);
+    getModeratorById(id, session) {
+        return this.adminService.getModeratorById(id, session.email);
     }
-    deleteStudent(id) {
-        return this.adminService.deleteStudent(id);
+    updateModeratorByAdminId(id, moderator, session) {
+        moderator.updatedDate = new Date();
+        return this.adminService.updateModeratorByAdminId(id, moderator, session.email);
     }
-    getAllModerator() {
-        return this.adminService.getAllModerator();
+    deleteModeratorByAdminId(id, session) {
+        return this.adminService.deleteModeratorByAdminId(id, session.email);
     }
-    getModeratorById(id) {
-        return this.adminService.getModeratorById(id);
-    }
-    updateModerator(id, moderator) {
-        return this.adminService.updateModerator(id, moderator);
-    }
-    deleteModerator(id) {
-        return this.adminService.deleteModerator(id);
-    }
-    addHr(hr, myfileobj) {
+    addHr(hr, myfileobj, session) {
         hr.profileImg = myfileobj.filename;
-        return this.adminService.addHr(hr);
+        hr.createdDate = new Date();
+        hr.updatedDate = new Date();
+        return this.adminService.addHr(hr, session.email);
     }
-    getAllHr() {
-        return this.adminService.getAllHr();
+    getHr(session) {
+        return this.adminService.getAllHr(session.email);
     }
-    getHrById(id) {
-        return this.adminService.getHrById(id);
+    getHrwithAdmin(session) {
+        return this.adminService.getHrWithAdmin(session.email);
     }
-    updateHr(id, hr) {
-        return this.adminService.updateHr(id, hr);
+    getHrById(id, session) {
+        return this.adminService.getHrById(id, session.email);
     }
-    deleteHr(id) {
-        return this.adminService.deleteHr(id);
+    updateHrByAdminId(id, hr, session) {
+        hr.updatedDate = new Date();
+        console.log(hr);
+        return this.adminService.updateHr(id, hr, session.email);
     }
-    moderatorAccess(id, access) {
-        return this.adminService.accessControl(id, access);
+    deleteHr(id, session) {
+        return this.adminService.deleteHr(id, session.email);
     }
-    adminProfile(id) {
-        return this.adminService.adminProfile(id);
+    moderatorAccess(id, access, session) {
+        access.status = 'active';
+        return this.adminService.accessControl(id, access, session.email);
+    }
+    adminProfile(session) {
+        return this.adminService.adminProfile(session.email);
+    }
+    adminLogout(session) {
+        if (session.destroy()) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    changePassword(changedPass, session) {
+        return this.adminService.changePassword(changedPass, session.email);
+    }
+    async getting(res, session) {
+        await this.adminService.getImages(res, session.email);
     }
 };
 __decorate([
@@ -127,6 +150,7 @@ __decorate([
 ], AdminController.prototype, "adminLogin", null);
 __decorate([
     (0, common_1.Put)('/update'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
     (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('myfile', {
         fileFilter: (req, file, cb) => {
             if (file.originalname.match(/^.*\.(jpg|webp|png|jpeg)$/))
@@ -153,6 +177,7 @@ __decorate([
 ], AdminController.prototype, "updateAdmin", null);
 __decorate([
     (0, common_1.Post)('/addStudent'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
     (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('myfile', {
         fileFilter: (req, file, cb) => {
             if (file.originalname.match(/^.*\.(jpg|webp|png|jpeg)$/))
@@ -163,7 +188,7 @@ __decorate([
         },
         limits: { fileSize: 2000000 },
         storage: (0, multer_1.diskStorage)({
-            destination: './uploads/students',
+            destination: './uploads/student',
             filename: function (req, file, cb) {
                 cb(null, Date.now() + file.originalname);
             },
@@ -179,12 +204,14 @@ __decorate([
 ], AdminController.prototype, "addStudent", null);
 __decorate([
     (0, common_1.Get)('/student'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Object)
 ], AdminController.prototype, "getAllStudent", null);
 __decorate([
     (0, common_1.Get)('/studentwithAdmin'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
     __param(0, (0, common_1.Session)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -192,13 +219,36 @@ __decorate([
 ], AdminController.prototype, "getStudentByAdminId", null);
 __decorate([
     (0, common_1.Get)('/student/:id'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Session)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
+    __metadata("design:paramtypes", [Number, Object]),
     __metadata("design:returntype", Object)
 ], AdminController.prototype, "getStudentById", null);
 __decorate([
-    (0, common_1.Post)('/RegisterModerator'),
+    (0, common_1.Put)('/Student/:id'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Session)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, updateStudent_dto_1.UpdateStudentDto, Object]),
+    __metadata("design:returntype", Object)
+], AdminController.prototype, "updateStudent", null);
+__decorate([
+    (0, common_1.Delete)('/student/:id'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Session)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", Object)
+], AdminController.prototype, "deleteStudent", null);
+__decorate([
+    (0, common_1.Post)('/addModerator'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
     (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('myfile', {
         fileFilter: (req, file, cb) => {
             if (file.originalname.match(/^.*\.(jpg|webp|png|jpeg)$/))
@@ -218,88 +268,59 @@ __decorate([
     (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.UploadedFile)()),
+    __param(2, (0, common_1.Session)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Moderator_dto_1.ModeratorDto, Object]),
+    __metadata("design:paramtypes", [Moderator_dto_1.ModeratorDto, Object, Object]),
     __metadata("design:returntype", Object)
 ], AdminController.prototype, "addModerator", null);
 __decorate([
-    (0, common_1.Delete)('/moderatorwithAdmin/:id'),
-    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    (0, common_1.Get)('/moderator'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Session)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Object)
-], AdminController.prototype, "deleteModeratorByAdminId", null);
+], AdminController.prototype, "getModerator", null);
 __decorate([
-    (0, common_1.Put)('/moderatorwithAdmin/:id'),
-    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('myfile', {
-        fileFilter: (req, file, cb) => {
-            if (file.originalname.match(/^.*\.(jpg|webp|png|jpeg)$/))
-                cb(null, true);
-            else {
-                cb(new multer_1.MulterError('LIMIT_UNEXPECTED_FILE', 'image'), false);
-            }
-        },
-        limits: { fileSize: 2000000 },
-        storage: (0, multer_1.diskStorage)({
-            destination: './uploads/moderator',
-            filename: function (req, file, cb) {
-                cb(null, Date.now() + file.originalname);
-            },
-        }),
-    })),
+    (0, common_1.Get)('/moderatorwithAdmin'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Session)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Object)
+], AdminController.prototype, "getModeratorByAdminId", null);
+__decorate([
+    (0, common_1.Get)('/moderator/:id'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Session)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", Object)
+], AdminController.prototype, "getModeratorById", null);
+__decorate([
+    (0, common_1.Put)('/moderator/:id'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
-    __param(2, (0, common_1.UploadedFile)()),
+    __param(2, (0, common_1.Session)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number, updateModerator_dto_1.UpdateModeratorDto, Object]),
     __metadata("design:returntype", Object)
 ], AdminController.prototype, "updateModeratorByAdminId", null);
 __decorate([
-    (0, common_1.Put)('/updateStudent/:id'),
-    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
-    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, updateStudent_dto_1.UpdateStudentDto]),
-    __metadata("design:returntype", Object)
-], AdminController.prototype, "updateStudent", null);
-__decorate([
-    (0, common_1.Delete)('/deleteStudent/:id'),
-    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", Object)
-], AdminController.prototype, "deleteStudent", null);
-__decorate([
-    (0, common_1.Get)('/moderator'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Object)
-], AdminController.prototype, "getAllModerator", null);
-__decorate([
-    (0, common_1.Get)('/moderator/:id'),
-    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", Object)
-], AdminController.prototype, "getModeratorById", null);
-__decorate([
-    (0, common_1.Put)('/moderator/:id'),
-    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
-    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, updateModerator_dto_1.UpdateModeratorDto]),
-    __metadata("design:returntype", Moderator_dto_1.ModeratorDto)
-], AdminController.prototype, "updateModerator", null);
-__decorate([
     (0, common_1.Delete)('/moderator/:id'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Session)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
+    __metadata("design:paramtypes", [Number, Object]),
     __metadata("design:returntype", Object)
-], AdminController.prototype, "deleteModerator", null);
+], AdminController.prototype, "deleteModeratorByAdminId", null);
 __decorate([
-    (0, common_1.Post)('/RegisterHr'),
+    (0, common_1.Post)('/addHr'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
     (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('myfile', {
         fileFilter: (req, file, cb) => {
             if (file.originalname.match(/^.*\.(jpg|webp|png|jpeg)$/))
@@ -310,7 +331,7 @@ __decorate([
         },
         limits: { fileSize: 2000000 },
         storage: (0, multer_1.diskStorage)({
-            destination: './uploads',
+            destination: './uploads/hr',
             filename: function (req, file, cb) {
                 cb(null, Date.now() + file.originalname);
             },
@@ -319,52 +340,100 @@ __decorate([
     (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.UploadedFile)()),
+    __param(2, (0, common_1.Session)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [hr_dto_1.HrDto, Object]),
+    __metadata("design:paramtypes", [hr_dto_1.HrDto, Object, Object]),
     __metadata("design:returntype", Object)
 ], AdminController.prototype, "addHr", null);
 __decorate([
     (0, common_1.Get)('/hr'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Session)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Object)
-], AdminController.prototype, "getAllHr", null);
+], AdminController.prototype, "getHr", null);
+__decorate([
+    (0, common_1.Get)('/hrwithAdmin'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Session)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Object)
+], AdminController.prototype, "getHrwithAdmin", null);
 __decorate([
     (0, common_1.Get)('/hr/:id'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Session)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
+    __metadata("design:paramtypes", [Number, Object]),
     __metadata("design:returntype", Object)
 ], AdminController.prototype, "getHrById", null);
 __decorate([
     (0, common_1.Put)('/hr/:id'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
     (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Session)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, updatehr_dto_1.UpdateHrDto]),
+    __metadata("design:paramtypes", [Number, updatehr_dto_1.UpdateHrDto, Object]),
     __metadata("design:returntype", Object)
-], AdminController.prototype, "updateHr", null);
+], AdminController.prototype, "updateHrByAdminId", null);
 __decorate([
     (0, common_1.Delete)('/hr/:id'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Session)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
+    __metadata("design:paramtypes", [Number, Object]),
     __metadata("design:returntype", Object)
 ], AdminController.prototype, "deleteHr", null);
 __decorate([
     (0, common_1.Patch)('moderatorAccess/:id'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Session)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, moderatorAccess_dto_1.ModeratorAccessDto]),
+    __metadata("design:paramtypes", [Number, moderatorAccess_dto_1.ModeratorAccessDto, Object]),
     __metadata("design:returntype", Object)
 ], AdminController.prototype, "moderatorAccess", null);
 __decorate([
-    (0, common_1.Get)('/profile/:id'),
-    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    (0, common_1.Get)('/profile'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Session)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Object)
 ], AdminController.prototype, "adminProfile", null);
+__decorate([
+    (0, common_1.Get)('/logout'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Session)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Object)
+], AdminController.prototype, "adminLogout", null);
+__decorate([
+    (0, common_1.Post)('/changePassword'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Session)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [changePassAdmin_dto_1.PasswordChangeAdminDto, Object]),
+    __metadata("design:returntype", Object)
+], AdminController.prototype, "changePassword", null);
+__decorate([
+    (0, common_1.Get)('/getimage'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Res)()),
+    __param(1, (0, common_1.Session)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], AdminController.prototype, "getting", null);
 exports.AdminController = AdminController = __decorate([
     (0, common_1.Controller)('admin'),
     __metadata("design:paramtypes", [admin_service_1.AdminService])

@@ -13,16 +13,15 @@ import {
 
 export class UpdateStudentDto {
   @IsString()
-  @Matches(/^[A-Z][A-Za-z0-9_]+$/)
+  @Matches(/^[A-Z][A-Za-z ]+$/)
   name: string;
   //@IsNumber()
   age: string;
-  // age: number;
   @IsNotEmpty()
   phone: string;
   @IsString()
   gender: string;
   //@IsDate()
   updatedDate: Date;
-  profileImg: string;
+  //profileImg: string;
 }

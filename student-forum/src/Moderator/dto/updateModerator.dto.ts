@@ -24,7 +24,7 @@ export class UpdateModeratorDto {
   gender: string;
   @IsString()
   education: string;
-  @IsDate()
+  //@IsDate()
   updatedDate: Date;
   profileImg: string;
 }

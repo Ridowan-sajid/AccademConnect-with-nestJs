@@ -7,9 +7,9 @@ export class ReportDto {
   details: string;
   @IsDate()
   createdDate: Date;
-  hrId: number;
-  studentId: number;
-  postId: number;
-  jobId: number;
-  handledById: number;
+  hr: number;
+  student: number;
+  post: number;
+  job: number;
+  handledBy: number;
 }

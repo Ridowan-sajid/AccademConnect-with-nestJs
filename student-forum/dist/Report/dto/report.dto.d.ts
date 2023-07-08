@@ -2,9 +2,9 @@ export declare class ReportDto {
     title: string;
     details: string;
     createdDate: Date;
-    hrId: number;
-    studentId: number;
-    postId: number;
-    jobId: number;
-    handledById: number;
+    hr: number;
+    student: number;
+    post: number;
+    job: number;
+    handledBy: number;
 }

@@ -9,5 +9,5 @@ export class PostDto {
   createdDate: Date;
   @IsDate()
   updatedDate: Date;
-  studentId: number;
+  student: number;
 }

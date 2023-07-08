@@ -21,7 +21,7 @@ export class Hr {
   @Column()
   name: string;
   @Column()
-  age: number;
+  age: string;
   @Column()
   phone: string;
   @Column()

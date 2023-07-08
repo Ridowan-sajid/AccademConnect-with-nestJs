@@ -33,8 +33,4 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], UpdateModeratorDto.prototype, "education", void 0);
-__decorate([
-    (0, class_validator_1.IsDate)(),
-    __metadata("design:type", Date)
-], UpdateModeratorDto.prototype, "updatedDate", void 0);
 //# sourceMappingURL=updateModerator.dto.js.map

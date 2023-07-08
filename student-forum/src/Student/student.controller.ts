@@ -3,13 +3,17 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
+  NotFoundException,
   Param,
   ParseIntPipe,
   Patch,
   Post,
   Put,
+  Res,
   Session,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { StudentService } from './student.service';
@@ -24,6 +28,8 @@ import { MulterError, diskStorage } from 'multer';
 import { PostDto } from '../Post/dto/post.dto';
 import { UpdateStudentDto } from './dto/updateStudent.dto';
 import { UpdatePostDto } from 'src/Post/dto/updatePost.dto';
+import { Student } from 'src/Db/student.entity';
+import { SessionGuard } from 'src/Guards/session.guard';
 
 @Controller('student')
 export class StudentController {
@@ -41,7 +47,7 @@ export class StudentController {
       },
       limits: { fileSize: 2000000 },
       storage: diskStorage({
-        destination: './uploads',
+        destination: './uploads/student',
         filename: function (req, file, cb) {
           cb(null, Date.now() + file.originalname);
         },
@@ -52,27 +58,44 @@ export class StudentController {
     @Body()
     student: StudentDto,
     @UploadedFile() myfileobj: Express.Multer.File,
-  ): StudentDto {
+  ): any {
     student.profileImg = myfileobj.filename;
+    student.createdDate = new Date();
+    student.updatedDate = new Date();
+
     return this.studentService.addStudent(student);
   }
 
   @Post('/login')
-  loginStudent(@Body() student: StudentLoginDto, @Session() session): any {
-    session.email = student.email;
-    return this.studentService.loginStudent(student);
-  }
-  @Get('/myprofile/:id')
-  myProfile(@Param('id', ParseIntPipe) id: number): StudentDto {
-    return this.studentService.myProfile(id);
+  async loginStudent(
+    @Body() student: StudentLoginDto,
+    @Session() session,
+  ): Promise<any> {
+    const res = this.studentService.loginStudent(student);
+
+    if ((await res) === true) {
+      session.email = student.email;
+      console.log(session.email);
+      return res;
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'Student not found',
+      });
+    }
   }
 
-  @Put('/updateprofile/:id')
-  updateProfile(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() student: UpdateStudentDto,
-  ): StudentDto {
-    return this.studentService.editProfile(id, student);
+  @Get('/myprofile')
+  @UseGuards(SessionGuard)
+  myProfile(@Session() session): any {
+    return this.studentService.myProfile(session.email);
+  }
+
+  @Put('/updateprofile')
+  @UseGuards(SessionGuard)
+  updateProfile(@Body() student: UpdateStudentDto, @Session() session): any {
+    student.updatedDate = new Date();
+    return this.studentService.editProfile(student, session.email);
   }
 
   @Delete('/deleteProfile/:id')
@@ -80,15 +103,17 @@ export class StudentController {
     return this.studentService.deleteProfile(id);
   }
 
-  @Patch('/changePassword/:id')
+  @Patch('/changePassword')
+  @UseGuards(SessionGuard)
   changePassword(
-    @Param('id', ParseIntPipe) id: number,
     @Body() student: PasswordChangeStudentDto,
-  ): StudentDto {
-    return this.studentService.passwordChange(id, student);
+    @Session() session,
+  ): any {
+    return this.studentService.passwordChange(student, session.email);
   }
 
   @Patch('/forgetPassword/:id')
+  @UseGuards(SessionGuard)
   forgetPassword(
     @Param('id', ParseIntPipe) id: number,
     @Body() student: ForgetPassStudentDto,
@@ -96,44 +121,65 @@ export class StudentController {
     return this.studentService.forgetpassword(id, student);
   }
 
-  @Get('/')
-  getDashboard(): any {
-    return this.studentService.getDashboard();
+  @Get('/allPost')
+  @UseGuards(SessionGuard)
+  getDashboard(@Session() session): any {
+    return this.studentService.getAllPost(session.email);
   }
 
-  @Delete('/deletepost/:id')
-  deletePost(@Param('id', ParseIntPipe) id: number) {
-    return this.studentService.deletePost(id);
+  @Post('/post')
+  @UseGuards(SessionGuard)
+  addPost(@Body() data: PostDto, @Session() session) {
+    return this.studentService.addPost(data, session.email);
+  }
+  @Get('/mypost')
+  @UseGuards(SessionGuard)
+  getMyPost(@Session() session): any {
+    return this.studentService.getMyPost(session.email);
   }
 
-  @Get('/myPost/:id')
-  myPost(@Param('id', ParseIntPipe) id: number) {
-    return this.studentService.myPost(id);
+  @Get('/post/:id')
+  @UseGuards(SessionGuard)
+  getPostByStudentId(
+    @Param('id', ParseIntPipe) id: number,
+    @Session() session,
+  ): any {
+    return this.studentService.getDetailsPost(id, session.email);
   }
 
-  @Post('/createpost/:id')
-  addPost(@Param('id', ParseIntPipe) id: number, @Body() data: PostDto) {
-    return this.studentService.addPost(data, id);
-  }
-  @Get('/PostwithStudent/:id')
-  getPostByStudentId(@Param('id', ParseIntPipe) id: number): any {
-    return this.studentService.getPostByStudentId(id);
-  }
-
-  @Delete('/PostwithStudent/:id')
+  @Delete('/post/:id')
+  @UseGuards(SessionGuard)
   deletePostByStudentId(
     @Param('id', ParseIntPipe) id: number,
     @Session() session,
   ): any {
+    console.log(id);
     return this.studentService.deletePostByStudentId(id, session.email);
   }
 
-  @Put('/PostwithStudent/:id')
+  @Put('/Post/:id')
+  @UseGuards(SessionGuard)
   updatePost(
     @Body() data: UpdatePostDto,
     @Param('id', ParseIntPipe) id: number,
     @Session() session,
   ) {
     return this.studentService.updatePost(id, data, session.email);
+  }
+
+  @Get('/logout')
+  @UseGuards(SessionGuard)
+  Logout(@Session() session): any {
+    if (session.destroy()) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  @Get('/getimage')
+  @UseGuards(SessionGuard)
+  async getting(@Res() res, @Session() session): Promise<any> {
+    await this.studentService.getImages(res, session.email);
   }
 }

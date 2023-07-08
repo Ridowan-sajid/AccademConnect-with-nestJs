@@ -4,6 +4,8 @@ import {
   InternalServerErrorException,
   NotFoundException,
   ParseIntPipe,
+  Res,
+  ServiceUnavailableException,
 } from '@nestjs/common';
 import { PostDto } from 'src/Post/dto/post.dto';
 import { StudentDto } from 'src/Student/dto/Student.dto';
@@ -21,82 +23,54 @@ import { Repository } from 'typeorm';
 import { Admin } from 'src/Db/admin.entity';
 import * as bcrypt from 'bcrypt';
 import { Student } from 'src/Db/student.entity';
+import { Hr } from 'src/Db/hiring.entity';
+import { PasswordChangeAdminDto } from './dto/changePassAdmin.dto';
 
 @Injectable()
 export class AdminService {
-  // async changePass(password: string): Promise<any> {
-  //   const salt = await bcrypt.genSalt();
-  //   password = await bcrypt.hash(password, salt);
-  //   return password;
-  // }
   constructor(
     @InjectRepository(Admin) private adminRepo: Repository<Admin>,
     @InjectRepository(Moderator)
     private moderatorRepo: Repository<Moderator>,
     @InjectRepository(Student)
     private studentRepo: Repository<Student>,
+    @InjectRepository(Hr)
+    private hrRepo: Repository<Hr>,
   ) {}
 
+  async changePassword(
+    changedPass: PasswordChangeAdminDto,
+    email: string,
+  ): Promise<any> {
+    const admin = await this.adminRepo.findOneBy({
+      email: email,
+    });
+    const isMatch: boolean = await bcrypt.compare(
+      changedPass.oldPassword,
+      admin.password,
+    );
+    console.log(changedPass.oldPassword);
+
+    if (isMatch) {
+      const salt = await bcrypt.genSalt();
+      admin.password = await bcrypt.hash(changedPass.newPassword, salt);
+      const res = await this.adminRepo.update(admin.id, admin);
+
+      return res;
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'Not found the user',
+      });
+    }
+  }
   async getStudentByAdminId(email: string): Promise<Admin[]> {
-    return this.adminRepo.find({
+    const res = await this.adminRepo.find({
       where: { email: email },
       relations: {
         students: true,
       },
     });
-  }
-
-  adminProfile(id: number): any {
-    return '';
-  }
-  accessControl(id: number, access: ModeratorAccessDto): any {
-    return '';
-  }
-  deleteHr(id: number): any {
-    return '';
-  }
-  updateHr(id: number, hr: UpdateHrDto): any {
-    return '';
-  }
-  getHrById(id: number): any {
-    return '';
-  }
-  getAllHr(): any {
-    return '';
-  }
-  addHr(hr: HrDto): any {
-    return '';
-  }
-  deleteModerator(id: number): any {
-    return '';
-  }
-  deleteStudent(id: number): any {
-    return '';
-  }
-  updateModerator(id: number, moderator: UpdateModeratorDto): any {
-    return '';
-  }
-  getModeratorById(id: number): any {
-    return '';
-  }
-  getAllModerator(): any {
-    return '';
-  }
-  async addModerator(moderator: ModeratorDto): Promise<Moderator> {
-    const admin = await this.adminRepo.findOneBy({ id: 1 });
-    moderator.status = 'Inactive';
-    moderator.createdBy = admin.id;
-    moderator.createdDate = new Date();
-    moderator.updatedDate = new Date();
-
-    const salt = await bcrypt.genSalt();
-    const hassedpassed = await bcrypt.hash(moderator.password, salt);
-    moderator.password = hassedpassed;
-
-    return this.moderatorRepo.save(moderator);
-  }
-  getAllStudent(): any {
-    const res = this.studentRepo.find();
 
     if (res) {
       return res;
@@ -107,11 +81,316 @@ export class AdminService {
       });
     }
   }
-  updateStudent(id: number, student: UpdateStudentDto): any {
-    return '';
+
+  async adminProfile(email: string): Promise<any> {
+    const admin = await this.adminRepo.findOneBy({ email: email });
+
+    if (admin) {
+      return admin;
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'Not found the user',
+      });
+    }
   }
-  getStudentById(): any {
-    return '';
+  async accessControl(
+    id: number,
+    access: ModeratorAccessDto,
+    email: string,
+  ): Promise<any> {
+    const admin = await this.adminRepo.findOneBy({ email: email });
+
+    if (admin) {
+      //access.status = 'Active';
+      const res = await this.moderatorRepo.update(id, access);
+      if (res) {
+        return res;
+      } else {
+        throw new NotFoundException({
+          status: HttpStatus.NOT_FOUND,
+          message: 'Not found the user',
+        });
+      }
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'You are not the valid admin',
+      });
+    }
+  }
+  async deleteHr(id: number, email: string): Promise<any> {
+    const admin = await this.adminRepo.findOneBy({ email: email });
+    if (admin) {
+      const res = await this.hrRepo.delete(id);
+
+      if (res) {
+        return res;
+      } else {
+        throw new NotFoundException({
+          status: HttpStatus.NOT_FOUND,
+          message: 'There is something wrong',
+        });
+      }
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'You are not the valid admin',
+      });
+    }
+  }
+  async updateHr(id: number, hr: UpdateHrDto, email: string): Promise<any> {
+    const admin = await this.adminRepo.findOneBy({ email: email });
+
+    if (admin) {
+      const res = await this.hrRepo.update(id, hr);
+      if (res) {
+        return res;
+      } else {
+        throw new NotFoundException({
+          status: HttpStatus.NOT_FOUND,
+          message: 'Not found the user',
+        });
+      }
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'You are not the valid admin',
+      });
+    }
+  }
+  async getHrById(id: number, email: string): Promise<any> {
+    const admin = await this.adminRepo.findOneBy({ email: email });
+    console.log(email);
+
+    if (admin) {
+      const res = await this.hrRepo.findOneBy({ id: id });
+      if (res) {
+        return res;
+      } else {
+        throw new NotFoundException({
+          status: HttpStatus.NOT_FOUND,
+          message: 'Not found the user',
+        });
+      }
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'You are not the valid admin',
+      });
+    }
+  }
+  async getAllHr(email: string): Promise<any> {
+    const admin = await this.adminRepo.findOneBy({ email: email });
+    if (admin) {
+      const res = await this.hrRepo.find();
+
+      if (res) {
+        return res;
+      } else {
+        throw new NotFoundException({
+          status: HttpStatus.NOT_FOUND,
+          message: 'There is something wrong',
+        });
+      }
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'You are not an admin',
+      });
+    }
+  }
+  async addHr(hr: HrDto, email: string): Promise<any> {
+    const admin = await this.adminRepo.findOneBy({ email: email });
+
+    if (admin) {
+      hr.createdByAdmin = admin.id;
+      const salt = await bcrypt.genSalt();
+      const hassedpassed = await bcrypt.hash(hr.password, salt);
+      hr.password = hassedpassed;
+
+      const res = this.hrRepo.save(hr);
+      if (res) {
+        return res;
+      } else {
+        throw new ServiceUnavailableException({
+          status: HttpStatus.SERVICE_UNAVAILABLE,
+          message: 'There is something wrong',
+        });
+      }
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'You are not an admin',
+      });
+    }
+  }
+  async deleteStudent(id: number, email: string): Promise<any> {
+    const admin = await this.adminRepo.findOneBy({ email: email });
+    if (admin) {
+      const res = await this.studentRepo.delete(id);
+
+      if (res) {
+        return res;
+      } else {
+        throw new NotFoundException({
+          status: HttpStatus.NOT_FOUND,
+          message: 'There is something wrong',
+        });
+      }
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'You are not the valid admin',
+      });
+    }
+  }
+
+  async getModeratorByAdminId(email: any): Promise<any> {
+    const res = await this.adminRepo.find({
+      where: { email: email },
+      relations: {
+        moderators: true,
+      },
+    });
+
+    if (res) {
+      return res;
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'There is something wrong',
+      });
+    }
+  }
+
+  async getModeratorById(id: number, email: string): Promise<any> {
+    const admin = await this.adminRepo.findOneBy({ email: email });
+
+    if (admin) {
+      const res = await this.moderatorRepo.findOneBy({ id: id });
+      if (res) {
+        return res;
+      } else {
+        throw new NotFoundException({
+          status: HttpStatus.NOT_FOUND,
+          message: 'Not found the user',
+        });
+      }
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'You are not the valid admin',
+      });
+    }
+  }
+  async getAllModerator(email: string): Promise<Moderator[]> {
+    const admin = await this.adminRepo.findOneBy({ email: email });
+    if (admin) {
+      const res = await this.moderatorRepo.find();
+
+      if (res) {
+        return res;
+      } else {
+        throw new NotFoundException({
+          status: HttpStatus.NOT_FOUND,
+          message: 'There is something wrong',
+        });
+      }
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'You are not an admin',
+      });
+    }
+  }
+  async addModerator(
+    moderator: ModeratorDto,
+    email: string,
+  ): Promise<Moderator> {
+    const admin = await this.adminRepo.findOneBy({ email: email });
+
+    if (admin) {
+      moderator.status = 'Inactive';
+      moderator.createdBy = admin.id;
+
+      const salt = await bcrypt.genSalt();
+      const hassedpassed = await bcrypt.hash(moderator.password, salt);
+      moderator.password = hassedpassed;
+
+      const res = await this.moderatorRepo.save(moderator);
+      if (res) {
+        return res;
+      } else {
+        throw new ServiceUnavailableException({
+          status: HttpStatus.SERVICE_UNAVAILABLE,
+          message: 'There is something wrong',
+        });
+      }
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'You are not an admin',
+      });
+    }
+  }
+  async getAllStudent(): Promise<Student[]> {
+    const res = await this.studentRepo.find();
+
+    if (res) {
+      return res;
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'There is something wrong',
+      });
+    }
+  }
+  async updateStudent(
+    id: number,
+    student: UpdateStudentDto,
+    email: string,
+  ): Promise<any> {
+    const admin = await this.adminRepo.findOneBy({ email: email });
+    console.log(email);
+
+    if (admin) {
+      const res = await this.studentRepo.update(id, student);
+      if (res) {
+        return res;
+      } else {
+        throw new NotFoundException({
+          status: HttpStatus.NOT_FOUND,
+          message: 'Not found the user',
+        });
+      }
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'You are not the valid admin',
+      });
+    }
+  }
+  async getStudentById(id: number, email: string): Promise<Student> {
+    const admin = await this.adminRepo.findOneBy({ email: email });
+    console.log(email);
+
+    if (admin) {
+      const res = await this.studentRepo.findOneBy({ id: id });
+      if (res) {
+        return res;
+      } else {
+        throw new NotFoundException({
+          status: HttpStatus.NOT_FOUND,
+          message: 'Not found the user',
+        });
+      }
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'You are not the valid admin',
+      });
+    }
   }
   async addStudent(student: StudentDto, email: string): Promise<any> {
     const salt = await bcrypt.genSalt();
@@ -153,13 +432,81 @@ export class AdminService {
       return false;
     }
   }
-  async deleteModeratorByAdminId(id: number): Promise<any> {
-    return this.moderatorRepo.delete({ id: id, createdBy: 1 });
+  async deleteModeratorByAdminId(id: number, email: string): Promise<any> {
+    const admin = await this.adminRepo.findOneBy({ email: email });
+    if (admin) {
+      const res = await this.moderatorRepo.delete(id);
+
+      if (res) {
+        return res;
+      } else {
+        throw new NotFoundException({
+          status: HttpStatus.NOT_FOUND,
+          message: 'There is something wrong',
+        });
+      }
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'You are not the valid admin',
+      });
+    }
   }
   async updateModeratorByAdminId(
     id: number,
     moderator: UpdateModeratorDto,
+    email: string,
   ): Promise<any> {
-    return this.moderatorRepo.update({ id: id, createdBy: 1 }, moderator);
+    //return this.moderatorRepo.update({ id: id, createdBy: 1 }, moderator);
+
+    const admin = await this.adminRepo.findOneBy({ email: email });
+
+    if (admin) {
+      const res = await this.moderatorRepo.update(id, moderator);
+      if (res) {
+        return res;
+      } else {
+        throw new NotFoundException({
+          status: HttpStatus.NOT_FOUND,
+          message: 'Not found the user',
+        });
+      }
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'You are not the valid admin',
+      });
+    }
+  }
+
+  async getHrWithAdmin(email: any): Promise<any> {
+    const res = await this.adminRepo.find({
+      where: { email: email },
+      relations: {
+        hrs: true,
+      },
+    });
+
+    if (res) {
+      return res;
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'There is something wrong',
+      });
+    }
+  }
+
+  async getImages(@Res() res, email: string): Promise<void> {
+    const admin = await this.adminRepo.findOneBy({ email: email });
+
+    if (admin) {
+      res.sendFile(admin.profileImg, { root: './uploads/admin' });
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'There is something wrong',
+      });
+    }
   }
 }

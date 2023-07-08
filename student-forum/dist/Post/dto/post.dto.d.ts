@@ -3,5 +3,5 @@ export declare class PostDto {
     details: string;
     createdDate: Date;
     updatedDate: Date;
-    studentId: number;
+    student: number;
 }

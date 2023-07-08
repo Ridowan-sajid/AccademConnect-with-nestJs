@@ -39,6 +39,10 @@ class PasswordChangeStudentDto {
 }
 exports.PasswordChangeStudentDto = PasswordChangeStudentDto;
 __decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], PasswordChangeStudentDto.prototype, "oldPassword", void 0);
+__decorate([
     (0, class_validator_1.MinLength)(7),
     __metadata("design:type", String)
 ], PasswordChangeStudentDto.prototype, "newPassword", void 0);

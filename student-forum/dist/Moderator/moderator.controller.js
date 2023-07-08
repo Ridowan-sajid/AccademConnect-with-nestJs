@@ -69,8 +69,7 @@ let ModeratorController = exports.ModeratorController = class ModeratorControlle
     deleteStudentByModeratorId(id, session) {
         return this.moderatorService.deleteStudentByModeratorId(id, session.email);
     }
-    updateStudentByModeratorId(id, student, myfileobj, session) {
-        student.profileImg = myfileobj.filename;
+    updateStudentByModeratorId(id, student, session) {
         return this.moderatorService.updateStudentByModeratorId(id, student, session.email);
     }
 };
@@ -205,28 +204,11 @@ __decorate([
 ], ModeratorController.prototype, "deleteStudentByModeratorId", null);
 __decorate([
     (0, common_1.Put)('/studentwithModerator/:id'),
-    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('myfile', {
-        fileFilter: (req, file, cb) => {
-            if (file.originalname.match(/^.*\.(jpg|webp|png|jpeg)$/))
-                cb(null, true);
-            else {
-                cb(new multer_1.MulterError('LIMIT_UNEXPECTED_FILE', 'image'), false);
-            }
-        },
-        limits: { fileSize: 2000000 },
-        storage: (0, multer_1.diskStorage)({
-            destination: './uploads/student',
-            filename: function (req, file, cb) {
-                cb(null, Date.now() + file.originalname);
-            },
-        }),
-    })),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
-    __param(2, (0, common_1.UploadedFile)()),
-    __param(3, (0, common_1.Session)()),
+    __param(2, (0, common_1.Session)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, updateStudent_dto_1.UpdateStudentDto, Object, Object]),
+    __metadata("design:paramtypes", [Number, updateStudent_dto_1.UpdateStudentDto, Object]),
     __metadata("design:returntype", Object)
 ], ModeratorController.prototype, "updateStudentByModeratorId", null);
 exports.ModeratorController = ModeratorController = __decorate([

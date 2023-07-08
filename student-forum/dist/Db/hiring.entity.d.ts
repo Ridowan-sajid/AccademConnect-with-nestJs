@@ -6,7 +6,7 @@ import { Offer } from './offer.entity';
 export declare class Hr {
     id: number;
     name: string;
-    age: number;
+    age: string;
     phone: string;
     email: string;
     gender: string;

@@ -12,7 +12,7 @@ import {
 export class HrDto {
   @IsString()
   @IsNotEmpty()
-  @Matches(/^[A-Z][A-Za-z0-9_]+$/)
+  @Matches(/^[A-Z][A-Za-z ]+$/)
   name: string;
   // @IsNumber()
   @IsNotEmpty()
@@ -24,9 +24,9 @@ export class HrDto {
   email: string;
   @IsString()
   gender: string;
-  @IsDate()
+  //@IsDate()
   createdDate: Date;
-  @IsDate()
+  //@IsDate()
   updatedDate: Date;
   @MinLength(7)
   password: string;

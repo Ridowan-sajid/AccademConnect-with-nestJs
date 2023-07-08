@@ -23,7 +23,7 @@ export class Post {
   updatedDate: Date;
 
   //
-  @ManyToOne(() => Student, (student) => student.posts)
+  @ManyToOne(() => Student, (student) => student.posts, { nullable: false })
   student: number;
 
   @OneToMany(() => Comment, (comment) => comment.post)
