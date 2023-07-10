@@ -4,7 +4,5 @@ export declare class ReportDto {
     createdDate: Date;
     hr: number;
     student: number;
-    post: number;
-    job: number;
     handledBy: number;
 }

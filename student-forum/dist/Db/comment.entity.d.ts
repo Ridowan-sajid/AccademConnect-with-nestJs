@@ -5,6 +5,6 @@ export declare class Comment {
     post: number;
     hr: number;
     student: number;
-    parentComment: Comment;
+    parentComment: number;
     childComments: Comment[];
 }

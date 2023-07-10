@@ -5,7 +5,5 @@ export declare class Report {
     createdDate: Date;
     hr: number;
     student: number;
-    post: number;
-    job: number;
     handledBy: number;
 }

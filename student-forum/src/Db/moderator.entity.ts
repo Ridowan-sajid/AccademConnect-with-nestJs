@@ -1,14 +1,17 @@
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Admin } from './admin.entity';
 import { Student } from './student.entity';
 import { Hr } from './hiring.entity';
 import { Report } from './report.entity';
+import { ModeratorProfile } from './moderatorProfile.dto';
 
 @Entity('Moderator')
 export class Moderator {
@@ -48,4 +51,11 @@ export class Moderator {
 
   @OneToMany(() => Report, (report) => report.handledBy)
   handledReports: Report[];
+
+  @OneToOne(
+    () => ModeratorProfile,
+    (moderatorProfile) => moderatorProfile.moderator,
+    // { cascade: true },
+  )
+  moderatorProfile: ModeratorProfile;
 }

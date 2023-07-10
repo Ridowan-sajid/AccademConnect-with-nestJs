@@ -36,10 +36,6 @@ export class Student {
   @UpdateDateColumn()
   updatedDate: Date;
 
-  @ManyToMany(() => Hr, (hr) => hr.connection)
-  @JoinTable()
-  connection: Hr[];
-
   @Column()
   profileImg: string;
   @Column()
@@ -51,10 +47,10 @@ export class Student {
   @ManyToOne(() => Admin, (admin) => admin.students)
   createdByAdmin: number;
 
-  @OneToMany(() => Post, (post) => post.student)
+  @OneToMany(() => Post, (post) => post.student, { cascade: true })
   posts: Post[];
 
-  @OneToMany(() => Comment, (comment) => comment.student)
+  @OneToMany(() => Comment, (comment) => comment.student, { cascade: true })
   comments: Comment[];
 
   @OneToMany(() => Offer, (offer) => offer.studentId)
@@ -62,4 +58,8 @@ export class Student {
 
   @OneToMany(() => Report, (report) => report.student)
   reports: Report[];
+
+  @ManyToMany(() => Hr, (hr) => hr.connectionH)
+  @JoinTable()
+  connectionS: Hr[];
 }

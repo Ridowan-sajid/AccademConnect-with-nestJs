@@ -9,6 +9,7 @@ import { Offer } from './offer.entity';
 import { Post } from './post.entity';
 import { Report } from './report.entity';
 import { Student } from './student.entity';
+import { ModeratorProfile } from './moderatorProfile.dto';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -21,6 +22,7 @@ import { Student } from './student.entity';
       Post,
       Report,
       Student,
+      ModeratorProfile,
     ]),
   ],
   controllers: [],

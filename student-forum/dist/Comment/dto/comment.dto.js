@@ -18,8 +18,4 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CommentDto.prototype, "text", void 0);
-__decorate([
-    (0, class_validator_1.IsDate)(),
-    __metadata("design:type", Date)
-], CommentDto.prototype, "createdDate", void 0);
 //# sourceMappingURL=comment.dto.js.map

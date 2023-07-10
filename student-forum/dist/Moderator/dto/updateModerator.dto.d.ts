@@ -5,5 +5,16 @@ export declare class UpdateModeratorDto {
     gender: string;
     education: string;
     updatedDate: Date;
-    profileImg: string;
+}
+export declare class ProfileModeratorDto {
+    name: string;
+    age: string;
+    phone: string;
+    email: string;
+    gender: string;
+    createdDate: Date;
+    education: string;
+    updatedDate: Date;
+    status: string;
+    moderator: number;
 }

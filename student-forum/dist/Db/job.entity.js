@@ -13,7 +13,6 @@ exports.Job = void 0;
 const typeorm_1 = require("typeorm");
 const hiring_entity_1 = require("./hiring.entity");
 const offer_entity_1 = require("./offer.entity");
-const report_entity_1 = require("./report.entity");
 let Job = exports.Job = class Job {
 };
 __decorate([
@@ -36,10 +35,6 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => offer_entity_1.Offer, (offer) => offer.jobId),
     __metadata("design:type", Array)
 ], Job.prototype, "letters", void 0);
-__decorate([
-    (0, typeorm_1.OneToMany)(() => report_entity_1.Report, (report) => report.job),
-    __metadata("design:type", Array)
-], Job.prototype, "reports", void 0);
 exports.Job = Job = __decorate([
     (0, typeorm_1.Entity)('Job')
 ], Job);

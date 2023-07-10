@@ -20,21 +20,26 @@ export class Comment {
   createdDate: Date;
 
   //
-  @ManyToOne(() => Post, (post) => post.comments)
+  @ManyToOne(() => Post, (post) => post.comments, { onDelete: 'CASCADE' })
   post: number;
   //
   @ManyToOne(() => Hr, (hr) => hr.comments)
   hr: number;
   //
-  @ManyToOne(() => Student, (student) => student.comments)
+  @ManyToOne(() => Student, (student) => student.comments, {
+    onDelete: 'CASCADE',
+  })
   student: number;
   //
 
   @ManyToOne(() => Comment, (comment) => comment.childComments, {
     nullable: true,
+    onDelete: 'CASCADE',
   })
-  parentComment: Comment;
+  parentComment: number;
 
-  @OneToMany(() => Comment, (comment) => comment.parentComment)
+  @OneToMany(() => Comment, (comment) => comment.parentComment, {
+    cascade: true,
+  })
   childComments: Comment[];
 }

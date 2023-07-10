@@ -56,6 +56,6 @@ export class Hr {
   @OneToMany(() => Offer, (offer) => offer.hrId)
   letters: Offer[];
 
-  @ManyToMany(() => Student, (student) => student.connection)
-  connection: Student[];
+  @ManyToMany(() => Student, (student) => student.connectionS)
+  connectionH: Student[];
 }

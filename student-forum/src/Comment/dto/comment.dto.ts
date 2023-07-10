@@ -1,10 +1,11 @@
-import { IsDate, IsString } from 'class-validator';
+import { IsDate, IsNotEmpty, IsString } from 'class-validator';
 
 export class CommentDto {
   @IsString()
   text: string;
-  @IsDate()
+  //@IsDate()
   createdDate: Date;
+  //@IsNotEmpty()
   post: number;
   hr: number;
   student: number;

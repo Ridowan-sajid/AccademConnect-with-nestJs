@@ -53,11 +53,6 @@ __decorate([
     __metadata("design:type", Date)
 ], Student.prototype, "updatedDate", void 0);
 __decorate([
-    (0, typeorm_1.ManyToMany)(() => hiring_entity_1.Hr, (hr) => hr.connection),
-    (0, typeorm_1.JoinTable)(),
-    __metadata("design:type", Array)
-], Student.prototype, "connection", void 0);
-__decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Student.prototype, "profileImg", void 0);
@@ -74,11 +69,11 @@ __decorate([
     __metadata("design:type", Number)
 ], Student.prototype, "createdByAdmin", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => post_entity_1.Post, (post) => post.student),
+    (0, typeorm_1.OneToMany)(() => post_entity_1.Post, (post) => post.student, { cascade: true }),
     __metadata("design:type", Array)
 ], Student.prototype, "posts", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => comment_entity_1.Comment, (comment) => comment.student),
+    (0, typeorm_1.OneToMany)(() => comment_entity_1.Comment, (comment) => comment.student, { cascade: true }),
     __metadata("design:type", Array)
 ], Student.prototype, "comments", void 0);
 __decorate([
@@ -89,6 +84,11 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => report_entity_1.Report, (report) => report.student),
     __metadata("design:type", Array)
 ], Student.prototype, "reports", void 0);
+__decorate([
+    (0, typeorm_1.ManyToMany)(() => hiring_entity_1.Hr, (hr) => hr.connectionH),
+    (0, typeorm_1.JoinTable)(),
+    __metadata("design:type", Array)
+], Student.prototype, "connectionS", void 0);
 exports.Student = Student = __decorate([
     (0, typeorm_1.Entity)('Student')
 ], Student);

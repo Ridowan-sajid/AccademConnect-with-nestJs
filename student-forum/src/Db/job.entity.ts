@@ -24,6 +24,6 @@ export class Job {
   @OneToMany(() => Offer, (offer) => offer.jobId)
   letters: Offer[];
 
-  @OneToMany(() => Report, (report) => report.job)
-  reports: Report[];
+  // @OneToMany(() => Report, (report) => report.job)
+  // reports: Report[];
 }

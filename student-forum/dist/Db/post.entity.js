@@ -13,7 +13,6 @@ exports.Post = void 0;
 const typeorm_1 = require("typeorm");
 const student_entity_1 = require("./student.entity");
 const comment_entity_1 = require("./comment.entity");
-const report_entity_1 = require("./report.entity");
 let Post = exports.Post = class Post {
 };
 __decorate([
@@ -37,17 +36,13 @@ __decorate([
     __metadata("design:type", Date)
 ], Post.prototype, "updatedDate", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => student_entity_1.Student, (student) => student.posts, { nullable: false }),
+    (0, typeorm_1.ManyToOne)(() => student_entity_1.Student, (student) => student.posts, { onDelete: 'CASCADE' }),
     __metadata("design:type", Number)
 ], Post.prototype, "student", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => comment_entity_1.Comment, (comment) => comment.post),
+    (0, typeorm_1.OneToMany)(() => comment_entity_1.Comment, (comment) => comment.post, { cascade: true }),
     __metadata("design:type", Array)
 ], Post.prototype, "comments", void 0);
-__decorate([
-    (0, typeorm_1.OneToMany)(() => report_entity_1.Report, (report) => report.post),
-    __metadata("design:type", Array)
-], Post.prototype, "reports", void 0);
 exports.Post = Post = __decorate([
     (0, typeorm_1.Entity)('Post')
 ], Post);

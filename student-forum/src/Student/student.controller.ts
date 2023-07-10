@@ -30,6 +30,8 @@ import { UpdateStudentDto } from './dto/updateStudent.dto';
 import { UpdatePostDto } from 'src/Post/dto/updatePost.dto';
 import { Student } from 'src/Db/student.entity';
 import { SessionGuard } from 'src/Guards/session.guard';
+import { CommentDto } from 'src/Comment/dto/comment.dto';
+import { ReportDto } from 'src/Report/dto/report.dto';
 
 @Controller('student')
 export class StudentController {
@@ -181,5 +183,67 @@ export class StudentController {
   @UseGuards(SessionGuard)
   async getting(@Res() res, @Session() session): Promise<any> {
     await this.studentService.getImages(res, session.email);
+  }
+
+  @Post('/comment/:id')
+  @UseGuards(SessionGuard)
+  addComment(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() data: CommentDto,
+    @Session() session,
+  ) {
+    data.createdDate = new Date();
+    return this.studentService.addComment(id, data, session.email);
+  }
+
+  @Get('/postComment/:id')
+  @UseGuards(SessionGuard)
+  getPostComment(
+    @Param('id', ParseIntPipe) id: number,
+    @Session() session,
+  ): any {
+    return this.studentService.getPostComment(id, session.email);
+  }
+
+  @Delete('/comment/:id')
+  @UseGuards(SessionGuard)
+  deleteComment(
+    @Param('id', ParseIntPipe) id: number,
+    @Session() session,
+  ): any {
+    return this.studentService.deleteComment(id, session.email);
+  }
+
+  @Post('/replycomment/:id')
+  @UseGuards(SessionGuard)
+  addReplyComment(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() data: CommentDto,
+    @Session() session,
+  ) {
+    data.createdDate = new Date();
+    return this.studentService.addReplyComment(id, data, session.email);
+  }
+
+  @Get('/replycomment/:id')
+  @UseGuards(SessionGuard)
+  getReplyComment(
+    @Param('id', ParseIntPipe) id: number,
+    @Session() session,
+  ): any {
+    return this.studentService.getReplyComment(id, session.email);
+  }
+
+  @Post('/createNetwork/:id')
+  @UseGuards(SessionGuard)
+  createNetwork(@Param('id', ParseIntPipe) id: number, @Session() session) {
+    return this.studentService.createNetwork(id, session.email);
+  }
+
+  @Post('/report')
+  @UseGuards(SessionGuard)
+  addReport(@Body() data: ReportDto, @Session() session) {
+    data.createdDate = new Date();
+    return this.studentService.addReport(data, session.email);
   }
 }

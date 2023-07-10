@@ -15,6 +15,7 @@ const admin_entity_1 = require("./admin.entity");
 const student_entity_1 = require("./student.entity");
 const hiring_entity_1 = require("./hiring.entity");
 const report_entity_1 = require("./report.entity");
+const moderatorProfile_dto_1 = require("./moderatorProfile.dto");
 let Moderator = exports.Moderator = class Moderator {
 };
 __decorate([
@@ -81,6 +82,10 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => report_entity_1.Report, (report) => report.handledBy),
     __metadata("design:type", Array)
 ], Moderator.prototype, "handledReports", void 0);
+__decorate([
+    (0, typeorm_1.OneToOne)(() => moderatorProfile_dto_1.ModeratorProfile, (moderatorProfile) => moderatorProfile.moderator),
+    __metadata("design:type", moderatorProfile_dto_1.ModeratorProfile)
+], Moderator.prototype, "moderatorProfile", void 0);
 exports.Moderator = Moderator = __decorate([
     (0, typeorm_1.Entity)('Moderator')
 ], Moderator);

@@ -12,7 +12,6 @@ export declare class Student {
     gender: string;
     createdDate: Date;
     updatedDate: Date;
-    connection: Hr[];
     profileImg: string;
     password: string;
     createdByModerator: number;
@@ -21,4 +20,5 @@ export declare class Student {
     comments: Comment[];
     letters: Offer[];
     reports: Report[];
+    connectionS: Hr[];
 }

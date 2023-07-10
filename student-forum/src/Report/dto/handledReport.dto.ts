@@ -1,6 +1,5 @@
-import { IsNumber } from 'class-validator';
+// import { IsNumber } from 'class-validator';
 
-export class HandledReportDto {
-  @IsNumber()
-  handledBy: number;
-}
+// export class HandledReportDto {
+//   handledBy: number;
+// }

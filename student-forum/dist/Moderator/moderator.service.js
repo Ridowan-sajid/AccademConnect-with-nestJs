@@ -19,7 +19,169 @@ const typeorm_2 = require("typeorm");
 const moderator_entity_1 = require("../Db/moderator.entity");
 const student_entity_1 = require("../Db/student.entity");
 const bcrypt = require("bcrypt");
+const moderatorProfile_dto_1 = require("../Db/moderatorProfile.dto");
+const post_entity_1 = require("../Db/post.entity");
+const report_entity_1 = require("../Db/report.entity");
+const comment_entity_1 = require("../Db/comment.entity");
+const hiring_entity_1 = require("../Db/hiring.entity");
 let ModeratorService = exports.ModeratorService = class ModeratorService {
+    async getHrComment(id, email) {
+        const res = await this.hrRepo.find({
+            where: { id: id },
+            relations: {
+                comments: true,
+            },
+        });
+        if (res) {
+            return res;
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'There is something wrong',
+            });
+        }
+    }
+    async getStudentComment(id, email) {
+        const res = await this.studentRepo.find({
+            where: { id: id },
+            relations: {
+                comments: true,
+            },
+        });
+        if (res) {
+            return res;
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'There is something wrong',
+            });
+        }
+    }
+    async getHrJobs(id, email) {
+        const res = await this.hrRepo.find({
+            where: { id: id },
+            relations: {
+                jobs: true,
+            },
+        });
+        if (res) {
+            return res;
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'There is something wrong',
+            });
+        }
+    }
+    async getStudentPost(id, email) {
+        const res = await this.studentRepo.find({
+            where: { id: id },
+            relations: {
+                posts: true,
+            },
+        });
+        if (res) {
+            return res;
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'There is something wrong',
+            });
+        }
+    }
+    async allReport(email) {
+        const mod = await this.moderatorRepo.findOneBy({ email: email });
+        if (mod) {
+            return await this.reportRepo.find();
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'Not found the user',
+            });
+        }
+    }
+    async deleteComment(id, email) {
+        const res = await this.moderatorRepo.findOneBy({ email: email });
+        if (res) {
+            const com = await this.commentRepo.delete(id);
+            return com;
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'There is something wrong',
+            });
+        }
+    }
+    async allPostComment(id, email) {
+        const res = await this.postRepo.find({
+            where: { id: id },
+            relations: {
+                comments: { childComments: true },
+            },
+        });
+        if (res) {
+            return res;
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'There is something wrong',
+            });
+        }
+    }
+    async allPost(email) {
+        const mod = await this.moderatorRepo.findOneBy({ email: email });
+        if (mod) {
+            return await this.postRepo.find();
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'Not found the user',
+            });
+        }
+    }
+    async reportHandling(id, email) {
+        const mod = await this.moderatorRepo.findOneBy({ email: email });
+        if (mod) {
+            const res = await this.reportRepo.findOneBy({ id: id });
+            res.handledBy = mod.id;
+            if (res) {
+                return await this.reportRepo.update({ id: id }, res);
+            }
+            else {
+                throw new common_1.NotFoundException({
+                    status: common_1.HttpStatus.NOT_FOUND,
+                    message: 'Not found the report',
+                });
+            }
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'Not found the user',
+            });
+        }
+    }
+    async deletePost(id, email) {
+        const mod = await this.moderatorRepo.findOneBy({ email: email });
+        if (mod) {
+            const res = await this.postRepo.delete({ id: id });
+            return res;
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'Not found the post',
+            });
+        }
+    }
     async deleteStudentByModeratorId(id, email) {
         const mod = await this.moderatorRepo.findOneBy({ email: email });
         if (mod) {
@@ -41,9 +203,14 @@ let ModeratorService = exports.ModeratorService = class ModeratorService {
             },
         });
     }
-    constructor(moderatorRepo, studentRepo) {
+    constructor(moderatorRepo, studentRepo, moderatorProfileRepo, postRepo, reportRepo, commentRepo, hrRepo) {
         this.moderatorRepo = moderatorRepo;
         this.studentRepo = studentRepo;
+        this.moderatorProfileRepo = moderatorProfileRepo;
+        this.postRepo = postRepo;
+        this.reportRepo = reportRepo;
+        this.commentRepo = commentRepo;
+        this.hrRepo = hrRepo;
     }
     async addStudent(student, email) {
         {
@@ -66,38 +233,119 @@ let ModeratorService = exports.ModeratorService = class ModeratorService {
     forgetPassword(id, moderator) {
         return '';
     }
-    passwordChange(id, moderator) {
-        return '';
+    async passwordChange(changedPass, email) {
+        const mod = await this.moderatorRepo.findOneBy({
+            email: email,
+        });
+        const isMatch = await bcrypt.compare(changedPass.oldPassword, mod.password);
+        if (isMatch) {
+            const salt = await bcrypt.genSalt();
+            mod.password = await bcrypt.hash(changedPass.newPassword, salt);
+            const res = await this.moderatorRepo.update(mod.id, mod);
+            return res;
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'Not found the user',
+            });
+        }
     }
     getDashboard() {
         return '';
     }
-    deleteProfile(id) {
-        return '';
+    async deleteProfile(email) {
+        const res2 = await this.moderatorProfileRepo.delete({ email: email });
+        const res = await this.moderatorRepo.delete({ email: email });
+        if (res && res2) {
+            return res;
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'There is something wrong',
+            });
+        }
     }
-    editProfile(id, moderator) {
-        return '';
+    async editProfile(moderator, email) {
+        const res = await this.moderatorRepo.update({ email: email }, moderator);
+        const res2 = await this.moderatorProfileRepo.update({ email: email }, moderator);
+        if (res && res2) {
+            return res2;
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'User not found',
+            });
+        }
     }
-    myProfile(id) {
-        return '';
+    async myProfile(email) {
+        const admin = await this.moderatorProfileRepo.findOneBy({ email: email });
+        if (admin) {
+            return admin;
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'Not found the user',
+            });
+        }
     }
     async loginModerator(moderator) {
         const mod = await this.moderatorRepo.findOneBy({ email: moderator.email });
         if (mod) {
             const isMatch = await bcrypt.compare(moderator.password, mod.password);
             if (isMatch)
-                return 'Successfully Logged In';
+                return isMatch;
+        }
+        else {
+            return false;
         }
     }
-    addModerator(moderator) {
-        return '';
+    async addModerator(moderator) {
+        const salt = await bcrypt.genSalt();
+        moderator.password = await bcrypt.hash(moderator.password, salt);
+        const res = await this.moderatorRepo.save(moderator);
+        if (res) {
+            const profile = {
+                name: res.name,
+                age: res.age,
+                phone: res.phone,
+                email: res.email,
+                gender: res.gender,
+                createdDate: res.createdDate,
+                education: res.education,
+                updatedDate: res.updatedDate,
+                status: res.status,
+                moderator: res.id,
+            };
+            await this.moderatorProfileRepo.save(profile);
+            return res;
+        }
+        else {
+            throw new common_1.InternalServerErrorException({
+                status: common_1.HttpStatus.INTERNAL_SERVER_ERROR,
+                message: 'There is something wrong',
+            });
+        }
     }
 };
 exports.ModeratorService = ModeratorService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(moderator_entity_1.Moderator)),
     __param(1, (0, typeorm_1.InjectRepository)(student_entity_1.Student)),
+    __param(2, (0, typeorm_1.InjectRepository)(moderatorProfile_dto_1.ModeratorProfile)),
+    __param(3, (0, typeorm_1.InjectRepository)(post_entity_1.Post)),
+    __param(4, (0, typeorm_1.InjectRepository)(report_entity_1.Report)),
+    __param(5, (0, typeorm_1.InjectRepository)(comment_entity_1.Comment)),
+    __param(6, (0, typeorm_1.InjectRepository)(hiring_entity_1.Hr)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository])
 ], ModeratorService);
 //# sourceMappingURL=moderator.service.js.map

@@ -85,9 +85,9 @@ __decorate([
     __metadata("design:type", Array)
 ], Hr.prototype, "letters", void 0);
 __decorate([
-    (0, typeorm_1.ManyToMany)(() => student_entity_1.Student, (student) => student.connection),
+    (0, typeorm_1.ManyToMany)(() => student_entity_1.Student, (student) => student.connectionS),
     __metadata("design:type", Array)
-], Hr.prototype, "connection", void 0);
+], Hr.prototype, "connectionH", void 0);
 exports.Hr = Hr = __decorate([
     (0, typeorm_1.Entity)('Hr')
 ], Hr);

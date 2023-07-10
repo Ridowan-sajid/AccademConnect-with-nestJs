@@ -26,5 +26,18 @@ export class UpdateModeratorDto {
   education: string;
   //@IsDate()
   updatedDate: Date;
-  profileImg: string;
+  //profileImg: string;
+}
+
+export class ProfileModeratorDto {
+  name: string;
+  age: string;
+  phone: string;
+  email: string;
+  gender: string;
+  createdDate: Date;
+  education: string;
+  updatedDate: Date;
+  status: string;
+  moderator: number;
 }

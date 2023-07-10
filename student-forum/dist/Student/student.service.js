@@ -19,7 +19,154 @@ const student_entity_1 = require("../Db/student.entity");
 const typeorm_2 = require("typeorm");
 const post_entity_1 = require("../Db/post.entity");
 const bcrypt = require("bcrypt");
+const comment_entity_1 = require("../Db/comment.entity");
+const hiring_entity_1 = require("../Db/hiring.entity");
+const report_entity_1 = require("../Db/report.entity");
 let StudentService = exports.StudentService = class StudentService {
+    async addReport(data, email) {
+        const student = await this.studentRepo.findOneBy({ email: email });
+        if (student) {
+            data.student = student.id;
+            const res = await this.reportRepo.save(data);
+            if (res) {
+                return res;
+            }
+            else {
+                throw new common_1.InternalServerErrorException({
+                    status: common_1.HttpStatus.INTERNAL_SERVER_ERROR,
+                    message: 'There is something wrong',
+                });
+            }
+        }
+        else {
+            throw new common_1.InternalServerErrorException({
+                status: common_1.HttpStatus.INTERNAL_SERVER_ERROR,
+                message: 'There is something wrong',
+            });
+        }
+    }
+    async createNetwork(id, email) {
+        const std = await this.studentRepo.findOneBy({ email: email });
+        if (std) {
+            const hr = await this.hrRepo.findOneBy({ id: id });
+            console.log(std.connectionS);
+            std.connectionS.push(hr);
+            await this.studentRepo.save(std);
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'There is something wrong',
+            });
+        }
+    }
+    async getReplyComment(id, email) {
+        const std = await this.studentRepo.findOneBy({ email: email });
+        console.log(std);
+        if (std) {
+            const res = await this.commentRepo.find({
+                where: { id: id },
+                relations: {
+                    childComments: true,
+                },
+            });
+            if (res) {
+                return res;
+            }
+            else {
+                throw new common_1.NotFoundException({
+                    status: common_1.HttpStatus.NOT_FOUND,
+                    message: 'There is something wrong',
+                });
+            }
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'There is something wrong',
+            });
+        }
+    }
+    async addReplyComment(id, data, email) {
+        const student = await this.studentRepo.findOneBy({ email: email });
+        if (student) {
+            data.student = student.id;
+            data.parentComment = id;
+            const res = await this.commentRepo.save(data);
+            if (res) {
+                return res;
+            }
+            else {
+                throw new common_1.InternalServerErrorException({
+                    status: common_1.HttpStatus.INTERNAL_SERVER_ERROR,
+                    message: 'There is something wrong',
+                });
+            }
+        }
+    }
+    async deleteComment(id, email) {
+        const res = await this.studentRepo.findOneBy({ email: email });
+        if (res) {
+            const com = await this.commentRepo.delete(id);
+            return com;
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'There is something wrong',
+            });
+        }
+    }
+    async getPostComment(id, email) {
+        const std = await this.studentRepo.findOneBy({ email: email });
+        if (std) {
+            const res = await this.postRepo.find({
+                where: { id: id },
+                relations: {
+                    comments: { childComments: true },
+                },
+            });
+            if (res) {
+                return res;
+            }
+            else {
+                throw new common_1.NotFoundException({
+                    status: common_1.HttpStatus.NOT_FOUND,
+                    message: 'There is something wrong',
+                });
+            }
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'There is something wrong',
+            });
+        }
+    }
+    constructor(studentRepo, postRepo, commentRepo, hrRepo, reportRepo) {
+        this.studentRepo = studentRepo;
+        this.postRepo = postRepo;
+        this.commentRepo = commentRepo;
+        this.hrRepo = hrRepo;
+        this.reportRepo = reportRepo;
+    }
+    async addComment(id, data, email) {
+        const student = await this.studentRepo.findOneBy({ email: email });
+        if (student) {
+            data.student = student.id;
+            data.post = id;
+            const res = await this.commentRepo.save(data);
+            if (res) {
+                return res;
+            }
+            else {
+                throw new common_1.InternalServerErrorException({
+                    status: common_1.HttpStatus.INTERNAL_SERVER_ERROR,
+                    message: 'There is something wrong',
+                });
+            }
+        }
+    }
     async getDetailsPost(id, email) {
         const std = await this.studentRepo.findOneBy({ email: email });
         if (std) {
@@ -52,10 +199,6 @@ let StudentService = exports.StudentService = class StudentService {
                 message: 'There is something wrong',
             });
         }
-    }
-    constructor(studentRepo, postRepo) {
-        this.studentRepo = studentRepo;
-        this.postRepo = postRepo;
     }
     async deletePostByStudentId(id, email) {
         const stud = await this.studentRepo.findOneBy({ email: email });
@@ -100,9 +243,6 @@ let StudentService = exports.StudentService = class StudentService {
                 message: 'Not found the post',
             });
         }
-    }
-    myPost(id) {
-        return '';
     }
     forgetpassword(id, student) {
         return '';
@@ -222,7 +362,13 @@ exports.StudentService = StudentService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(student_entity_1.Student)),
     __param(1, (0, typeorm_1.InjectRepository)(post_entity_1.Post)),
+    __param(2, (0, typeorm_1.InjectRepository)(comment_entity_1.Comment)),
+    __param(3, (0, typeorm_1.InjectRepository)(hiring_entity_1.Hr)),
+    __param(4, (0, typeorm_1.InjectRepository)(report_entity_1.Report)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository])
 ], StudentService);
 //# sourceMappingURL=student.service.js.map

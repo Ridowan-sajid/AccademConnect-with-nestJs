@@ -23,6 +23,8 @@ const post_dto_1 = require("../Post/dto/post.dto");
 const updateStudent_dto_1 = require("./dto/updateStudent.dto");
 const updatePost_dto_1 = require("../Post/dto/updatePost.dto");
 const session_guard_1 = require("../Guards/session.guard");
+const comment_dto_1 = require("../Comment/dto/comment.dto");
+const report_dto_1 = require("../Report/dto/report.dto");
 let StudentController = exports.StudentController = class StudentController {
     constructor(studentService) {
         this.studentService = studentService;
@@ -92,6 +94,30 @@ let StudentController = exports.StudentController = class StudentController {
     }
     async getting(res, session) {
         await this.studentService.getImages(res, session.email);
+    }
+    addComment(id, data, session) {
+        data.createdDate = new Date();
+        return this.studentService.addComment(id, data, session.email);
+    }
+    getPostComment(id, session) {
+        return this.studentService.getPostComment(id, session.email);
+    }
+    deleteComment(id, session) {
+        return this.studentService.deleteComment(id, session.email);
+    }
+    addReplyComment(id, data, session) {
+        data.createdDate = new Date();
+        return this.studentService.addReplyComment(id, data, session.email);
+    }
+    getReplyComment(id, session) {
+        return this.studentService.getReplyComment(id, session.email);
+    }
+    createNetwork(id, session) {
+        return this.studentService.createNetwork(id, session.email);
+    }
+    addReport(data, session) {
+        data.createdDate = new Date();
+        return this.studentService.addReport(data, session.email);
     }
 };
 __decorate([
@@ -238,6 +264,71 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], StudentController.prototype, "getting", null);
+__decorate([
+    (0, common_1.Post)('/comment/:id'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Session)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, comment_dto_1.CommentDto, Object]),
+    __metadata("design:returntype", void 0)
+], StudentController.prototype, "addComment", null);
+__decorate([
+    (0, common_1.Get)('/postComment/:id'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Session)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", Object)
+], StudentController.prototype, "getPostComment", null);
+__decorate([
+    (0, common_1.Delete)('/comment/:id'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Session)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", Object)
+], StudentController.prototype, "deleteComment", null);
+__decorate([
+    (0, common_1.Post)('/replycomment/:id'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Session)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, comment_dto_1.CommentDto, Object]),
+    __metadata("design:returntype", void 0)
+], StudentController.prototype, "addReplyComment", null);
+__decorate([
+    (0, common_1.Get)('/replycomment/:id'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Session)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", Object)
+], StudentController.prototype, "getReplyComment", null);
+__decorate([
+    (0, common_1.Post)('/createNetwork/:id'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Session)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", void 0)
+], StudentController.prototype, "createNetwork", null);
+__decorate([
+    (0, common_1.Post)('/report'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Session)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [report_dto_1.ReportDto, Object]),
+    __metadata("design:returntype", void 0)
+], StudentController.prototype, "addReport", null);
 exports.StudentController = StudentController = __decorate([
     (0, common_1.Controller)('student'),
     __metadata("design:paramtypes", [student_service_1.StudentService])

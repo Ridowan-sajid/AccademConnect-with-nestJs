@@ -22,42 +22,50 @@ const multer_1 = require("multer");
 const updateModerator_dto_1 = require("./dto/updateModerator.dto");
 const Student_dto_1 = require("../Student/dto/Student.dto");
 const updateStudent_dto_1 = require("../Student/dto/updateStudent.dto");
+const session_guard_1 = require("../Guards/session.guard");
 let ModeratorController = exports.ModeratorController = class ModeratorController {
     constructor(moderatorService) {
         this.moderatorService = moderatorService;
     }
     addModerator(moderator, myfileobj) {
         moderator.profileImg = myfileobj.filename;
+        moderator.createdDate = new Date();
+        moderator.updatedDate = new Date();
+        moderator.status = 'inactive';
         return this.moderatorService.addModerator(moderator);
     }
-    loginModerator(moderator, session) {
-        console.log(moderator);
-        session.email = moderator.email;
-        return this.moderatorService.loginModerator(moderator);
+    async loginModerator(moderator, session) {
+        const res = this.moderatorService.loginModerator(moderator);
+        if ((await res) === true) {
+            session.email = moderator.email;
+            console.log(session.email);
+            return res;
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'Moderator not found',
+            });
+        }
     }
-    myProfile(id) {
-        return this.moderatorService.myProfile(id);
+    myProfile(session) {
+        return this.moderatorService.myProfile(session.email);
     }
-    updateProfile(id, moderator) {
-        return this.moderatorService.editProfile(id, moderator);
+    updateProfile(data, session) {
+        data.updatedDate = new Date();
+        return this.moderatorService.editProfile(data, session.email);
     }
-    deleteProfile(id) {
-        return this.moderatorService.deleteProfile(id);
+    deleteProfile(session) {
+        return this.moderatorService.deleteProfile(session.email);
     }
     getDashboard() {
         return this.moderatorService.getDashboard();
     }
-    changePassword(id, moderator) {
-        return this.moderatorService.passwordChange(id, moderator);
+    changePassword(changedPass, session) {
+        return this.moderatorService.passwordChange(changedPass, session.email);
     }
     forgetPassword(id, moderator) {
         return this.moderatorService.forgetPassword(id, moderator);
-    }
-    deletStudent(id) {
-        return this.moderatorService.deleteStudent(id);
-    }
-    deletHr(id) {
-        return this.moderatorService.deleteHr(id);
     }
     addStudent(student, myfileobj, session) {
         student.profileImg = myfileobj.filename;
@@ -72,6 +80,45 @@ let ModeratorController = exports.ModeratorController = class ModeratorControlle
     updateStudentByModeratorId(id, student, session) {
         return this.moderatorService.updateStudentByModeratorId(id, student, session.email);
     }
+    deletePost(id, session) {
+        console.log(id);
+        return this.moderatorService.deletePost(id, session.email);
+    }
+    reportHandling(id, session) {
+        return this.moderatorService.reportHandling(id, session.email);
+    }
+    allpost(session) {
+        return this.moderatorService.allPost(session.email);
+    }
+    allpostComment(id, session) {
+        return this.moderatorService.allPostComment(id, session.email);
+    }
+    deleteComment(id, session) {
+        return this.moderatorService.deleteComment(id, session.email);
+    }
+    allReport(session) {
+        return this.moderatorService.allReport(session.email);
+    }
+    moderatorLogout(session) {
+        if (session.destroy()) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    getStudentPost(id, session) {
+        return this.moderatorService.getStudentPost(id, session.email);
+    }
+    gethrJobs(id, session) {
+        return this.moderatorService.getHrJobs(id, session.email);
+    }
+    getStudentComment(id, session) {
+        return this.moderatorService.getStudentComment(id, session.email);
+    }
+    gethrComment(id, session) {
+        return this.moderatorService.getHrComment(id, session.email);
+    }
 };
 __decorate([
     (0, common_1.Post)('/Register'),
@@ -85,7 +132,7 @@ __decorate([
         },
         limits: { fileSize: 2000000 },
         storage: (0, multer_1.diskStorage)({
-            destination: './uploads',
+            destination: './uploads/moderator',
             filename: function (req, file, cb) {
                 cb(null, Date.now() + file.originalname);
             },
@@ -95,7 +142,7 @@ __decorate([
     __param(1, (0, common_1.UploadedFile)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Moderator_dto_1.ModeratorDto, Object]),
-    __metadata("design:returntype", Moderator_dto_1.ModeratorDto)
+    __metadata("design:returntype", Object)
 ], ModeratorController.prototype, "addModerator", null);
 __decorate([
     (0, common_1.Post)('/login'),
@@ -103,27 +150,32 @@ __decorate([
     __param(1, (0, common_1.Session)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Moderator_dto_2.ModeratorLoginDto, Object]),
-    __metadata("design:returntype", Object)
+    __metadata("design:returntype", Promise)
 ], ModeratorController.prototype, "loginModerator", null);
 __decorate([
-    (0, common_1.Get)('/myprofile/:id'),
+    (0, common_1.Get)('/myprofile'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Session)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", Moderator_dto_1.ModeratorDto)
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Object)
 ], ModeratorController.prototype, "myProfile", null);
 __decorate([
-    (0, common_1.Put)('/updateprofile/:id'),
-    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    (0, common_1.Put)('/updateprofile'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Session)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, updateModerator_dto_1.UpdateModeratorDto]),
-    __metadata("design:returntype", Moderator_dto_1.ModeratorDto)
+    __metadata("design:paramtypes", [updateModerator_dto_1.UpdateModeratorDto, Object]),
+    __metadata("design:returntype", Object)
 ], ModeratorController.prototype, "updateProfile", null);
 __decorate([
-    (0, common_1.Delete)('/deleteProfile/:id'),
-    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    (0, common_1.Delete)('/deleteProfile'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Session)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", Moderator_dto_1.ModeratorDto)
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Object)
 ], ModeratorController.prototype, "deleteProfile", null);
 __decorate([
     (0, common_1.Get)('/'),
@@ -132,11 +184,12 @@ __decorate([
     __metadata("design:returntype", Object)
 ], ModeratorController.prototype, "getDashboard", null);
 __decorate([
-    (0, common_1.Patch)('/changePassword/:id'),
-    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
-    __param(1, (0, common_1.Body)()),
+    (0, common_1.Post)('/changePassword'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Session)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Moderator_dto_1.PasswordChangeModeratorDto]),
+    __metadata("design:paramtypes", [Moderator_dto_1.PasswordChangeModeratorDto, Object]),
     __metadata("design:returntype", Object)
 ], ModeratorController.prototype, "changePassword", null);
 __decorate([
@@ -147,20 +200,6 @@ __decorate([
     __metadata("design:paramtypes", [Number, Moderator_dto_1.ForgetPassModeratorDto]),
     __metadata("design:returntype", Object)
 ], ModeratorController.prototype, "forgetPassword", null);
-__decorate([
-    (0, common_1.Delete)('/deletestudent/:id'),
-    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", void 0)
-], ModeratorController.prototype, "deletStudent", null);
-__decorate([
-    (0, common_1.Delete)('/deleteHr/:id'),
-    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", void 0)
-], ModeratorController.prototype, "deletHr", null);
 __decorate([
     (0, common_1.Post)('/RegisterStudent'),
     (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('myfile', {
@@ -211,6 +250,102 @@ __decorate([
     __metadata("design:paramtypes", [Number, updateStudent_dto_1.UpdateStudentDto, Object]),
     __metadata("design:returntype", Object)
 ], ModeratorController.prototype, "updateStudentByModeratorId", null);
+__decorate([
+    (0, common_1.Delete)('/post/:id'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Session)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", Object)
+], ModeratorController.prototype, "deletePost", null);
+__decorate([
+    (0, common_1.Put)('/report/:id'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Session)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", Object)
+], ModeratorController.prototype, "reportHandling", null);
+__decorate([
+    (0, common_1.Get)('/post'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Session)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Object)
+], ModeratorController.prototype, "allpost", null);
+__decorate([
+    (0, common_1.Get)('/postComment/:id'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Session)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", Object)
+], ModeratorController.prototype, "allpostComment", null);
+__decorate([
+    (0, common_1.Delete)('/comment/:id'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Session)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", Object)
+], ModeratorController.prototype, "deleteComment", null);
+__decorate([
+    (0, common_1.Get)('/report'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Session)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Object)
+], ModeratorController.prototype, "allReport", null);
+__decorate([
+    (0, common_1.Get)('/logout'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Session)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Object)
+], ModeratorController.prototype, "moderatorLogout", null);
+__decorate([
+    (0, common_1.Get)('/studentPosts/:id'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Session)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", Object)
+], ModeratorController.prototype, "getStudentPost", null);
+__decorate([
+    (0, common_1.Get)('/hrJobs/:id'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Session)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", Object)
+], ModeratorController.prototype, "gethrJobs", null);
+__decorate([
+    (0, common_1.Get)('/studentComment/:id'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Session)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", Object)
+], ModeratorController.prototype, "getStudentComment", null);
+__decorate([
+    (0, common_1.Get)('/hrComments/:id'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Session)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", Object)
+], ModeratorController.prototype, "gethrComment", null);
 exports.ModeratorController = ModeratorController = __decorate([
     (0, common_1.Controller)('moderator'),
     __metadata("design:paramtypes", [moderator_service_1.ModeratorService])

@@ -20,5 +20,5 @@ export declare class Hr {
     comments: Comment[];
     reports: Report[];
     letters: Offer[];
-    connection: Student[];
+    connectionH: Student[];
 }

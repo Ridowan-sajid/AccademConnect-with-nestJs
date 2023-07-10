@@ -18,6 +18,7 @@ const offer_entity_1 = require("./offer.entity");
 const post_entity_1 = require("./post.entity");
 const report_entity_1 = require("./report.entity");
 const student_entity_1 = require("./student.entity");
+const moderatorProfile_dto_1 = require("./moderatorProfile.dto");
 let DbModule = exports.DbModule = class DbModule {
 };
 exports.DbModule = DbModule = __decorate([
@@ -33,6 +34,7 @@ exports.DbModule = DbModule = __decorate([
                 post_entity_1.Post,
                 report_entity_1.Report,
                 student_entity_1.Student,
+                moderatorProfile_dto_1.ModeratorProfile,
             ]),
         ],
         controllers: [],

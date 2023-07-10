@@ -23,12 +23,12 @@ export class Post {
   updatedDate: Date;
 
   //
-  @ManyToOne(() => Student, (student) => student.posts, { nullable: false })
+  @ManyToOne(() => Student, (student) => student.posts, { onDelete: 'CASCADE' })
   student: number;
 
-  @OneToMany(() => Comment, (comment) => comment.post)
+  @OneToMany(() => Comment, (comment) => comment.post, { cascade: true })
   comments: Comment[];
 
-  @OneToMany(() => Report, (report) => report.post)
-  reports: Report[];
+  // @OneToMany(() => Report, (report) => report.post)
+  // reports: Report[];
 }

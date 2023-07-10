@@ -22,11 +22,11 @@ export class Report {
   @ManyToOne(() => Student, (student) => student.reports)
   student: number;
   //
-  @ManyToOne(() => Post, (post) => post.reports)
-  post: number;
+  // @ManyToOne(() => Post, (post) => post.reports)
+  // post: number;
   //
-  @ManyToOne(() => Job, (job) => job.reports)
-  job: number;
+  // @ManyToOne(() => Job, (job) => job.reports)
+  // job: number;
   //
   @ManyToOne(() => Moderator, (moderator) => moderator.handledReports)
   handledBy: number;

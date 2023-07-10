@@ -21,9 +21,161 @@ import { UpdatePostDto } from 'src/Post/dto/updatePost.dto';
 import * as bcrypt from 'bcrypt';
 import e from 'express';
 import { log } from 'console';
+import { CommentDto } from 'src/Comment/dto/comment.dto';
+import { Comment } from 'src/Db/comment.entity';
+import { connect } from 'http2';
+import { Hr } from 'src/Db/hiring.entity';
+import { ReportDto } from 'src/Report/dto/report.dto';
+import { Report } from 'src/Db/report.entity';
 
 @Injectable()
 export class StudentService {
+  async addReport(data: ReportDto, email: string) {
+    const student = await this.studentRepo.findOneBy({ email: email });
+    if (student) {
+      data.student = student.id;
+
+      const res = await this.reportRepo.save(data);
+
+      if (res) {
+        return res;
+      } else {
+        throw new InternalServerErrorException({
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: 'There is something wrong',
+        });
+      }
+    } else {
+      throw new InternalServerErrorException({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'There is something wrong',
+      });
+    }
+  }
+  async createNetwork(id: number, email: string) {
+    const std = await this.studentRepo.findOneBy({ email: email });
+
+    if (std) {
+      const hr = await this.hrRepo.findOneBy({ id: id });
+      console.log(std.connectionS);
+
+      std.connectionS.push(hr); // = [...std.connectionS, hr];
+      await this.studentRepo.save(std);
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'There is something wrong',
+      });
+    }
+  }
+  async getReplyComment(id: number, email: string): Promise<any> {
+    const std = await this.studentRepo.findOneBy({ email: email });
+    console.log(std);
+    if (std) {
+      const res = await this.commentRepo.find({
+        where: { id: id },
+        relations: {
+          childComments: true,
+        },
+      });
+
+      if (res) {
+        return res;
+      } else {
+        throw new NotFoundException({
+          status: HttpStatus.NOT_FOUND,
+          message: 'There is something wrong',
+        });
+      }
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'There is something wrong',
+      });
+    }
+  }
+  async addReplyComment(
+    id: number,
+    data: CommentDto,
+    email: string,
+  ): Promise<any> {
+    const student = await this.studentRepo.findOneBy({ email: email });
+    if (student) {
+      data.student = student.id;
+      data.parentComment = id;
+      const res = await this.commentRepo.save(data);
+
+      if (res) {
+        return res;
+      } else {
+        throw new InternalServerErrorException({
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: 'There is something wrong',
+        });
+      }
+    }
+  }
+  async deleteComment(id: number, email: string): Promise<any> {
+    const res = await this.studentRepo.findOneBy({ email: email });
+    if (res) {
+      const com = await this.commentRepo.delete(id);
+      return com;
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'There is something wrong',
+      });
+    }
+  }
+  async getPostComment(id: number, email: string): Promise<any> {
+    const std = await this.studentRepo.findOneBy({ email: email });
+    if (std) {
+      const res = await this.postRepo.find({
+        where: { id: id },
+        relations: {
+          comments: { childComments: true },
+        },
+      });
+      if (res) {
+        return res;
+      } else {
+        throw new NotFoundException({
+          status: HttpStatus.NOT_FOUND,
+          message: 'There is something wrong',
+        });
+      }
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'There is something wrong',
+      });
+    }
+  }
+  constructor(
+    @InjectRepository(Student) private studentRepo: Repository<Student>,
+    @InjectRepository(Post) private postRepo: Repository<Post>,
+    @InjectRepository(Comment) private commentRepo: Repository<Comment>,
+    @InjectRepository(Hr) private hrRepo: Repository<Hr>,
+    @InjectRepository(Report) private reportRepo: Repository<Report>,
+  ) {}
+
+  async addComment(id: number, data: CommentDto, email: string): Promise<any> {
+    const student = await this.studentRepo.findOneBy({ email: email });
+    if (student) {
+      data.student = student.id;
+      data.post = id;
+      const res = await this.commentRepo.save(data);
+
+      if (res) {
+        return res;
+      } else {
+        throw new InternalServerErrorException({
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: 'There is something wrong',
+        });
+      }
+    }
+  }
   async getDetailsPost(id: number, email: any): Promise<any> {
     const std = await this.studentRepo.findOneBy({ email: email });
 
@@ -56,10 +208,6 @@ export class StudentService {
       });
     }
   }
-  constructor(
-    @InjectRepository(Student) private studentRepo: Repository<Student>,
-    @InjectRepository(Post) private postRepo: Repository<Post>,
-  ) {}
 
   async deletePostByStudentId(id: number, email: string): Promise<any> {
     const stud = await this.studentRepo.findOneBy({ email: email });
@@ -115,9 +263,6 @@ export class StudentService {
     }
   }
 
-  myPost(id: number) {
-    return '';
-  }
   forgetpassword(id: number, student: ForgetPassStudentDto): any {
     return '';
   }
