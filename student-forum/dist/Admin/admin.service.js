@@ -21,12 +21,14 @@ const admin_entity_1 = require("../Db/admin.entity");
 const bcrypt = require("bcrypt");
 const student_entity_1 = require("../Db/student.entity");
 const hiring_entity_1 = require("../Db/hiring.entity");
+const adminProfile_entity_1 = require("../Db/adminProfile.entity");
 let AdminService = exports.AdminService = class AdminService {
-    constructor(adminRepo, moderatorRepo, studentRepo, hrRepo) {
+    constructor(adminRepo, moderatorRepo, studentRepo, hrRepo, adminProfileRepo) {
         this.adminRepo = adminRepo;
         this.moderatorRepo = moderatorRepo;
         this.studentRepo = studentRepo;
         this.hrRepo = hrRepo;
+        this.adminProfileRepo = adminProfileRepo;
     }
     async changePassword(changedPass, email) {
         const admin = await this.adminRepo.findOneBy({
@@ -65,7 +67,7 @@ let AdminService = exports.AdminService = class AdminService {
         }
     }
     async adminProfile(email) {
-        const admin = await this.adminRepo.findOneBy({ email: email });
+        const admin = await this.adminProfileRepo.findOneBy({ email: email });
         if (admin) {
             return admin;
         }
@@ -387,7 +389,8 @@ let AdminService = exports.AdminService = class AdminService {
     }
     async updateAdmin(email, admin) {
         const res = await this.adminRepo.update({ email: email }, admin);
-        if (res) {
+        const res2 = await this.adminProfileRepo.update({ email: email }, admin);
+        if (res && res2) {
             return res;
         }
         else {
@@ -492,7 +495,9 @@ exports.AdminService = AdminService = __decorate([
     __param(1, (0, typeorm_1.InjectRepository)(moderator_entity_1.Moderator)),
     __param(2, (0, typeorm_1.InjectRepository)(student_entity_1.Student)),
     __param(3, (0, typeorm_1.InjectRepository)(hiring_entity_1.Hr)),
+    __param(4, (0, typeorm_1.InjectRepository)(adminProfile_entity_1.AdminProfile)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository])

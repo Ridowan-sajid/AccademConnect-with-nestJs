@@ -13,12 +13,14 @@ import { Admin } from 'src/Db/admin.entity';
 import { Student } from 'src/Db/student.entity';
 import { Hr } from 'src/Db/hiring.entity';
 import { PasswordChangeAdminDto } from './dto/changePassAdmin.dto';
+import { AdminProfile } from 'src/Db/adminProfile.entity';
 export declare class AdminService {
     private adminRepo;
     private moderatorRepo;
     private studentRepo;
     private hrRepo;
-    constructor(adminRepo: Repository<Admin>, moderatorRepo: Repository<Moderator>, studentRepo: Repository<Student>, hrRepo: Repository<Hr>);
+    private adminProfileRepo;
+    constructor(adminRepo: Repository<Admin>, moderatorRepo: Repository<Moderator>, studentRepo: Repository<Student>, hrRepo: Repository<Hr>, adminProfileRepo: Repository<AdminProfile>);
     changePassword(changedPass: PasswordChangeAdminDto, email: string): Promise<any>;
     getStudentByAdminId(email: string): Promise<Admin[]>;
     adminProfile(email: string): Promise<any>;

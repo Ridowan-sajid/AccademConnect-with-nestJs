@@ -7,8 +7,8 @@ export class OfferDTO {
   letter: string;
   @IsDate()
   createdDate: Date;
-  studentId: number;
+  student: number;
   @IsNotEmpty()
-  jobId: number;
-  hrId: string;
+  job: number;
+  hr: number;
 }

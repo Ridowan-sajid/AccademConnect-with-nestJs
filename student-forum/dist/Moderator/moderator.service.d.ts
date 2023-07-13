@@ -43,4 +43,5 @@ export declare class ModeratorService {
     myProfile(email: string): Promise<ModeratorProfile>;
     loginModerator(moderator: ModeratorLoginDto): Promise<any>;
     addModerator(moderator: ModeratorDto): Promise<any>;
+    getImages(res: any, email: string): Promise<void>;
 }

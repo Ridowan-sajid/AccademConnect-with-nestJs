@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  JoinTable,
   ManyToMany,
   ManyToOne,
   OneToMany,
@@ -13,6 +14,7 @@ import { Student } from './student.entity';
 import { Comment } from './comment.entity';
 import { Report } from './report.entity';
 import { Offer } from './offer.entity';
+import { StudentHr } from './student_hr.entity';
 
 @Entity('Hr')
 export class Hr {
@@ -53,9 +55,12 @@ export class Hr {
   @OneToMany(() => Report, (report) => report.hr)
   reports: Report[];
 
-  @OneToMany(() => Offer, (offer) => offer.hrId)
+  @OneToMany(() => Offer, (offer) => offer.hr)
   letters: Offer[];
 
-  @ManyToMany(() => Student, (student) => student.connectionS)
-  connectionH: Student[];
+  // @ManyToMany(() => Student, (student) => student.connectionS)
+  // connectionH: Student[];
+
+  @OneToMany(() => StudentHr, (sh) => sh.student)
+  sthr: Hr[];
 }

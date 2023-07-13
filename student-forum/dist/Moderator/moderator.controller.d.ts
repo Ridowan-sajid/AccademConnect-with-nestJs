@@ -31,4 +31,5 @@ export declare class ModeratorController {
     gethrJobs(id: number, session: any): any;
     getStudentComment(id: number, session: any): any;
     gethrComment(id: number, session: any): any;
+    getting(res: any, session: any): Promise<any>;
 }

@@ -1,7 +1,14 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Moderator } from './moderator.entity';
 import { Student } from './student.entity';
 import { Hr } from './hiring.entity';
+import { AdminProfile } from './adminProfile.entity';
 
 @Entity('admin')
 export class Admin {
@@ -31,4 +38,11 @@ export class Admin {
   students: Student[];
   @OneToMany(() => Hr, (hr) => hr.createdByAdmin)
   hrs: Hr[];
+
+  @OneToOne(
+    () => AdminProfile,
+    (adminProfile) => adminProfile.admin,
+    // { cascade: true },
+  )
+  adminProfile: AdminProfile;
 }

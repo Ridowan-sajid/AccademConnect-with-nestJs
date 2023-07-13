@@ -29,5 +29,5 @@ __decorate([
 __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Number)
-], OfferDTO.prototype, "jobId", void 0);
+], OfferDTO.prototype, "job", void 0);
 //# sourceMappingURL=offer.dto.js.map

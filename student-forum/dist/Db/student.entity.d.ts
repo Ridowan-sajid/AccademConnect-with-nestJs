@@ -1,5 +1,4 @@
 import { Post } from './post.entity';
-import { Hr } from './hiring.entity';
 import { Comment } from './comment.entity';
 import { Offer } from './offer.entity';
 import { Report } from './report.entity';
@@ -14,11 +13,12 @@ export declare class Student {
     updatedDate: Date;
     profileImg: string;
     password: string;
+    job: number;
     createdByModerator: number;
     createdByAdmin: number;
     posts: Post[];
     comments: Comment[];
     letters: Offer[];
     reports: Report[];
-    connectionS: Hr[];
+    sthr: Student[];
 }

@@ -119,6 +119,15 @@ let StudentController = exports.StudentController = class StudentController {
         data.createdDate = new Date();
         return this.studentService.addReport(data, session.email);
     }
+    addApply(id, session) {
+        return this.studentService.addApply(id, session.email);
+    }
+    getNetwork(session) {
+        return this.studentService.getNetwork(session.email);
+    }
+    deleteStudent(session) {
+        return this.studentService.deleteStudent(session.email);
+    }
 };
 __decorate([
     (0, common_1.Post)('/Register'),
@@ -329,6 +338,31 @@ __decorate([
     __metadata("design:paramtypes", [report_dto_1.ReportDto, Object]),
     __metadata("design:returntype", void 0)
 ], StudentController.prototype, "addReport", null);
+__decorate([
+    (0, common_1.Put)('/apply/:id'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Session)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", void 0)
+], StudentController.prototype, "addApply", null);
+__decorate([
+    (0, common_1.Get)('/network'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Session)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Object)
+], StudentController.prototype, "getNetwork", null);
+__decorate([
+    (0, common_1.Delete)('/delete'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Session)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Object)
+], StudentController.prototype, "deleteStudent", null);
 exports.StudentController = StudentController = __decorate([
     (0, common_1.Controller)('student'),
     __metadata("design:paramtypes", [student_service_1.StudentService])

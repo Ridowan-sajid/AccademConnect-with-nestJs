@@ -47,8 +47,6 @@ let AdminController = exports.AdminController = class AdminController {
         }
     }
     updateAdmin(admin, session, myfileobj) {
-        admin.updatedDate = new Date();
-        console.log(session.email);
         return this.adminService.updateAdmin(session.email, admin);
     }
     addStudent(student, myfileobj, session) {

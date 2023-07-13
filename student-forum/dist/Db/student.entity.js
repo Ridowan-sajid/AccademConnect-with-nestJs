@@ -14,10 +14,11 @@ const typeorm_1 = require("typeorm");
 const moderator_entity_1 = require("./moderator.entity");
 const post_entity_1 = require("./post.entity");
 const admin_entity_1 = require("./admin.entity");
-const hiring_entity_1 = require("./hiring.entity");
 const comment_entity_1 = require("./comment.entity");
 const offer_entity_1 = require("./offer.entity");
 const report_entity_1 = require("./report.entity");
+const job_entity_1 = require("./job.entity");
+const student_hr_entity_1 = require("./student_hr.entity");
 let Student = exports.Student = class Student {
 };
 __decorate([
@@ -61,6 +62,10 @@ __decorate([
     __metadata("design:type", String)
 ], Student.prototype, "password", void 0);
 __decorate([
+    (0, typeorm_1.ManyToOne)(() => job_entity_1.Job, (job) => job.students),
+    __metadata("design:type", Number)
+], Student.prototype, "job", void 0);
+__decorate([
     (0, typeorm_1.ManyToOne)(() => moderator_entity_1.Moderator, (moderator) => moderator.students),
     __metadata("design:type", Number)
 ], Student.prototype, "createdByModerator", void 0);
@@ -77,7 +82,7 @@ __decorate([
     __metadata("design:type", Array)
 ], Student.prototype, "comments", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => offer_entity_1.Offer, (offer) => offer.studentId),
+    (0, typeorm_1.OneToMany)(() => offer_entity_1.Offer, (offer) => offer.student),
     __metadata("design:type", Array)
 ], Student.prototype, "letters", void 0);
 __decorate([
@@ -85,10 +90,9 @@ __decorate([
     __metadata("design:type", Array)
 ], Student.prototype, "reports", void 0);
 __decorate([
-    (0, typeorm_1.ManyToMany)(() => hiring_entity_1.Hr, (hr) => hr.connectionH),
-    (0, typeorm_1.JoinTable)(),
+    (0, typeorm_1.OneToMany)(() => student_hr_entity_1.StudentHr, (sh) => sh.student),
     __metadata("design:type", Array)
-], Student.prototype, "connectionS", void 0);
+], Student.prototype, "sthr", void 0);
 exports.Student = Student = __decorate([
     (0, typeorm_1.Entity)('Student')
 ], Student);

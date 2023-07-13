@@ -14,10 +14,10 @@ const typeorm_1 = require("typeorm");
 const job_entity_1 = require("./job.entity");
 const moderator_entity_1 = require("./moderator.entity");
 const admin_entity_1 = require("./admin.entity");
-const student_entity_1 = require("./student.entity");
 const comment_entity_1 = require("./comment.entity");
 const report_entity_1 = require("./report.entity");
 const offer_entity_1 = require("./offer.entity");
+const student_hr_entity_1 = require("./student_hr.entity");
 let Hr = exports.Hr = class Hr {
 };
 __decorate([
@@ -81,13 +81,13 @@ __decorate([
     __metadata("design:type", Array)
 ], Hr.prototype, "reports", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => offer_entity_1.Offer, (offer) => offer.hrId),
+    (0, typeorm_1.OneToMany)(() => offer_entity_1.Offer, (offer) => offer.hr),
     __metadata("design:type", Array)
 ], Hr.prototype, "letters", void 0);
 __decorate([
-    (0, typeorm_1.ManyToMany)(() => student_entity_1.Student, (student) => student.connectionS),
+    (0, typeorm_1.OneToMany)(() => student_hr_entity_1.StudentHr, (sh) => sh.student),
     __metadata("design:type", Array)
-], Hr.prototype, "connectionH", void 0);
+], Hr.prototype, "sthr", void 0);
 exports.Hr = Hr = __decorate([
     (0, typeorm_1.Entity)('Hr')
 ], Hr);

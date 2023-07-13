@@ -27,9 +27,53 @@ import { connect } from 'http2';
 import { Hr } from 'src/Db/hiring.entity';
 import { ReportDto } from 'src/Report/dto/report.dto';
 import { Report } from 'src/Db/report.entity';
+import { ApplyDto } from './dto/apply.dto';
+import { StudentHr } from 'src/Db/student_hr.entity';
 
 @Injectable()
 export class StudentService {
+  async deleteStudent(email: string): Promise<any> {
+    const res = await this.studentRepo.delete({ email: email });
+
+    if (res) {
+      return res;
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'There is something wrong',
+      });
+    }
+  }
+  async getNetwork(email: string): Promise<any> {
+    const std = await this.studentRepo.find({
+      where: { email: email },
+      relations: {
+        sthr: true,
+      },
+    });
+
+    if (std) {
+      return std;
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'There is something wrong',
+      });
+    }
+  }
+  async addApply(id: number, email: string) {
+    const std = await this.studentRepo.findOneBy({ email: email });
+
+    if (std) {
+      std.job = id;
+      return await this.studentRepo.update(std.id, std);
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'There is something wrong',
+      });
+    }
+  }
   async addReport(data: ReportDto, email: string) {
     const student = await this.studentRepo.findOneBy({ email: email });
     if (student) {
@@ -57,10 +101,16 @@ export class StudentService {
 
     if (std) {
       const hr = await this.hrRepo.findOneBy({ id: id });
-      console.log(std.connectionS);
 
-      std.connectionS.push(hr); // = [...std.connectionS, hr];
-      await this.studentRepo.save(std);
+      const ex = await this.studentHrRepo.findOneBy({ student: std, hr: hr });
+      if (!ex) {
+        return await this.studentHrRepo.save({ student: std, hr: hr });
+      } else {
+        throw new NotFoundException({
+          status: HttpStatus.NOT_FOUND,
+          message: 'There is something wrong',
+        });
+      }
     } else {
       throw new NotFoundException({
         status: HttpStatus.NOT_FOUND,
@@ -157,6 +207,8 @@ export class StudentService {
     @InjectRepository(Comment) private commentRepo: Repository<Comment>,
     @InjectRepository(Hr) private hrRepo: Repository<Hr>,
     @InjectRepository(Report) private reportRepo: Repository<Report>,
+
+    @InjectRepository(StudentHr) private studentHrRepo: Repository<StudentHr>,
   ) {}
 
   async addComment(id: number, data: CommentDto, email: string): Promise<any> {
@@ -353,6 +405,7 @@ export class StudentService {
       return false;
     }
   }
+
   async addStudent(student: StudentDto): Promise<any> {
     const salt = await bcrypt.genSalt();
     student.password = await bcrypt.hash(student.password, salt);

@@ -13,6 +13,7 @@ exports.Job = void 0;
 const typeorm_1 = require("typeorm");
 const hiring_entity_1 = require("./hiring.entity");
 const offer_entity_1 = require("./offer.entity");
+const student_entity_1 = require("./student.entity");
 let Job = exports.Job = class Job {
 };
 __decorate([
@@ -28,11 +29,23 @@ __decorate([
     __metadata("design:type", String)
 ], Job.prototype, "details", void 0);
 __decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Date)
+], Job.prototype, "createdDate", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Date)
+], Job.prototype, "updatedDate", void 0);
+__decorate([
     (0, typeorm_1.ManyToOne)(() => hiring_entity_1.Hr, (hr) => hr.jobs),
     __metadata("design:type", Number)
 ], Job.prototype, "hr", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => offer_entity_1.Offer, (offer) => offer.jobId),
+    (0, typeorm_1.OneToMany)(() => student_entity_1.Student, (student) => student.job),
+    __metadata("design:type", Array)
+], Job.prototype, "students", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => offer_entity_1.Offer, (offer) => offer.job),
     __metadata("design:type", Array)
 ], Job.prototype, "letters", void 0);
 exports.Job = Job = __decorate([

@@ -14,6 +14,7 @@ const typeorm_1 = require("typeorm");
 const moderator_entity_1 = require("./moderator.entity");
 const student_entity_1 = require("./student.entity");
 const hiring_entity_1 = require("./hiring.entity");
+const adminProfile_entity_1 = require("./adminProfile.entity");
 let Admin = exports.Admin = class Admin {
 };
 __decorate([
@@ -68,6 +69,10 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => hiring_entity_1.Hr, (hr) => hr.createdByAdmin),
     __metadata("design:type", Array)
 ], Admin.prototype, "hrs", void 0);
+__decorate([
+    (0, typeorm_1.OneToOne)(() => adminProfile_entity_1.AdminProfile, (adminProfile) => adminProfile.admin),
+    __metadata("design:type", adminProfile_entity_1.AdminProfile)
+], Admin.prototype, "adminProfile", void 0);
 exports.Admin = Admin = __decorate([
     (0, typeorm_1.Entity)('admin')
 ], Admin);

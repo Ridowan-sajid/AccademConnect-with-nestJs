@@ -3,6 +3,5 @@ export declare class JobDto {
     details: string;
     createdDate: Date;
     updatedDate: Date;
-    type: string;
     hr: number;
 }

@@ -91,8 +91,6 @@ export class AdminController {
     @UploadedFile() myfileobj: Express.Multer.File,
   ): any {
     //admin.profileImg = myfileobj.filename;
-    admin.updatedDate = new Date();
-    console.log(session.email);
 
     return this.adminService.updateAdmin(session.email, admin);
   }

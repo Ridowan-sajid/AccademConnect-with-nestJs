@@ -25,6 +25,7 @@ import * as bcrypt from 'bcrypt';
 import { Student } from 'src/Db/student.entity';
 import { Hr } from 'src/Db/hiring.entity';
 import { PasswordChangeAdminDto } from './dto/changePassAdmin.dto';
+import { AdminProfile } from 'src/Db/adminProfile.entity';
 
 @Injectable()
 export class AdminService {
@@ -36,6 +37,9 @@ export class AdminService {
     private studentRepo: Repository<Student>,
     @InjectRepository(Hr)
     private hrRepo: Repository<Hr>,
+
+    @InjectRepository(AdminProfile)
+    private adminProfileRepo: Repository<AdminProfile>,
   ) {}
 
   async changePassword(
@@ -83,7 +87,7 @@ export class AdminService {
   }
 
   async adminProfile(email: string): Promise<any> {
-    const admin = await this.adminRepo.findOneBy({ email: email });
+    const admin = await this.adminProfileRepo.findOneBy({ email: email });
 
     if (admin) {
       return admin;
@@ -411,7 +415,9 @@ export class AdminService {
   async updateAdmin(email: string, admin: UpdateAdminDTO): Promise<any> {
     const res = await this.adminRepo.update({ email: email }, admin);
 
-    if (res) {
+    const res2 = await this.adminProfileRepo.update({ email: email }, admin);
+
+    if (res && res2) {
       return res;
     } else {
       throw new NotFoundException({

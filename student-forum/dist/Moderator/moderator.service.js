@@ -330,7 +330,25 @@ let ModeratorService = exports.ModeratorService = class ModeratorService {
             });
         }
     }
+    async getImages(res, email) {
+        const admin = await this.moderatorRepo.findOneBy({ email: email });
+        if (admin) {
+            res.sendFile(admin.profileImg, { root: './uploads/moderator' });
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'There is something wrong',
+            });
+        }
+    }
 };
+__decorate([
+    __param(0, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], ModeratorService.prototype, "getImages", null);
 exports.ModeratorService = ModeratorService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(moderator_entity_1.Moderator)),

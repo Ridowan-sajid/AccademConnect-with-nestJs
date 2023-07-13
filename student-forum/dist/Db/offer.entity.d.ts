@@ -3,7 +3,7 @@ export declare class Offer {
     title: string;
     letter: string;
     createdDate: Date;
-    studentId: number;
-    jobId: number;
-    hrId: number;
+    student: number;
+    job: number;
+    hr: number;
 }

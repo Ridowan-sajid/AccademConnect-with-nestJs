@@ -40,14 +40,6 @@ __decorate([
 ], ModeratorProfile.prototype, "gender", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
-    __metadata("design:type", Date)
-], ModeratorProfile.prototype, "createdDate", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", Date)
-], ModeratorProfile.prototype, "updatedDate", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], ModeratorProfile.prototype, "education", void 0);
 __decorate([

@@ -22,7 +22,50 @@ const bcrypt = require("bcrypt");
 const comment_entity_1 = require("../Db/comment.entity");
 const hiring_entity_1 = require("../Db/hiring.entity");
 const report_entity_1 = require("../Db/report.entity");
+const student_hr_entity_1 = require("../Db/student_hr.entity");
 let StudentService = exports.StudentService = class StudentService {
+    async deleteStudent(email) {
+        const res = await this.studentRepo.delete({ email: email });
+        if (res) {
+            return res;
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'There is something wrong',
+            });
+        }
+    }
+    async getNetwork(email) {
+        const std = await this.studentRepo.find({
+            where: { email: email },
+            relations: {
+                sthr: true,
+            },
+        });
+        if (std) {
+            return std;
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'There is something wrong',
+            });
+        }
+    }
+    async addApply(id, email) {
+        const std = await this.studentRepo.findOneBy({ email: email });
+        if (std) {
+            std.job = id;
+            return await this.studentRepo.update(std.id, std);
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'There is something wrong',
+            });
+        }
+    }
     async addReport(data, email) {
         const student = await this.studentRepo.findOneBy({ email: email });
         if (student) {
@@ -49,9 +92,16 @@ let StudentService = exports.StudentService = class StudentService {
         const std = await this.studentRepo.findOneBy({ email: email });
         if (std) {
             const hr = await this.hrRepo.findOneBy({ id: id });
-            console.log(std.connectionS);
-            std.connectionS.push(hr);
-            await this.studentRepo.save(std);
+            const ex = await this.studentHrRepo.findOneBy({ student: std, hr: hr });
+            if (!ex) {
+                return await this.studentHrRepo.save({ student: std, hr: hr });
+            }
+            else {
+                throw new common_1.NotFoundException({
+                    status: common_1.HttpStatus.NOT_FOUND,
+                    message: 'There is something wrong',
+                });
+            }
         }
         else {
             throw new common_1.NotFoundException({
@@ -143,12 +193,13 @@ let StudentService = exports.StudentService = class StudentService {
             });
         }
     }
-    constructor(studentRepo, postRepo, commentRepo, hrRepo, reportRepo) {
+    constructor(studentRepo, postRepo, commentRepo, hrRepo, reportRepo, studentHrRepo) {
         this.studentRepo = studentRepo;
         this.postRepo = postRepo;
         this.commentRepo = commentRepo;
         this.hrRepo = hrRepo;
         this.reportRepo = reportRepo;
+        this.studentHrRepo = studentHrRepo;
     }
     async addComment(id, data, email) {
         const student = await this.studentRepo.findOneBy({ email: email });
@@ -365,7 +416,9 @@ exports.StudentService = StudentService = __decorate([
     __param(2, (0, typeorm_1.InjectRepository)(comment_entity_1.Comment)),
     __param(3, (0, typeorm_1.InjectRepository)(hiring_entity_1.Hr)),
     __param(4, (0, typeorm_1.InjectRepository)(report_entity_1.Report)),
+    __param(5, (0, typeorm_1.InjectRepository)(student_hr_entity_1.StudentHr)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,

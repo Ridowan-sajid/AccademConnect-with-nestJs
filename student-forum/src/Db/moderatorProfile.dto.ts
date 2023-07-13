@@ -23,10 +23,7 @@ export class ModeratorProfile {
   email: string;
   @Column()
   gender: string;
-  @Column()
-  createdDate: Date;
-  @Column()
-  updatedDate: Date;
+
   @Column()
   education: string;
   @Column()

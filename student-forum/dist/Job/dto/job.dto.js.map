@@ -1,1 +1,1 @@
-{"version":3,"file":"job.dto.js","sourceRoot":"","sources":["../../../src/Job/dto/job.dto.ts"],"names":[],"mappings":";;;AAAA,MAAa,MAAM;CAQlB;AARD,wBAQC"}
+{"version":3,"file":"job.dto.js","sourceRoot":"","sources":["../../../src/Job/dto/job.dto.ts"],"names":[],"mappings":";;;;;;;;;;;;AAAA,qDAAmD;AAEnD,MAAa,MAAM;CAUlB;AAVD,wBAUC;AARC;IADC,IAAA,0BAAQ,GAAE;;qCACG;AAEd;IADC,IAAA,0BAAQ,GAAE;;uCACK;AAEhB;IADC,IAAA,wBAAM,GAAE;8BACI,IAAI;2CAAC;AAElB;IADC,IAAA,wBAAM,GAAE;8BACI,IAAI;2CAAC"}

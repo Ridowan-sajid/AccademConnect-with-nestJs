@@ -35,15 +35,15 @@ __decorate([
 __decorate([
     (0, typeorm_1.ManyToOne)(() => student_entity_1.Student, (student) => student.letters),
     __metadata("design:type", Number)
-], Offer.prototype, "studentId", void 0);
+], Offer.prototype, "student", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => job_entity_1.Job, (job) => job.letters),
     __metadata("design:type", Number)
-], Offer.prototype, "jobId", void 0);
+], Offer.prototype, "job", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => hiring_entity_1.Hr, (hr) => hr.letters),
     __metadata("design:type", Number)
-], Offer.prototype, "hrId", void 0);
+], Offer.prototype, "hr", void 0);
 exports.Offer = Offer = __decorate([
     (0, typeorm_1.Entity)('Offer')
 ], Offer);

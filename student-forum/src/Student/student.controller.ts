@@ -32,6 +32,7 @@ import { Student } from 'src/Db/student.entity';
 import { SessionGuard } from 'src/Guards/session.guard';
 import { CommentDto } from 'src/Comment/dto/comment.dto';
 import { ReportDto } from 'src/Report/dto/report.dto';
+import { ApplyDto } from './dto/apply.dto';
 
 @Controller('student')
 export class StudentController {
@@ -245,5 +246,23 @@ export class StudentController {
   addReport(@Body() data: ReportDto, @Session() session) {
     data.createdDate = new Date();
     return this.studentService.addReport(data, session.email);
+  }
+
+  @Put('/apply/:id')
+  @UseGuards(SessionGuard)
+  addApply(@Param('id', ParseIntPipe) id: number, @Session() session) {
+    return this.studentService.addApply(id, session.email);
+  }
+
+  @Get('/network')
+  @UseGuards(SessionGuard)
+  getNetwork(@Session() session): any {
+    return this.studentService.getNetwork(session.email);
+  }
+
+  @Delete('/delete')
+  @UseGuards(SessionGuard)
+  deleteStudent(@Session() session): any {
+    return this.studentService.deleteStudent(session.email);
   }
 }

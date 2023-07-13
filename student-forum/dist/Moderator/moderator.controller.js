@@ -52,7 +52,6 @@ let ModeratorController = exports.ModeratorController = class ModeratorControlle
         return this.moderatorService.myProfile(session.email);
     }
     updateProfile(data, session) {
-        data.updatedDate = new Date();
         return this.moderatorService.editProfile(data, session.email);
     }
     deleteProfile(session) {
@@ -118,6 +117,9 @@ let ModeratorController = exports.ModeratorController = class ModeratorControlle
     }
     gethrComment(id, session) {
         return this.moderatorService.getHrComment(id, session.email);
+    }
+    async getting(res, session) {
+        await this.moderatorService.getImages(res, session.email);
     }
 };
 __decorate([
@@ -346,6 +348,15 @@ __decorate([
     __metadata("design:paramtypes", [Number, Object]),
     __metadata("design:returntype", Object)
 ], ModeratorController.prototype, "gethrComment", null);
+__decorate([
+    (0, common_1.Get)('/getimage'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Res)()),
+    __param(1, (0, common_1.Session)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], ModeratorController.prototype, "getting", null);
 exports.ModeratorController = ModeratorController = __decorate([
     (0, common_1.Controller)('moderator'),
     __metadata("design:paramtypes", [moderator_service_1.ModeratorService])

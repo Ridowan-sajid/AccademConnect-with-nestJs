@@ -3,6 +3,7 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
+  Res,
 } from '@nestjs/common';
 import {
   ForgetPassModeratorDto,
@@ -364,6 +365,19 @@ export class ModeratorService {
     } else {
       throw new InternalServerErrorException({
         status: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'There is something wrong',
+      });
+    }
+  }
+
+  async getImages(@Res() res, email: string): Promise<void> {
+    const admin = await this.moderatorRepo.findOneBy({ email: email });
+
+    if (admin) {
+      res.sendFile(admin.profileImg, { root: './uploads/moderator' });
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
         message: 'There is something wrong',
       });
     }

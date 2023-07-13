@@ -26,5 +26,4 @@ export class UpdateHrDto {
   gender: string;
   //@IsDate()
   updatedDate: Date;
-  profileImg: string;
 }

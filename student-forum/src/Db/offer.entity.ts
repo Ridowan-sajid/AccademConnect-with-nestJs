@@ -16,9 +16,9 @@ export class Offer {
 
   //
   @ManyToOne(() => Student, (student) => student.letters)
-  studentId: number;
+  student: number;
   @ManyToOne(() => Job, (job) => job.letters)
-  jobId: number;
+  job: number;
   @ManyToOne(() => Hr, (hr) => hr.letters)
-  hrId: number;
+  hr: number;
 }

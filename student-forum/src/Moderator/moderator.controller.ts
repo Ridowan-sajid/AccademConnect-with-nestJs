@@ -10,6 +10,7 @@ import {
   Patch,
   Post,
   Put,
+  Res,
   Session,
   UploadedFile,
   UseGuards,
@@ -97,8 +98,6 @@ export class ModeratorController {
   @Put('/updateprofile')
   @UseGuards(SessionGuard)
   updateProfile(@Body() data: UpdateModeratorDto, @Session() session): any {
-    data.updatedDate = new Date();
-
     return this.moderatorService.editProfile(data, session.email);
   }
 
@@ -288,5 +287,11 @@ export class ModeratorController {
   @UseGuards(SessionGuard)
   gethrComment(@Param('id', ParseIntPipe) id: number, @Session() session): any {
     return this.moderatorService.getHrComment(id, session.email);
+  }
+
+  @Get('/getimage')
+  @UseGuards(SessionGuard)
+  async getting(@Res() res, @Session() session): Promise<any> {
+    await this.moderatorService.getImages(res, session.email);
   }
 }
