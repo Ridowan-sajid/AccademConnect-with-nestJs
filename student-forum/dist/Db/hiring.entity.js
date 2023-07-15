@@ -85,7 +85,7 @@ __decorate([
     __metadata("design:type", Array)
 ], Hr.prototype, "letters", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => student_hr_entity_1.StudentHr, (sh) => sh.student),
+    (0, typeorm_1.OneToMany)(() => student_hr_entity_1.StudentHr, (sh) => sh.hr),
     __metadata("design:type", Array)
 ], Hr.prototype, "sthr", void 0);
 exports.Hr = Hr = __decorate([

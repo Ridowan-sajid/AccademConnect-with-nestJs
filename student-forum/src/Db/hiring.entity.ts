@@ -61,6 +61,6 @@ export class Hr {
   // @ManyToMany(() => Student, (student) => student.connectionS)
   // connectionH: Student[];
 
-  @OneToMany(() => StudentHr, (sh) => sh.student)
-  sthr: Hr[];
+  @OneToMany(() => StudentHr, (sh) => sh.hr)
+  sthr: Student[];
 }

@@ -15,18 +15,20 @@ import {
   UploadedFile,
   UseGuards,
   UseInterceptors,
+  ValidationPipe,
+  UsePipes,
 } from '@nestjs/common';
 import { StudentService } from './student.service';
-import {
-  ForgetPassStudentDto,
-  PasswordChangeStudentDto,
-  StudentDto,
-} from './dto/Student.dto';
+import { PasswordChangeStudentDto, StudentDto } from './dto/Student.dto';
 import { StudentLoginDto } from './dto/StudentLogin.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MulterError, diskStorage } from 'multer';
 import { PostDto } from '../Post/dto/post.dto';
-import { UpdateStudentDto } from './dto/updateStudent.dto';
+import {
+  ForgetPassStudentDto,
+  PasswordForgetStudentDto,
+  UpdateStudentDto,
+} from './dto/updateStudent.dto';
 import { UpdatePostDto } from 'src/Post/dto/updatePost.dto';
 import { Student } from 'src/Db/student.entity';
 import { SessionGuard } from 'src/Guards/session.guard';
@@ -57,6 +59,7 @@ export class StudentController {
       }),
     }),
   )
+  @UsePipes(new ValidationPipe())
   addStudent(
     @Body()
     student: StudentDto,
@@ -70,6 +73,7 @@ export class StudentController {
   }
 
   @Post('/login')
+  @UsePipes(new ValidationPipe())
   async loginStudent(
     @Body() student: StudentLoginDto,
     @Session() session,
@@ -96,32 +100,20 @@ export class StudentController {
 
   @Put('/updateprofile')
   @UseGuards(SessionGuard)
+  @UsePipes(new ValidationPipe())
   updateProfile(@Body() student: UpdateStudentDto, @Session() session): any {
     student.updatedDate = new Date();
     return this.studentService.editProfile(student, session.email);
   }
 
-  @Delete('/deleteProfile/:id')
-  deleteProfile(@Param('id', ParseIntPipe) id: number): StudentDto {
-    return this.studentService.deleteProfile(id);
-  }
-
   @Patch('/changePassword')
   @UseGuards(SessionGuard)
+  @UsePipes(new ValidationPipe())
   changePassword(
     @Body() student: PasswordChangeStudentDto,
     @Session() session,
   ): any {
     return this.studentService.passwordChange(student, session.email);
-  }
-
-  @Patch('/forgetPassword/:id')
-  @UseGuards(SessionGuard)
-  forgetPassword(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() student: ForgetPassStudentDto,
-  ): StudentDto {
-    return this.studentService.forgetpassword(id, student);
   }
 
   @Get('/allPost')
@@ -132,6 +124,7 @@ export class StudentController {
 
   @Post('/post')
   @UseGuards(SessionGuard)
+  @UsePipes(new ValidationPipe())
   addPost(@Body() data: PostDto, @Session() session) {
     return this.studentService.addPost(data, session.email);
   }
@@ -162,6 +155,7 @@ export class StudentController {
 
   @Put('/Post/:id')
   @UseGuards(SessionGuard)
+  @UsePipes(new ValidationPipe())
   updatePost(
     @Body() data: UpdatePostDto,
     @Param('id', ParseIntPipe) id: number,
@@ -188,6 +182,7 @@ export class StudentController {
 
   @Post('/comment/:id')
   @UseGuards(SessionGuard)
+  @UsePipes(new ValidationPipe())
   addComment(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: CommentDto,
@@ -217,6 +212,7 @@ export class StudentController {
 
   @Post('/replycomment/:id')
   @UseGuards(SessionGuard)
+  @UsePipes(new ValidationPipe())
   addReplyComment(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: CommentDto,
@@ -237,12 +233,14 @@ export class StudentController {
 
   @Post('/createNetwork/:id')
   @UseGuards(SessionGuard)
+  @UsePipes(new ValidationPipe())
   createNetwork(@Param('id', ParseIntPipe) id: number, @Session() session) {
     return this.studentService.createNetwork(id, session.email);
   }
 
   @Post('/report')
   @UseGuards(SessionGuard)
+  @UsePipes(new ValidationPipe())
   addReport(@Body() data: ReportDto, @Session() session) {
     data.createdDate = new Date();
     return this.studentService.addReport(data, session.email);
@@ -250,6 +248,7 @@ export class StudentController {
 
   @Put('/apply/:id')
   @UseGuards(SessionGuard)
+  @UsePipes(new ValidationPipe())
   addApply(@Param('id', ParseIntPipe) id: number, @Session() session) {
     return this.studentService.addApply(id, session.email);
   }
@@ -264,5 +263,23 @@ export class StudentController {
   @UseGuards(SessionGuard)
   deleteStudent(@Session() session): any {
     return this.studentService.deleteStudent(session.email);
+  }
+
+  @Post('/sentmail')
+  @UsePipes(new ValidationPipe())
+  sentMail(@Body() data: PasswordForgetStudentDto): any {
+    return this.studentService.ForgetPassword(data.email);
+  }
+
+  @Patch('/forgetPassword')
+  @UsePipes(new ValidationPipe())
+  forgetPass(@Body() data: ForgetPassStudentDto): any {
+    return this.studentService.newPassword(data);
+  }
+
+  @Get('/myletter')
+  @UseGuards(SessionGuard)
+  getMyLetter(@Session() session): any {
+    return this.studentService.getMyLetter(session.email);
   }
 }

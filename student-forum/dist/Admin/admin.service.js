@@ -22,13 +22,18 @@ const bcrypt = require("bcrypt");
 const student_entity_1 = require("../Db/student.entity");
 const hiring_entity_1 = require("../Db/hiring.entity");
 const adminProfile_entity_1 = require("../Db/adminProfile.entity");
+const mailer_1 = require("@nestjs-modules/mailer");
+const uuid_1 = require("uuid");
+const token_entity_1 = require("../Db/token.entity");
 let AdminService = exports.AdminService = class AdminService {
-    constructor(adminRepo, moderatorRepo, studentRepo, hrRepo, adminProfileRepo) {
+    constructor(adminRepo, moderatorRepo, studentRepo, hrRepo, adminProfileRepo, tokenRepo, mailService) {
         this.adminRepo = adminRepo;
         this.moderatorRepo = moderatorRepo;
         this.studentRepo = studentRepo;
         this.hrRepo = hrRepo;
         this.adminProfileRepo = adminProfileRepo;
+        this.tokenRepo = tokenRepo;
+        this.mailService = mailService;
     }
     async changePassword(changedPass, email) {
         const admin = await this.adminRepo.findOneBy({
@@ -482,6 +487,30 @@ let AdminService = exports.AdminService = class AdminService {
             });
         }
     }
+    async ForgetPassword(email) {
+        const uniqueId = (0, uuid_1.v4)();
+        const admin = await this.adminRepo.findOneBy({ email: email });
+        if (admin) {
+            await this.tokenRepo.save({
+                otp: uniqueId.substring(0, 6),
+                userId: admin.id,
+            });
+            await this.mailService.sendMail({
+                to: email,
+                subject: 'Student Forum',
+                text: `Hello User. Here is your otp: ${uniqueId.substring(0, 6)}`,
+            });
+        }
+    }
+    async newPassword(data) {
+        const matchToken = await this.tokenRepo.findOneBy({ otp: data.otp });
+        if (matchToken) {
+            const admin = await this.adminRepo.findOneBy({ id: matchToken.userId });
+            const salt = await bcrypt.genSalt();
+            admin.password = await bcrypt.hash(data.newPassword, salt);
+            return await this.adminRepo.update(admin.id, admin);
+        }
+    }
 };
 __decorate([
     __param(0, (0, common_1.Res)()),
@@ -496,10 +525,13 @@ exports.AdminService = AdminService = __decorate([
     __param(2, (0, typeorm_1.InjectRepository)(student_entity_1.Student)),
     __param(3, (0, typeorm_1.InjectRepository)(hiring_entity_1.Hr)),
     __param(4, (0, typeorm_1.InjectRepository)(adminProfile_entity_1.AdminProfile)),
+    __param(5, (0, typeorm_1.InjectRepository)(token_entity_1.Token)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
-        typeorm_2.Repository])
+        typeorm_2.Repository,
+        typeorm_2.Repository,
+        mailer_1.MailerService])
 ], AdminService);
 //# sourceMappingURL=admin.service.js.map

@@ -13,7 +13,7 @@ import {
 export class UpdateModeratorDto {
   @IsString()
   @IsNotEmpty()
-  @Matches(/^[A-Z][A-Za-z0-9_]+$/)
+  @Matches(/^[A-Z][A-Za-z ]+$/)
   name: string;
   //@IsNumber()
   age: string;

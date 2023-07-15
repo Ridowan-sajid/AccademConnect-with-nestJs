@@ -1,6 +1,6 @@
 /// <reference types="multer" />
 import { ModeratorService } from './moderator.service';
-import { ForgetPassModeratorDto, ModeratorDto, PasswordChangeModeratorDto } from './dto/Moderator.dto';
+import { ForgetPassModeratorDto, ModeratorDto, PasswordChangeModeratorDto, PasswordForgetModeratorDto } from './dto/Moderator.dto';
 import { ModeratorLoginDto } from './dto/Moderator.dto';
 import { UpdateModeratorDto } from './dto/updateModerator.dto';
 import { StudentDto } from 'src/Student/dto/Student.dto';
@@ -15,7 +15,6 @@ export declare class ModeratorController {
     deleteProfile(session: any): any;
     getDashboard(): any;
     changePassword(changedPass: PasswordChangeModeratorDto, session: any): any;
-    forgetPassword(id: number, moderator: ForgetPassModeratorDto): any;
     addStudent(student: StudentDto, myfileobj: Express.Multer.File, session: any): any;
     getStudentByModeratorId(id: number): any;
     deleteStudentByModeratorId(id: number, session: any): any;
@@ -32,4 +31,6 @@ export declare class ModeratorController {
     getStudentComment(id: number, session: any): any;
     gethrComment(id: number, session: any): any;
     getting(res: any, session: any): Promise<any>;
+    sentMail(data: PasswordForgetModeratorDto): any;
+    forgetPass(data: ForgetPassModeratorDto): any;
 }

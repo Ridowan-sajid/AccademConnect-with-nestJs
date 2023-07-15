@@ -63,9 +63,6 @@ let ModeratorController = exports.ModeratorController = class ModeratorControlle
     changePassword(changedPass, session) {
         return this.moderatorService.passwordChange(changedPass, session.email);
     }
-    forgetPassword(id, moderator) {
-        return this.moderatorService.forgetPassword(id, moderator);
-    }
     addStudent(student, myfileobj, session) {
         student.profileImg = myfileobj.filename;
         return this.moderatorService.addStudent(student, session.email);
@@ -120,6 +117,12 @@ let ModeratorController = exports.ModeratorController = class ModeratorControlle
     }
     async getting(res, session) {
         await this.moderatorService.getImages(res, session.email);
+    }
+    sentMail(data) {
+        return this.moderatorService.ForgetPassword(data.email);
+    }
+    forgetPass(data) {
+        return this.moderatorService.newPassword(data);
     }
 };
 __decorate([
@@ -194,14 +197,6 @@ __decorate([
     __metadata("design:paramtypes", [Moderator_dto_1.PasswordChangeModeratorDto, Object]),
     __metadata("design:returntype", Object)
 ], ModeratorController.prototype, "changePassword", null);
-__decorate([
-    (0, common_1.Patch)('/forgetPassword/:id'),
-    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Moderator_dto_1.ForgetPassModeratorDto]),
-    __metadata("design:returntype", Object)
-], ModeratorController.prototype, "forgetPassword", null);
 __decorate([
     (0, common_1.Post)('/RegisterStudent'),
     (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('myfile', {
@@ -357,6 +352,20 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], ModeratorController.prototype, "getting", null);
+__decorate([
+    (0, common_1.Post)('/sentmail'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Moderator_dto_1.PasswordForgetModeratorDto]),
+    __metadata("design:returntype", Object)
+], ModeratorController.prototype, "sentMail", null);
+__decorate([
+    (0, common_1.Patch)('/forgetPassword'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Moderator_dto_1.ForgetPassModeratorDto]),
+    __metadata("design:returntype", Object)
+], ModeratorController.prototype, "forgetPass", null);
 exports.ModeratorController = ModeratorController = __decorate([
     (0, common_1.Controller)('moderator'),
     __metadata("design:paramtypes", [moderator_service_1.ModeratorService])

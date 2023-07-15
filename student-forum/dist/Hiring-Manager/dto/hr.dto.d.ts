@@ -19,6 +19,3 @@ export declare class PasswordChangeHrDto {
     oldPassword: string;
     newPassword: string;
 }
-export declare class ForgetPassHrDto {
-    email: string;
-}

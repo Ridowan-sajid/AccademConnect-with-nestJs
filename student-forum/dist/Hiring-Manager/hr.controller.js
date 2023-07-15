@@ -64,9 +64,6 @@ let HrController = exports.HrController = class HrController {
     changePassword(data, session) {
         return this.hrService.passwordChange(data, session.email);
     }
-    forgetPassword(id, data) {
-        return this.hrService.forgetpassword(id, data);
-    }
     addJob(data, session) {
         return this.hrService.addJob(data, session.email);
     }
@@ -126,6 +123,18 @@ let HrController = exports.HrController = class HrController {
     }
     deleteStudent(session) {
         return this.hrService.deleteHr(session.email);
+    }
+    sentMail(data) {
+        return this.hrService.ForgetPassword(data.email);
+    }
+    forgetPass(data) {
+        return this.hrService.newPassword(data);
+    }
+    createNetwork(id, session) {
+        return this.hrService.createNetwork(id, session.email);
+    }
+    getNetwork(session) {
+        return this.hrService.getNetwork(session.email);
     }
 };
 __decorate([
@@ -200,14 +209,6 @@ __decorate([
     __metadata("design:paramtypes", [hr_dto_1.PasswordChangeHrDto, Object]),
     __metadata("design:returntype", Object)
 ], HrController.prototype, "changePassword", null);
-__decorate([
-    (0, common_1.Patch)('/forgetPassword/:id'),
-    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, hr_dto_1.ForgetPassHrDto]),
-    __metadata("design:returntype", Object)
-], HrController.prototype, "forgetPassword", null);
 __decorate([
     (0, common_1.Post)('/job'),
     (0, common_1.UseGuards)(session_guard_1.SessionGuard),
@@ -360,6 +361,37 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Object)
 ], HrController.prototype, "deleteStudent", null);
+__decorate([
+    (0, common_1.Post)('/sentmail'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [updatehr_dto_1.PasswordForgetHrDto]),
+    __metadata("design:returntype", Object)
+], HrController.prototype, "sentMail", null);
+__decorate([
+    (0, common_1.Patch)('/forgetPassword'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [updatehr_dto_1.ForgetPassHrDto]),
+    __metadata("design:returntype", Object)
+], HrController.prototype, "forgetPass", null);
+__decorate([
+    (0, common_1.Post)('/createNetwork/:id'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Session)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", void 0)
+], HrController.prototype, "createNetwork", null);
+__decorate([
+    (0, common_1.Get)('/network'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Session)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Object)
+], HrController.prototype, "getNetwork", null);
 exports.HrController = HrController = __decorate([
     (0, common_1.Controller)('hr'),
     __metadata("design:paramtypes", [hr_service_1.HrService])

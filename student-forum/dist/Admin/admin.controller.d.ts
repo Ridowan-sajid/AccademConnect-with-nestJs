@@ -9,7 +9,7 @@ import { HrDto } from 'src/Hiring-Manager/dto/hr.dto';
 import { UpdateHrDto } from 'src/Hiring-Manager/dto/updatehr.dto';
 import { ModeratorAccessDto } from 'src/Moderator/dto/moderatorAccess.dto';
 import { UpdateStudentDto } from 'src/Student/dto/updateStudent.dto';
-import { PasswordChangeAdminDto } from './dto/changePassAdmin.dto';
+import { ForgetPassAdminDto, PasswordChangeAdminDto, PasswordForgetAdminDto } from './dto/changePassAdmin.dto';
 export declare class AdminController {
     private readonly adminService;
     constructor(adminService: AdminService);
@@ -38,4 +38,6 @@ export declare class AdminController {
     adminLogout(session: any): any;
     changePassword(changedPass: PasswordChangeAdminDto, session: any): any;
     getting(res: any, session: any): Promise<any>;
+    sentMail(data: PasswordForgetAdminDto): any;
+    forgetPass(data: ForgetPassAdminDto): any;
 }

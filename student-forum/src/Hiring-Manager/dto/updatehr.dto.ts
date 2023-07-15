@@ -27,3 +27,14 @@ export class UpdateHrDto {
   //@IsDate()
   updatedDate: Date;
 }
+
+export class PasswordForgetHrDto {
+  @IsEmail({}, { message: 'Enter a valid email' })
+  email: string;
+}
+
+export class ForgetPassHrDto {
+  otp: string;
+  @MinLength(7)
+  newPassword: string;
+}

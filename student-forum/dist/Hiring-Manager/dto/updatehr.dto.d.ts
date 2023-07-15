@@ -5,3 +5,10 @@ export declare class UpdateHrDto {
     gender: string;
     updatedDate: Date;
 }
+export declare class PasswordForgetHrDto {
+    email: string;
+}
+export declare class ForgetPassHrDto {
+    otp: string;
+    newPassword: string;
+}

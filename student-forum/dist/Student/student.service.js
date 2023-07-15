@@ -23,6 +23,9 @@ const comment_entity_1 = require("../Db/comment.entity");
 const hiring_entity_1 = require("../Db/hiring.entity");
 const report_entity_1 = require("../Db/report.entity");
 const student_hr_entity_1 = require("../Db/student_hr.entity");
+const uuid_1 = require("uuid");
+const token_entity_1 = require("../Db/token.entity");
+const mailer_1 = require("@nestjs-modules/mailer");
 let StudentService = exports.StudentService = class StudentService {
     async deleteStudent(email) {
         const res = await this.studentRepo.delete({ email: email });
@@ -193,13 +196,15 @@ let StudentService = exports.StudentService = class StudentService {
             });
         }
     }
-    constructor(studentRepo, postRepo, commentRepo, hrRepo, reportRepo, studentHrRepo) {
+    constructor(studentRepo, postRepo, commentRepo, hrRepo, reportRepo, studentHrRepo, tokenRepo, mailService) {
         this.studentRepo = studentRepo;
         this.postRepo = postRepo;
         this.commentRepo = commentRepo;
         this.hrRepo = hrRepo;
         this.reportRepo = reportRepo;
         this.studentHrRepo = studentHrRepo;
+        this.tokenRepo = tokenRepo;
+        this.mailService = mailService;
     }
     async addComment(id, data, email) {
         const student = await this.studentRepo.findOneBy({ email: email });
@@ -294,9 +299,6 @@ let StudentService = exports.StudentService = class StudentService {
                 message: 'Not found the post',
             });
         }
-    }
-    forgetpassword(id, student) {
-        return '';
     }
     async passwordChange(changedPass, email) {
         const student = await this.studentRepo.findOneBy({
@@ -402,6 +404,59 @@ let StudentService = exports.StudentService = class StudentService {
             });
         }
     }
+    async ForgetPassword(email) {
+        const uniqueId = (0, uuid_1.v4)();
+        const std = await this.studentRepo.findOneBy({ email: email });
+        if (std) {
+            await this.tokenRepo.save({
+                otp: uniqueId.substring(0, 6),
+                userId: std.id,
+            });
+            await this.mailService.sendMail({
+                to: email,
+                subject: 'Student Forum',
+                text: `Hello ${std.name}. Here is your otp: ${uniqueId.substring(0, 6)}`,
+            });
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'There is something wrong',
+            });
+        }
+    }
+    async newPassword(data) {
+        const matchToken = await this.tokenRepo.findOneBy({ otp: data.otp });
+        if (matchToken) {
+            const std = await this.studentRepo.findOneBy({ id: matchToken.userId });
+            const salt = await bcrypt.genSalt();
+            std.password = await bcrypt.hash(data.newPassword, salt);
+            return await this.studentRepo.update(std.id, std);
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'Tour token is not correct',
+            });
+        }
+    }
+    async getMyLetter(email) {
+        const res = await this.studentRepo.find({
+            where: { email: email },
+            relations: {
+                letters: true,
+            },
+        });
+        if (res) {
+            return res;
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'There is something wrong',
+            });
+        }
+    }
 };
 __decorate([
     __param(0, (0, common_1.Res)()),
@@ -417,11 +472,14 @@ exports.StudentService = StudentService = __decorate([
     __param(3, (0, typeorm_1.InjectRepository)(hiring_entity_1.Hr)),
     __param(4, (0, typeorm_1.InjectRepository)(report_entity_1.Report)),
     __param(5, (0, typeorm_1.InjectRepository)(student_hr_entity_1.StudentHr)),
+    __param(6, (0, typeorm_1.InjectRepository)(token_entity_1.Token)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
-        typeorm_2.Repository])
+        typeorm_2.Repository,
+        typeorm_2.Repository,
+        mailer_1.MailerService])
 ], StudentService);
 //# sourceMappingURL=student.service.js.map

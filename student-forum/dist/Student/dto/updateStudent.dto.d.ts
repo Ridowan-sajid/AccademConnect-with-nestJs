@@ -5,3 +5,10 @@ export declare class UpdateStudentDto {
     gender: string;
     updatedDate: Date;
 }
+export declare class PasswordForgetStudentDto {
+    email: string;
+}
+export declare class ForgetPassStudentDto {
+    otp: string;
+    newPassword: string;
+}

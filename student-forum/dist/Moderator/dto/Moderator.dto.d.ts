@@ -20,6 +20,10 @@ export declare class PasswordChangeModeratorDto {
     oldPassword: string;
     newPassword: string;
 }
-export declare class ForgetPassModeratorDto {
+export declare class PasswordForgetModeratorDto {
     email: string;
+}
+export declare class ForgetPassModeratorDto {
+    otp: string;
+    newPassword: string;
 }

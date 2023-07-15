@@ -62,9 +62,6 @@ let StudentController = exports.StudentController = class StudentController {
     changePassword(student, session) {
         return this.studentService.passwordChange(student, session.email);
     }
-    forgetPassword(id, student) {
-        return this.studentService.forgetpassword(id, student);
-    }
     getDashboard(session) {
         return this.studentService.getAllPost(session.email);
     }
@@ -127,6 +124,15 @@ let StudentController = exports.StudentController = class StudentController {
     }
     deleteStudent(session) {
         return this.studentService.deleteStudent(session.email);
+    }
+    sentMail(data) {
+        return this.studentService.ForgetPassword(data.email);
+    }
+    forgetPass(data) {
+        return this.studentService.newPassword(data);
+    }
+    getMyLetter(session) {
+        return this.studentService.getMyLetter(session.email);
     }
 };
 __decorate([
@@ -194,15 +200,6 @@ __decorate([
     __metadata("design:paramtypes", [Student_dto_1.PasswordChangeStudentDto, Object]),
     __metadata("design:returntype", Object)
 ], StudentController.prototype, "changePassword", null);
-__decorate([
-    (0, common_1.Patch)('/forgetPassword/:id'),
-    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
-    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Student_dto_1.ForgetPassStudentDto]),
-    __metadata("design:returntype", Student_dto_1.StudentDto)
-], StudentController.prototype, "forgetPassword", null);
 __decorate([
     (0, common_1.Get)('/allPost'),
     (0, common_1.UseGuards)(session_guard_1.SessionGuard),
@@ -363,6 +360,28 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Object)
 ], StudentController.prototype, "deleteStudent", null);
+__decorate([
+    (0, common_1.Post)('/sentmail'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [updateStudent_dto_1.PasswordForgetStudentDto]),
+    __metadata("design:returntype", Object)
+], StudentController.prototype, "sentMail", null);
+__decorate([
+    (0, common_1.Patch)('/forgetPassword'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [updateStudent_dto_1.ForgetPassStudentDto]),
+    __metadata("design:returntype", Object)
+], StudentController.prototype, "forgetPass", null);
+__decorate([
+    (0, common_1.Get)('/myletter'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Session)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Object)
+], StudentController.prototype, "getMyLetter", null);
 exports.StudentController = StudentController = __decorate([
     (0, common_1.Controller)('student'),
     __metadata("design:paramtypes", [student_service_1.StudentService])

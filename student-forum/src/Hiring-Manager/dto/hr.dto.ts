@@ -28,7 +28,9 @@ export class HrDto {
   createdDate: Date;
   //@IsDate()
   updatedDate: Date;
-  @MinLength(7)
+  @MinLength(7, {
+    message: 'Password length should be greater than or equal 7 ',
+  })
   password: string;
   profileImg: string;
   createdByAdmin: number;
@@ -45,9 +47,4 @@ export class PasswordChangeHrDto {
   oldPassword: string;
   @MinLength(7)
   newPassword: string;
-}
-
-export class ForgetPassHrDto {
-  @IsEmail({}, { message: 'Entered a wrong email' })
-  email: string;
 }

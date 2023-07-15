@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UpdateHrDto = void 0;
+exports.ForgetPassHrDto = exports.PasswordForgetHrDto = exports.UpdateHrDto = void 0;
 const class_validator_1 = require("class-validator");
 class UpdateHrDto {
 }
@@ -33,4 +33,18 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], UpdateHrDto.prototype, "gender", void 0);
+class PasswordForgetHrDto {
+}
+exports.PasswordForgetHrDto = PasswordForgetHrDto;
+__decorate([
+    (0, class_validator_1.IsEmail)(),
+    __metadata("design:type", String)
+], PasswordForgetHrDto.prototype, "email", void 0);
+class ForgetPassHrDto {
+}
+exports.ForgetPassHrDto = ForgetPassHrDto;
+__decorate([
+    (0, class_validator_1.MinLength)(7),
+    __metadata("design:type", String)
+], ForgetPassHrDto.prototype, "newPassword", void 0);
 //# sourceMappingURL=updatehr.dto.js.map

@@ -1,11 +1,12 @@
 /// <reference types="multer" />
 import { HrService } from './hr.service';
-import { ForgetPassHrDto, HrDto, HrLoginDto, PasswordChangeHrDto } from './dto/hr.dto';
+import { HrDto, HrLoginDto, PasswordChangeHrDto } from './dto/hr.dto';
 import { JobDto } from 'src/Job/dto/job.dto';
 import { UpdateJobDto } from 'src/Job/dto/updateJob.dto';
+import { Hr } from 'src/Db/hiring.entity';
 import { OfferDTO } from 'src/OfferLetter/dto/offer.dto';
 import { CommentDto } from 'src/Comment/dto/comment.dto';
-import { UpdateHrDto } from './dto/updatehr.dto';
+import { ForgetPassHrDto, PasswordForgetHrDto, UpdateHrDto } from './dto/updatehr.dto';
 export declare class HrController {
     private readonly hrService;
     constructor(hrService: HrService);
@@ -16,7 +17,6 @@ export declare class HrController {
     updateProfile(data: UpdateHrDto, session: any): any;
     deleteProfile(id: number): any;
     changePassword(data: PasswordChangeHrDto, session: any): any;
-    forgetPassword(id: number, data: ForgetPassHrDto): any;
     addJob(data: JobDto, session: any): Promise<JobDto & import("../Db/job.entity").Job>;
     getMyJobPost(session: any): any;
     getJobByHrId(id: number, session: any): any;
@@ -34,4 +34,11 @@ export declare class HrController {
     getReplyComment(id: number, session: any): any;
     getting(res: any, session: any): Promise<any>;
     deleteStudent(session: any): any;
+    sentMail(data: PasswordForgetHrDto): any;
+    forgetPass(data: ForgetPassHrDto): any;
+    createNetwork(id: number, session: any): Promise<{
+        student: import("../Db/student.entity").Student;
+        hr: Hr;
+    } & import("../Db/student_hr.entity").StudentHr>;
+    getNetwork(session: any): any;
 }

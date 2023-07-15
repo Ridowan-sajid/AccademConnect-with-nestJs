@@ -24,6 +24,9 @@ const post_entity_1 = require("../Db/post.entity");
 const report_entity_1 = require("../Db/report.entity");
 const comment_entity_1 = require("../Db/comment.entity");
 const hiring_entity_1 = require("../Db/hiring.entity");
+const token_entity_1 = require("../Db/token.entity");
+const uuid_1 = require("uuid");
+const mailer_1 = require("@nestjs-modules/mailer");
 let ModeratorService = exports.ModeratorService = class ModeratorService {
     async getHrComment(id, email) {
         const res = await this.hrRepo.find({
@@ -203,7 +206,7 @@ let ModeratorService = exports.ModeratorService = class ModeratorService {
             },
         });
     }
-    constructor(moderatorRepo, studentRepo, moderatorProfileRepo, postRepo, reportRepo, commentRepo, hrRepo) {
+    constructor(moderatorRepo, studentRepo, moderatorProfileRepo, postRepo, reportRepo, commentRepo, hrRepo, tokenRepo, mailService) {
         this.moderatorRepo = moderatorRepo;
         this.studentRepo = studentRepo;
         this.moderatorProfileRepo = moderatorProfileRepo;
@@ -211,6 +214,8 @@ let ModeratorService = exports.ModeratorService = class ModeratorService {
         this.reportRepo = reportRepo;
         this.commentRepo = commentRepo;
         this.hrRepo = hrRepo;
+        this.tokenRepo = tokenRepo;
+        this.mailService = mailService;
     }
     async addStudent(student, email) {
         {
@@ -228,9 +233,6 @@ let ModeratorService = exports.ModeratorService = class ModeratorService {
         return '';
     }
     deleteStudent(id) {
-        return '';
-    }
-    forgetPassword(id, moderator) {
         return '';
     }
     async passwordChange(changedPass, email) {
@@ -342,6 +344,42 @@ let ModeratorService = exports.ModeratorService = class ModeratorService {
             });
         }
     }
+    async ForgetPassword(email) {
+        const uniqueId = (0, uuid_1.v4)();
+        const moderator = await this.moderatorRepo.findOneBy({ email: email });
+        if (moderator) {
+            await this.tokenRepo.save({
+                otp: uniqueId.substring(0, 6),
+                userId: moderator.id,
+            });
+            await this.mailService.sendMail({
+                to: email,
+                subject: 'Student Forum',
+                text: `Hello ${moderator.name}. Here is your otp: ${uniqueId.substring(0, 6)}`,
+            });
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'There is something wrong',
+            });
+        }
+    }
+    async newPassword(data) {
+        const matchToken = await this.tokenRepo.findOneBy({ otp: data.otp });
+        if (matchToken) {
+            const mod = await this.moderatorRepo.findOneBy({ id: matchToken.userId });
+            const salt = await bcrypt.genSalt();
+            mod.password = await bcrypt.hash(data.newPassword, salt);
+            return await this.moderatorRepo.update(mod.id, mod);
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'Tour token is not correct',
+            });
+        }
+    }
 };
 __decorate([
     __param(0, (0, common_1.Res)()),
@@ -358,12 +396,15 @@ exports.ModeratorService = ModeratorService = __decorate([
     __param(4, (0, typeorm_1.InjectRepository)(report_entity_1.Report)),
     __param(5, (0, typeorm_1.InjectRepository)(comment_entity_1.Comment)),
     __param(6, (0, typeorm_1.InjectRepository)(hiring_entity_1.Hr)),
+    __param(7, (0, typeorm_1.InjectRepository)(token_entity_1.Token)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
-        typeorm_2.Repository])
+        typeorm_2.Repository,
+        typeorm_2.Repository,
+        mailer_1.MailerService])
 ], ModeratorService);
 //# sourceMappingURL=moderator.service.js.map

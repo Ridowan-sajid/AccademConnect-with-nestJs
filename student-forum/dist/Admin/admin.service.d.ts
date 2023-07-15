@@ -12,15 +12,19 @@ import { Repository } from 'typeorm';
 import { Admin } from 'src/Db/admin.entity';
 import { Student } from 'src/Db/student.entity';
 import { Hr } from 'src/Db/hiring.entity';
-import { PasswordChangeAdminDto } from './dto/changePassAdmin.dto';
+import { ForgetPassAdminDto, PasswordChangeAdminDto } from './dto/changePassAdmin.dto';
 import { AdminProfile } from 'src/Db/adminProfile.entity';
+import { MailerService } from '@nestjs-modules/mailer';
+import { Token } from 'src/Db/token.entity';
 export declare class AdminService {
     private adminRepo;
     private moderatorRepo;
     private studentRepo;
     private hrRepo;
     private adminProfileRepo;
-    constructor(adminRepo: Repository<Admin>, moderatorRepo: Repository<Moderator>, studentRepo: Repository<Student>, hrRepo: Repository<Hr>, adminProfileRepo: Repository<AdminProfile>);
+    private tokenRepo;
+    private mailService;
+    constructor(adminRepo: Repository<Admin>, moderatorRepo: Repository<Moderator>, studentRepo: Repository<Student>, hrRepo: Repository<Hr>, adminProfileRepo: Repository<AdminProfile>, tokenRepo: Repository<Token>, mailService: MailerService);
     changePassword(changedPass: PasswordChangeAdminDto, email: string): Promise<any>;
     getStudentByAdminId(email: string): Promise<Admin[]>;
     adminProfile(email: string): Promise<any>;
@@ -45,4 +49,6 @@ export declare class AdminService {
     updateModeratorByAdminId(id: number, moderator: UpdateModeratorDto, email: string): Promise<any>;
     getHrWithAdmin(email: any): Promise<any>;
     getImages(res: any, email: string): Promise<void>;
+    ForgetPassword(email: string): Promise<void>;
+    newPassword(data: ForgetPassAdminDto): Promise<import("typeorm").UpdateResult>;
 }

@@ -1,4 +1,5 @@
 import { Job } from './job.entity';
+import { Student } from './student.entity';
 import { Comment } from './comment.entity';
 import { Report } from './report.entity';
 import { Offer } from './offer.entity';
@@ -19,5 +20,5 @@ export declare class Hr {
     comments: Comment[];
     reports: Report[];
     letters: Offer[];
-    sthr: Hr[];
+    sthr: Student[];
 }

@@ -15,24 +15,25 @@ import {
   UploadedFile,
   UseGuards,
   UseInterceptors,
+  ValidationPipe,
+  UsePipes,
 } from '@nestjs/common';
 import { HrService } from './hr.service';
 import { PostDto } from 'src/Post/dto/post.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MulterError, diskStorage } from 'multer';
-import {
-  ForgetPassHrDto,
-  HrDto,
-  HrLoginDto,
-  PasswordChangeHrDto,
-} from './dto/hr.dto';
+import { HrDto, HrLoginDto, PasswordChangeHrDto } from './dto/hr.dto';
 import { JobDto } from 'src/Job/dto/job.dto';
 import { UpdateJobDto } from 'src/Job/dto/updateJob.dto';
 import { Hr } from 'src/Db/hiring.entity';
 import { SessionGuard } from 'src/Guards/session.guard';
 import { OfferDTO } from 'src/OfferLetter/dto/offer.dto';
 import { CommentDto } from 'src/Comment/dto/comment.dto';
-import { UpdateHrDto } from './dto/updatehr.dto';
+import {
+  ForgetPassHrDto,
+  PasswordForgetHrDto,
+  UpdateHrDto,
+} from './dto/updatehr.dto';
 
 @Controller('hr')
 export class HrController {
@@ -57,6 +58,7 @@ export class HrController {
       }),
     }),
   )
+  @UsePipes(new ValidationPipe())
   addHr(
     @Body()
     hr: HrDto,
@@ -69,6 +71,7 @@ export class HrController {
   }
 
   @Post('/login')
+  @UsePipes(new ValidationPipe())
   async loginHr(@Body() hr: HrLoginDto, @Session() session): Promise<any> {
     const res = this.hrService.loginHr(hr);
 
@@ -97,6 +100,7 @@ export class HrController {
 
   @Put('/updateprofile')
   @UseGuards(SessionGuard)
+  @UsePipes(new ValidationPipe())
   updateProfile(@Body() data: UpdateHrDto, @Session() session): any {
     data.updatedDate = new Date();
     return this.hrService.editProfile(data, session.email);
@@ -110,20 +114,14 @@ export class HrController {
 
   @Patch('/changePassword')
   @UseGuards(SessionGuard)
+  @UsePipes(new ValidationPipe())
   changePassword(@Body() data: PasswordChangeHrDto, @Session() session): any {
     return this.hrService.passwordChange(data, session.email);
   }
 
-  @Patch('/forgetPassword/:id')
-  forgetPassword(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() data: ForgetPassHrDto,
-  ): any {
-    return this.hrService.forgetpassword(id, data);
-  }
-
   @Post('/job')
   @UseGuards(SessionGuard)
+  @UsePipes(new ValidationPipe())
   addJob(@Body() data: JobDto, @Session() session) {
     return this.hrService.addJob(data, session.email);
   }
@@ -151,6 +149,7 @@ export class HrController {
 
   @Put('/job/:id')
   @UseGuards(SessionGuard)
+  @UsePipes(new ValidationPipe())
   updatePost(
     @Body() data: UpdateJobDto,
     @Param('id', ParseIntPipe) id: number,
@@ -184,6 +183,7 @@ export class HrController {
 
   @Post('/offerLetter/:id')
   @UseGuards(SessionGuard)
+  @UsePipes(new ValidationPipe())
   addLetter(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: OfferDTO,
@@ -204,6 +204,7 @@ export class HrController {
 
   @Post('/comment/:id')
   @UseGuards(SessionGuard)
+  @UsePipes(new ValidationPipe())
   addComment(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: CommentDto,
@@ -233,6 +234,7 @@ export class HrController {
 
   @Post('/replycomment/:id')
   @UseGuards(SessionGuard)
+  @UsePipes(new ValidationPipe())
   addReplyComment(
     @Param('id', ParseIntPipe) id: number,
     @Body() data: CommentDto,
@@ -260,5 +262,30 @@ export class HrController {
   @UseGuards(SessionGuard)
   deleteStudent(@Session() session): any {
     return this.hrService.deleteHr(session.email);
+  }
+
+  @Post('/sentmail')
+  @UsePipes(new ValidationPipe())
+  sentMail(@Body() data: PasswordForgetHrDto): any {
+    return this.hrService.ForgetPassword(data.email);
+  }
+
+  @Patch('/forgetPassword')
+  @UsePipes(new ValidationPipe())
+  forgetPass(@Body() data: ForgetPassHrDto): any {
+    return this.hrService.newPassword(data);
+  }
+
+  @Post('/createNetwork/:id')
+  @UseGuards(SessionGuard)
+  @UsePipes(new ValidationPipe())
+  createNetwork(@Param('id', ParseIntPipe) id: number, @Session() session) {
+    return this.hrService.createNetwork(id, session.email);
+  }
+
+  @Get('/network')
+  @UseGuards(SessionGuard)
+  getNetwork(@Session() session): any {
+    return this.hrService.getNetwork(session.email);
   }
 }

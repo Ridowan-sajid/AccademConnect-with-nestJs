@@ -1,9 +1,9 @@
 /// <reference types="multer" />
 import { StudentService } from './student.service';
-import { ForgetPassStudentDto, PasswordChangeStudentDto, StudentDto } from './dto/Student.dto';
+import { PasswordChangeStudentDto, StudentDto } from './dto/Student.dto';
 import { StudentLoginDto } from './dto/StudentLogin.dto';
 import { PostDto } from '../Post/dto/post.dto';
-import { UpdateStudentDto } from './dto/updateStudent.dto';
+import { ForgetPassStudentDto, PasswordForgetStudentDto, UpdateStudentDto } from './dto/updateStudent.dto';
 import { UpdatePostDto } from 'src/Post/dto/updatePost.dto';
 import { Student } from 'src/Db/student.entity';
 import { CommentDto } from 'src/Comment/dto/comment.dto';
@@ -17,7 +17,6 @@ export declare class StudentController {
     updateProfile(student: UpdateStudentDto, session: any): any;
     deleteProfile(id: number): StudentDto;
     changePassword(student: PasswordChangeStudentDto, session: any): any;
-    forgetPassword(id: number, student: ForgetPassStudentDto): StudentDto;
     getDashboard(session: any): any;
     addPost(data: PostDto, session: any): Promise<any>;
     getMyPost(session: any): any;
@@ -39,4 +38,7 @@ export declare class StudentController {
     addApply(id: number, session: any): Promise<import("typeorm").UpdateResult>;
     getNetwork(session: any): any;
     deleteStudent(session: any): any;
+    sentMail(data: PasswordForgetStudentDto): any;
+    forgetPass(data: ForgetPassStudentDto): any;
+    getMyLetter(session: any): any;
 }

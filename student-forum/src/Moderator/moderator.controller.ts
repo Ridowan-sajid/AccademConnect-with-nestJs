@@ -23,6 +23,7 @@ import {
   ForgetPassModeratorDto,
   ModeratorDto,
   PasswordChangeModeratorDto,
+  PasswordForgetModeratorDto,
 } from './dto/Moderator.dto';
 import { ModeratorLoginDto } from './dto/Moderator.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -59,6 +60,7 @@ export class ModeratorController {
       }),
     }),
   )
+  @UsePipes(new ValidationPipe())
   addModerator(
     @Body()
     moderator: ModeratorDto,
@@ -72,6 +74,7 @@ export class ModeratorController {
   }
 
   @Post('/login')
+  @UsePipes(new ValidationPipe())
   async loginModerator(
     @Body() moderator: ModeratorLoginDto,
     @Session() session,
@@ -96,6 +99,7 @@ export class ModeratorController {
   }
 
   @Put('/updateprofile')
+  @UsePipes(new ValidationPipe())
   @UseGuards(SessionGuard)
   updateProfile(@Body() data: UpdateModeratorDto, @Session() session): any {
     return this.moderatorService.editProfile(data, session.email);
@@ -114,19 +118,12 @@ export class ModeratorController {
 
   @Post('/changePassword')
   @UseGuards(SessionGuard)
+  @UsePipes(new ValidationPipe())
   changePassword(
     @Body() changedPass: PasswordChangeModeratorDto,
     @Session() session,
   ): any {
     return this.moderatorService.passwordChange(changedPass, session.email);
-  }
-
-  @Patch('/forgetPassword/:id')
-  forgetPassword(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() moderator: ForgetPassModeratorDto,
-  ): any {
-    return this.moderatorService.forgetPassword(id, moderator);
   }
 
   // @Delete('/deletestudent/:id')
@@ -190,6 +187,7 @@ export class ModeratorController {
   }
 
   @Put('/studentwithModerator/:id')
+  @UsePipes(new ValidationPipe())
   updateStudentByModeratorId(
     @Param('id', ParseIntPipe) id: number,
     @Body() student: UpdateStudentDto,
@@ -212,6 +210,7 @@ export class ModeratorController {
 
   @Put('/report/:id')
   @UseGuards(SessionGuard)
+  @UsePipes(new ValidationPipe())
   reportHandling(
     @Param('id', ParseIntPipe) id: number,
     @Session() session,
@@ -293,5 +292,17 @@ export class ModeratorController {
   @UseGuards(SessionGuard)
   async getting(@Res() res, @Session() session): Promise<any> {
     await this.moderatorService.getImages(res, session.email);
+  }
+
+  @Post('/sentmail')
+  @UsePipes(new ValidationPipe())
+  sentMail(@Body() data: PasswordForgetModeratorDto): any {
+    return this.moderatorService.ForgetPassword(data.email);
+  }
+
+  @Patch('/forgetPassword')
+  @UsePipes(new ValidationPipe())
+  forgetPass(@Body() data: ForgetPassModeratorDto): any {
+    return this.moderatorService.newPassword(data);
   }
 }

@@ -10,6 +10,8 @@ import { Post } from 'src/Db/post.entity';
 import { Report } from 'src/Db/report.entity';
 import { Comment } from 'src/Db/comment.entity';
 import { Hr } from 'src/Db/hiring.entity';
+import { Token } from 'src/Db/token.entity';
+import { MailerService } from '@nestjs-modules/mailer';
 export declare class ModeratorService {
     private moderatorRepo;
     private studentRepo;
@@ -18,6 +20,8 @@ export declare class ModeratorService {
     private reportRepo;
     private commentRepo;
     private hrRepo;
+    private tokenRepo;
+    private mailService;
     getHrComment(id: number, email: any): Promise<any>;
     getStudentComment(id: number, email: any): Promise<any>;
     getHrJobs(id: number, email: any): Promise<any>;
@@ -31,11 +35,10 @@ export declare class ModeratorService {
     deleteStudentByModeratorId(id: number, email: string): Promise<any>;
     updateStudentByModeratorId(id: number, student: UpdateStudentDto, email: string): Promise<any>;
     getStudentByModeratorId(id: number): Promise<any>;
-    constructor(moderatorRepo: Repository<Moderator>, studentRepo: Repository<Student>, moderatorProfileRepo: Repository<ModeratorProfile>, postRepo: Repository<Post>, reportRepo: Repository<Report>, commentRepo: Repository<Comment>, hrRepo: Repository<Hr>);
+    constructor(moderatorRepo: Repository<Moderator>, studentRepo: Repository<Student>, moderatorProfileRepo: Repository<ModeratorProfile>, postRepo: Repository<Post>, reportRepo: Repository<Report>, commentRepo: Repository<Comment>, hrRepo: Repository<Hr>, tokenRepo: Repository<Token>, mailService: MailerService);
     addStudent(student: StudentDto, email: string): Promise<Student>;
     deleteHr(id: number): string;
     deleteStudent(id: number): string;
-    forgetPassword(id: number, moderator: ForgetPassModeratorDto): any;
     passwordChange(changedPass: PasswordChangeModeratorDto, email: string): Promise<any>;
     getDashboard(): any;
     deleteProfile(email: string): Promise<any>;
@@ -44,4 +47,6 @@ export declare class ModeratorService {
     loginModerator(moderator: ModeratorLoginDto): Promise<any>;
     addModerator(moderator: ModeratorDto): Promise<any>;
     getImages(res: any, email: string): Promise<void>;
+    ForgetPassword(email: string): Promise<void>;
+    newPassword(data: ForgetPassModeratorDto): Promise<import("typeorm").UpdateResult>;
 }

@@ -1,7 +1,7 @@
-import { ForgetPassStudentDto, PasswordChangeStudentDto, StudentDto } from './dto/Student.dto';
+import { PasswordChangeStudentDto, StudentDto } from './dto/Student.dto';
 import { StudentLoginDto } from './dto/StudentLogin.dto';
 import { PostDto } from '../Post/dto/post.dto';
-import { UpdateStudentDto } from './dto/updateStudent.dto';
+import { ForgetPassStudentDto, UpdateStudentDto } from './dto/updateStudent.dto';
 import { Student } from 'src/Db/student.entity';
 import { Repository } from 'typeorm';
 import { Post } from 'src/Db/post.entity';
@@ -12,6 +12,8 @@ import { Hr } from 'src/Db/hiring.entity';
 import { ReportDto } from 'src/Report/dto/report.dto';
 import { Report } from 'src/Db/report.entity';
 import { StudentHr } from 'src/Db/student_hr.entity';
+import { Token } from 'src/Db/token.entity';
+import { MailerService } from '@nestjs-modules/mailer';
 export declare class StudentService {
     private studentRepo;
     private postRepo;
@@ -19,6 +21,8 @@ export declare class StudentService {
     private hrRepo;
     private reportRepo;
     private studentHrRepo;
+    private tokenRepo;
+    private mailService;
     deleteStudent(email: string): Promise<any>;
     getNetwork(email: string): Promise<any>;
     addApply(id: number, email: string): Promise<import("typeorm").UpdateResult>;
@@ -31,14 +35,13 @@ export declare class StudentService {
     addReplyComment(id: number, data: CommentDto, email: string): Promise<any>;
     deleteComment(id: number, email: string): Promise<any>;
     getPostComment(id: number, email: string): Promise<any>;
-    constructor(studentRepo: Repository<Student>, postRepo: Repository<Post>, commentRepo: Repository<Comment>, hrRepo: Repository<Hr>, reportRepo: Repository<Report>, studentHrRepo: Repository<StudentHr>);
+    constructor(studentRepo: Repository<Student>, postRepo: Repository<Post>, commentRepo: Repository<Comment>, hrRepo: Repository<Hr>, reportRepo: Repository<Report>, studentHrRepo: Repository<StudentHr>, tokenRepo: Repository<Token>, mailService: MailerService);
     addComment(id: number, data: CommentDto, email: string): Promise<any>;
     getDetailsPost(id: number, email: any): Promise<any>;
     getAllPost(email: string): Promise<Post[]>;
     deletePostByStudentId(id: number, email: string): Promise<any>;
     getMyPost(email: string): Promise<any>;
     updatePost(id: number, data: UpdatePostDto, email: string): Promise<any>;
-    forgetpassword(id: number, student: ForgetPassStudentDto): any;
     passwordChange(changedPass: PasswordChangeStudentDto, email: string): Promise<any>;
     addPost(data: PostDto, email: string): Promise<any>;
     getDashboard(): any;
@@ -48,4 +51,7 @@ export declare class StudentService {
     loginStudent(student: StudentLoginDto): Promise<any>;
     addStudent(student: StudentDto): Promise<any>;
     getImages(res: any, email: string): Promise<void>;
+    ForgetPassword(email: string): Promise<void>;
+    newPassword(data: ForgetPassStudentDto): Promise<import("typeorm").UpdateResult>;
+    getMyLetter(email: string): Promise<any>;
 }

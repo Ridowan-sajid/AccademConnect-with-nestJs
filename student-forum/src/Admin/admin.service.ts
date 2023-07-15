@@ -24,8 +24,14 @@ import { Admin } from 'src/Db/admin.entity';
 import * as bcrypt from 'bcrypt';
 import { Student } from 'src/Db/student.entity';
 import { Hr } from 'src/Db/hiring.entity';
-import { PasswordChangeAdminDto } from './dto/changePassAdmin.dto';
+import {
+  ForgetPassAdminDto,
+  PasswordChangeAdminDto,
+} from './dto/changePassAdmin.dto';
 import { AdminProfile } from 'src/Db/adminProfile.entity';
+import { MailerService } from '@nestjs-modules/mailer';
+import { v4 as uuidv4 } from 'uuid';
+import { Token } from 'src/Db/token.entity';
 
 @Injectable()
 export class AdminService {
@@ -40,6 +46,11 @@ export class AdminService {
 
     @InjectRepository(AdminProfile)
     private adminProfileRepo: Repository<AdminProfile>,
+
+    @InjectRepository(Token)
+    private tokenRepo: Repository<Token>,
+
+    private mailService: MailerService,
   ) {}
 
   async changePassword(
@@ -513,6 +524,38 @@ export class AdminService {
         status: HttpStatus.NOT_FOUND,
         message: 'There is something wrong',
       });
+    }
+  }
+
+  async ForgetPassword(email: string) {
+    const uniqueId = uuidv4();
+
+    const admin = await this.adminRepo.findOneBy({ email: email });
+
+    if (admin) {
+      await this.tokenRepo.save({
+        otp: uniqueId.substring(0, 6),
+        userId: admin.id,
+      });
+
+      await this.mailService.sendMail({
+        to: email,
+        subject: 'Student Forum',
+        text: `Hello User. Here is your otp: ${uniqueId.substring(0, 6)}`,
+      });
+    }
+  }
+
+  async newPassword(data: ForgetPassAdminDto) {
+    const matchToken = await this.tokenRepo.findOneBy({ otp: data.otp });
+
+    if (matchToken) {
+      const admin = await this.adminRepo.findOneBy({ id: matchToken.userId });
+
+      const salt = await bcrypt.genSalt();
+      admin.password = await bcrypt.hash(data.newPassword, salt);
+
+      return await this.adminRepo.update(admin.id, admin);
     }
   }
 }

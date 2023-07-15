@@ -15,6 +15,3 @@ export declare class PasswordChangeStudentDto {
     oldPassword: string;
     newPassword: string;
 }
-export declare class ForgetPassStudentDto {
-    email: string;
-}

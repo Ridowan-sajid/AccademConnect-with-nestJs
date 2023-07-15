@@ -5,12 +5,7 @@ import {
   NotFoundException,
   Res,
 } from '@nestjs/common';
-import {
-  ForgetPassHrDto,
-  HrDto,
-  HrLoginDto,
-  PasswordChangeHrDto,
-} from './dto/hr.dto';
+import { HrDto, HrLoginDto, PasswordChangeHrDto } from './dto/hr.dto';
 import { PostDto } from 'src/Post/dto/post.dto';
 import { JobDto } from 'src/Job/dto/job.dto';
 import { UpdateJobDto } from 'src/Job/dto/updateJob.dto';
@@ -25,7 +20,11 @@ import { Student } from 'src/Db/student.entity';
 import { Offer } from 'src/Db/offer.entity';
 import { CommentDto } from 'src/Comment/dto/comment.dto';
 import { Comment } from 'src/Db/comment.entity';
-import { UpdateHrDto } from './dto/updatehr.dto';
+import { ForgetPassHrDto, UpdateHrDto } from './dto/updatehr.dto';
+import { v4 as uuidv4 } from 'uuid';
+import { Token } from 'src/Db/token.entity';
+import { MailerService } from '@nestjs-modules/mailer';
+import { StudentHr } from 'src/Db/student_hr.entity';
 
 @Injectable()
 export class HrService {
@@ -132,6 +131,11 @@ export class HrService {
     @InjectRepository(Offer) private offerRepo: Repository<Offer>,
 
     @InjectRepository(Comment) private commentRepo: Repository<Comment>,
+
+    @InjectRepository(StudentHr) private studentHrRepo: Repository<StudentHr>,
+
+    @InjectRepository(Token) private tokenRepo: Repository<Token>,
+    private mailService: MailerService,
   ) {}
 
   async deleteJob(id: number, email: string) {
@@ -148,9 +152,7 @@ export class HrService {
       });
     }
   }
-  forgetpassword(id: number, data: ForgetPassHrDto): any {
-    return '';
-  }
+
   async passwordChange(data: PasswordChangeHrDto, email: string): Promise<any> {
     const hr = await this.hrRepo.findOneBy({
       email: email,
@@ -393,6 +395,90 @@ export class HrService {
 
     if (admin) {
       res.sendFile(admin.profileImg, { root: './uploads/hr' });
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'There is something wrong',
+      });
+    }
+  }
+
+  async ForgetPassword(email: string) {
+    const uniqueId = uuidv4();
+    //import { v4 as uuidv4 } from 'uuid';
+
+    const hr = await this.hrRepo.findOneBy({ email: email });
+
+    if (hr) {
+      await this.tokenRepo.save({
+        otp: uniqueId.substring(0, 6),
+        userId: hr.id,
+      });
+
+      await this.mailService.sendMail({
+        to: email,
+        subject: 'Student Forum',
+        text: `Hello ${hr.name}. Here is your otp: ${uniqueId.substring(0, 6)}`,
+      });
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'There is something wrong',
+      });
+    }
+  }
+
+  async newPassword(data: ForgetPassHrDto) {
+    const matchToken = await this.tokenRepo.findOneBy({ otp: data.otp });
+
+    if (matchToken) {
+      const hr = await this.hrRepo.findOneBy({ id: matchToken.userId });
+
+      const salt = await bcrypt.genSalt();
+      hr.password = await bcrypt.hash(data.newPassword, salt);
+
+      return await this.hrRepo.update(hr.id, hr);
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'Your token is not correct',
+      });
+    }
+  }
+
+  async createNetwork(id: number, email: string) {
+    const hr = await this.hrRepo.findOneBy({ email: email });
+
+    if (hr) {
+      const std = await this.studentRepo.findOneBy({ id: id });
+
+      const ex = await this.studentHrRepo.findOneBy({ student: std, hr: hr });
+      if (!ex) {
+        return await this.studentHrRepo.save({ student: std, hr: hr });
+      } else {
+        throw new NotFoundException({
+          status: HttpStatus.NOT_FOUND,
+          message: 'Already Conntected',
+        });
+      }
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'There is something wrong',
+      });
+    }
+  }
+
+  async getNetwork(email: string): Promise<any> {
+    const hr = await this.hrRepo.find({
+      where: { email: email },
+      relations: {
+        sthr: true,
+      },
+    });
+
+    if (hr) {
+      return hr;
     } else {
       throw new NotFoundException({
         status: HttpStatus.NOT_FOUND,

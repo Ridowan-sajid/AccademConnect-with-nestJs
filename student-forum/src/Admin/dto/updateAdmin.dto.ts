@@ -6,11 +6,13 @@ import {
   IsPhoneNumber,
   IsString,
   Length,
+  Matches,
   MinLength,
 } from 'class-validator';
 
 export class UpdateAdminDTO {
   @IsString()
+  @Matches(/^[A-Z][A-Za-z ]+$/)
   name: string;
   @IsNumber()
   age: number;

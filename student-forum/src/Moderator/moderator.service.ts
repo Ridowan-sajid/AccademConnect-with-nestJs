@@ -29,6 +29,9 @@ import { Post } from 'src/Db/post.entity';
 import { Report } from 'src/Db/report.entity';
 import { Comment } from 'src/Db/comment.entity';
 import { Hr } from 'src/Db/hiring.entity';
+import { Token } from 'src/Db/token.entity';
+import { v4 as uuidv4 } from 'uuid';
+import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class ModeratorService {
@@ -231,6 +234,11 @@ export class ModeratorService {
 
     @InjectRepository(Hr)
     private hrRepo: Repository<Hr>,
+
+    @InjectRepository(Token)
+    private tokenRepo: Repository<Token>,
+
+    private mailService: MailerService,
   ) {}
 
   async addStudent(student: StudentDto, email: string): Promise<Student> {
@@ -253,9 +261,7 @@ export class ModeratorService {
   deleteStudent(id: number) {
     return '';
   }
-  forgetPassword(id: number, moderator: ForgetPassModeratorDto): any {
-    return '';
-  }
+
   async passwordChange(
     changedPass: PasswordChangeModeratorDto,
     email: string,
@@ -379,6 +385,51 @@ export class ModeratorService {
       throw new NotFoundException({
         status: HttpStatus.NOT_FOUND,
         message: 'There is something wrong',
+      });
+    }
+  }
+
+  async ForgetPassword(email: string) {
+    const uniqueId = uuidv4();
+
+    const moderator = await this.moderatorRepo.findOneBy({ email: email });
+
+    if (moderator) {
+      await this.tokenRepo.save({
+        otp: uniqueId.substring(0, 6),
+        userId: moderator.id,
+      });
+
+      await this.mailService.sendMail({
+        to: email,
+        subject: 'Student Forum',
+        text: `Hello ${moderator.name}. Here is your otp: ${uniqueId.substring(
+          0,
+          6,
+        )}`,
+      });
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'There is something wrong',
+      });
+    }
+  }
+
+  async newPassword(data: ForgetPassModeratorDto) {
+    const matchToken = await this.tokenRepo.findOneBy({ otp: data.otp });
+
+    if (matchToken) {
+      const mod = await this.moderatorRepo.findOneBy({ id: matchToken.userId });
+
+      const salt = await bcrypt.genSalt();
+      mod.password = await bcrypt.hash(data.newPassword, salt);
+
+      return await this.moderatorRepo.update(mod.id, mod);
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'Tour token is not correct',
       });
     }
   }

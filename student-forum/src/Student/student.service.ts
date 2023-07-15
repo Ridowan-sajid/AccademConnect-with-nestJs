@@ -5,14 +5,13 @@ import {
   NotFoundException,
   Res,
 } from '@nestjs/common';
-import {
-  ForgetPassStudentDto,
-  PasswordChangeStudentDto,
-  StudentDto,
-} from './dto/Student.dto';
+import { PasswordChangeStudentDto, StudentDto } from './dto/Student.dto';
 import { StudentLoginDto } from './dto/StudentLogin.dto';
 import { PostDto } from '../Post/dto/post.dto';
-import { UpdateStudentDto } from './dto/updateStudent.dto';
+import {
+  ForgetPassStudentDto,
+  UpdateStudentDto,
+} from './dto/updateStudent.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Student } from 'src/Db/student.entity';
 import { Repository } from 'typeorm';
@@ -29,9 +28,23 @@ import { ReportDto } from 'src/Report/dto/report.dto';
 import { Report } from 'src/Db/report.entity';
 import { ApplyDto } from './dto/apply.dto';
 import { StudentHr } from 'src/Db/student_hr.entity';
+import { v4 as uuidv4 } from 'uuid';
+import { Token } from 'src/Db/token.entity';
+import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class StudentService {
+  constructor(
+    @InjectRepository(Student) private studentRepo: Repository<Student>,
+    @InjectRepository(Post) private postRepo: Repository<Post>,
+    @InjectRepository(Comment) private commentRepo: Repository<Comment>,
+    @InjectRepository(Hr) private hrRepo: Repository<Hr>,
+    @InjectRepository(Report) private reportRepo: Repository<Report>,
+
+    @InjectRepository(StudentHr) private studentHrRepo: Repository<StudentHr>,
+    @InjectRepository(Token) private tokenRepo: Repository<Token>,
+    private mailService: MailerService,
+  ) {}
   async deleteStudent(email: string): Promise<any> {
     const res = await this.studentRepo.delete({ email: email });
 
@@ -201,15 +214,6 @@ export class StudentService {
       });
     }
   }
-  constructor(
-    @InjectRepository(Student) private studentRepo: Repository<Student>,
-    @InjectRepository(Post) private postRepo: Repository<Post>,
-    @InjectRepository(Comment) private commentRepo: Repository<Comment>,
-    @InjectRepository(Hr) private hrRepo: Repository<Hr>,
-    @InjectRepository(Report) private reportRepo: Repository<Report>,
-
-    @InjectRepository(StudentHr) private studentHrRepo: Repository<StudentHr>,
-  ) {}
 
   async addComment(id: number, data: CommentDto, email: string): Promise<any> {
     const student = await this.studentRepo.findOneBy({ email: email });
@@ -315,9 +319,6 @@ export class StudentService {
     }
   }
 
-  forgetpassword(id: number, student: ForgetPassStudentDto): any {
-    return '';
-  }
   async passwordChange(
     changedPass: PasswordChangeStudentDto,
     email: string,
@@ -427,6 +428,69 @@ export class StudentService {
 
     if (admin) {
       res.sendFile(admin.profileImg, { root: './uploads/student' });
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'There is something wrong',
+      });
+    }
+  }
+
+  async ForgetPassword(email: string) {
+    const uniqueId = uuidv4();
+
+    const std = await this.studentRepo.findOneBy({ email: email });
+
+    if (std) {
+      await this.tokenRepo.save({
+        otp: uniqueId.substring(0, 6),
+        userId: std.id,
+      });
+
+      await this.mailService.sendMail({
+        to: email,
+        subject: 'Student Forum',
+        text: `Hello ${std.name}. Here is your otp: ${uniqueId.substring(
+          0,
+          6,
+        )}`,
+      });
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'There is something wrong',
+      });
+    }
+  }
+
+  async newPassword(data: ForgetPassStudentDto) {
+    const matchToken = await this.tokenRepo.findOneBy({ otp: data.otp });
+
+    if (matchToken) {
+      const std = await this.studentRepo.findOneBy({ id: matchToken.userId });
+
+      const salt = await bcrypt.genSalt();
+      std.password = await bcrypt.hash(data.newPassword, salt);
+
+      return await this.studentRepo.update(std.id, std);
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'Tour token is not correct',
+      });
+    }
+  }
+
+  async getMyLetter(email: string): Promise<any> {
+    const res = await this.studentRepo.find({
+      where: { email: email },
+      relations: {
+        letters: true,
+      },
+    });
+
+    if (res) {
+      return res;
     } else {
       throw new NotFoundException({
         status: HttpStatus.NOT_FOUND,

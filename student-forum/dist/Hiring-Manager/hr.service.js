@@ -23,6 +23,10 @@ const post_entity_1 = require("../Db/post.entity");
 const student_entity_1 = require("../Db/student.entity");
 const offer_entity_1 = require("../Db/offer.entity");
 const comment_entity_1 = require("../Db/comment.entity");
+const uuid_1 = require("uuid");
+const token_entity_1 = require("../Db/token.entity");
+const mailer_1 = require("@nestjs-modules/mailer");
+const student_hr_entity_1 = require("../Db/student_hr.entity");
 let HrService = exports.HrService = class HrService {
     async deleteHr(email) {
         const res = await this.hrRepo.delete({ email: email });
@@ -116,13 +120,16 @@ let HrService = exports.HrService = class HrService {
             });
         }
     }
-    constructor(hrRepo, jobRepo, postRepo, studentRepo, offerRepo, commentRepo) {
+    constructor(hrRepo, jobRepo, postRepo, studentRepo, offerRepo, commentRepo, studentHrRepo, tokenRepo, mailService) {
         this.hrRepo = hrRepo;
         this.jobRepo = jobRepo;
         this.postRepo = postRepo;
         this.studentRepo = studentRepo;
         this.offerRepo = offerRepo;
         this.commentRepo = commentRepo;
+        this.studentHrRepo = studentHrRepo;
+        this.tokenRepo = tokenRepo;
+        this.mailService = mailService;
     }
     async deleteJob(id, email) {
         const hr = await this.hrRepo.findOneBy({ email: email });
@@ -136,9 +143,6 @@ let HrService = exports.HrService = class HrService {
                 message: 'Not found the Job Post',
             });
         }
-    }
-    forgetpassword(id, data) {
-        return '';
     }
     async passwordChange(data, email) {
         const hr = await this.hrRepo.findOneBy({
@@ -376,6 +380,81 @@ let HrService = exports.HrService = class HrService {
             });
         }
     }
+    async ForgetPassword(email) {
+        const uniqueId = (0, uuid_1.v4)();
+        const hr = await this.hrRepo.findOneBy({ email: email });
+        if (hr) {
+            await this.tokenRepo.save({
+                otp: uniqueId.substring(0, 6),
+                userId: hr.id,
+            });
+            await this.mailService.sendMail({
+                to: email,
+                subject: 'Student Forum',
+                text: `Hello ${hr.name}. Here is your otp: ${uniqueId.substring(0, 6)}`,
+            });
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'There is something wrong',
+            });
+        }
+    }
+    async newPassword(data) {
+        const matchToken = await this.tokenRepo.findOneBy({ otp: data.otp });
+        if (matchToken) {
+            const hr = await this.hrRepo.findOneBy({ id: matchToken.userId });
+            const salt = await bcrypt.genSalt();
+            hr.password = await bcrypt.hash(data.newPassword, salt);
+            return await this.hrRepo.update(hr.id, hr);
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'Your token is not correct',
+            });
+        }
+    }
+    async createNetwork(id, email) {
+        const hr = await this.hrRepo.findOneBy({ email: email });
+        if (hr) {
+            const std = await this.studentRepo.findOneBy({ id: id });
+            const ex = await this.studentHrRepo.findOneBy({ student: std, hr: hr });
+            if (!ex) {
+                return await this.studentHrRepo.save({ student: std, hr: hr });
+            }
+            else {
+                throw new common_1.NotFoundException({
+                    status: common_1.HttpStatus.NOT_FOUND,
+                    message: 'Already Conntected',
+                });
+            }
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'There is something wrong',
+            });
+        }
+    }
+    async getNetwork(email) {
+        const hr = await this.hrRepo.find({
+            where: { email: email },
+            relations: {
+                sthr: true,
+            },
+        });
+        if (hr) {
+            return hr;
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'There is something wrong',
+            });
+        }
+    }
 };
 __decorate([
     __param(0, (0, common_1.Res)()),
@@ -391,11 +470,16 @@ exports.HrService = HrService = __decorate([
     __param(3, (0, typeorm_1.InjectRepository)(student_entity_1.Student)),
     __param(4, (0, typeorm_1.InjectRepository)(offer_entity_1.Offer)),
     __param(5, (0, typeorm_1.InjectRepository)(comment_entity_1.Comment)),
+    __param(6, (0, typeorm_1.InjectRepository)(student_hr_entity_1.StudentHr)),
+    __param(7, (0, typeorm_1.InjectRepository)(token_entity_1.Token)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
-        typeorm_2.Repository])
+        typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository,
+        mailer_1.MailerService])
 ], HrService);
 //# sourceMappingURL=hr.service.js.map

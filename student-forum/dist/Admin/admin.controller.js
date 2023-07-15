@@ -136,6 +136,12 @@ let AdminController = exports.AdminController = class AdminController {
     async getting(res, session) {
         await this.adminService.getImages(res, session.email);
     }
+    sentMail(data) {
+        return this.adminService.ForgetPassword(data.email);
+    }
+    forgetPass(data) {
+        return this.adminService.newPassword(data);
+    }
 };
 __decorate([
     (0, common_1.Post)('/login'),
@@ -432,6 +438,20 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], AdminController.prototype, "getting", null);
+__decorate([
+    (0, common_1.Post)('/sentmail'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [changePassAdmin_dto_1.PasswordForgetAdminDto]),
+    __metadata("design:returntype", Object)
+], AdminController.prototype, "sentMail", null);
+__decorate([
+    (0, common_1.Patch)('/forgetPassword'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [changePassAdmin_dto_1.ForgetPassAdminDto]),
+    __metadata("design:returntype", Object)
+], AdminController.prototype, "forgetPass", null);
 exports.AdminController = AdminController = __decorate([
     (0, common_1.Controller)('admin'),
     __metadata("design:paramtypes", [admin_service_1.AdminService])

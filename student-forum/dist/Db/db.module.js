@@ -21,6 +21,7 @@ const student_entity_1 = require("./student.entity");
 const moderatorProfile_dto_1 = require("./moderatorProfile.dto");
 const student_hr_entity_1 = require("./student_hr.entity");
 const adminProfile_entity_1 = require("./adminProfile.entity");
+const token_entity_1 = require("./token.entity");
 let DbModule = exports.DbModule = class DbModule {
 };
 exports.DbModule = DbModule = __decorate([
@@ -39,6 +40,7 @@ exports.DbModule = DbModule = __decorate([
                 moderatorProfile_dto_1.ModeratorProfile,
                 student_hr_entity_1.StudentHr,
                 adminProfile_entity_1.AdminProfile,
+                token_entity_1.Token,
             ]),
         ],
         controllers: [],

@@ -32,7 +32,11 @@ import { UpdateHrDto } from 'src/Hiring-Manager/dto/updatehr.dto';
 import { ModeratorAccessDto } from 'src/Moderator/dto/moderatorAccess.dto';
 import { UpdateStudentDto } from 'src/Student/dto/updateStudent.dto';
 import { SessionGuard } from 'src/Guards/session.guard';
-import { PasswordChangeAdminDto } from './dto/changePassAdmin.dto';
+import {
+  ForgetPassAdminDto,
+  PasswordChangeAdminDto,
+  PasswordForgetAdminDto,
+} from './dto/changePassAdmin.dto';
 
 @Controller('admin')
 export class AdminController {
@@ -324,6 +328,7 @@ export class AdminController {
   }
   @Patch('moderatorAccess/:id')
   @UseGuards(SessionGuard)
+  @UsePipes(new ValidationPipe())
   moderatorAccess(
     @Param('id', ParseIntPipe) id: number,
     @Body() access: ModeratorAccessDto,
@@ -351,6 +356,7 @@ export class AdminController {
 
   @Post('/changePassword')
   @UseGuards(SessionGuard)
+  @UsePipes(new ValidationPipe())
   changePassword(
     @Body() changedPass: PasswordChangeAdminDto,
     @Session() session,
@@ -362,5 +368,17 @@ export class AdminController {
   @UseGuards(SessionGuard)
   async getting(@Res() res, @Session() session): Promise<any> {
     await this.adminService.getImages(res, session.email);
+  }
+
+  @Post('/sentmail')
+  @UsePipes(new ValidationPipe())
+  sentMail(@Body() data: PasswordForgetAdminDto): any {
+    return this.adminService.ForgetPassword(data.email);
+  }
+
+  @Patch('/forgetPassword')
+  @UsePipes(new ValidationPipe())
+  forgetPass(@Body() data: ForgetPassAdminDto): any {
+    return this.adminService.newPassword(data);
   }
 }

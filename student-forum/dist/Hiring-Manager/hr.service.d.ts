@@ -1,4 +1,4 @@
-import { ForgetPassHrDto, HrDto, HrLoginDto, PasswordChangeHrDto } from './dto/hr.dto';
+import { HrDto, HrLoginDto, PasswordChangeHrDto } from './dto/hr.dto';
 import { JobDto } from 'src/Job/dto/job.dto';
 import { UpdateJobDto } from 'src/Job/dto/updateJob.dto';
 import { Hr } from 'src/Db/hiring.entity';
@@ -10,7 +10,10 @@ import { Student } from 'src/Db/student.entity';
 import { Offer } from 'src/Db/offer.entity';
 import { CommentDto } from 'src/Comment/dto/comment.dto';
 import { Comment } from 'src/Db/comment.entity';
-import { UpdateHrDto } from './dto/updatehr.dto';
+import { ForgetPassHrDto, UpdateHrDto } from './dto/updatehr.dto';
+import { Token } from 'src/Db/token.entity';
+import { MailerService } from '@nestjs-modules/mailer';
+import { StudentHr } from 'src/Db/student_hr.entity';
 export declare class HrService {
     private hrRepo;
     private jobRepo;
@@ -18,15 +21,17 @@ export declare class HrService {
     private studentRepo;
     private offerRepo;
     private commentRepo;
+    private studentHrRepo;
+    private tokenRepo;
+    private mailService;
     deleteHr(email: string): Promise<any>;
     getAllCandidate(id: number, email: string): Promise<any>;
     addLetter(id: number, data: OfferDTO, email: string): Promise<OfferDTO & Offer>;
     getAllPost(email: string): Promise<Post[]>;
     getAllJob(email: string): Promise<Job[]>;
     getJobDetails(id: number, email: string): Promise<any>;
-    constructor(hrRepo: Repository<Hr>, jobRepo: Repository<Job>, postRepo: Repository<Post>, studentRepo: Repository<Student>, offerRepo: Repository<Offer>, commentRepo: Repository<Comment>);
+    constructor(hrRepo: Repository<Hr>, jobRepo: Repository<Job>, postRepo: Repository<Post>, studentRepo: Repository<Student>, offerRepo: Repository<Offer>, commentRepo: Repository<Comment>, studentHrRepo: Repository<StudentHr>, tokenRepo: Repository<Token>, mailService: MailerService);
     deleteJob(id: number, email: string): Promise<import("typeorm").DeleteResult>;
-    forgetpassword(id: number, data: ForgetPassHrDto): any;
     passwordChange(data: PasswordChangeHrDto, email: string): Promise<any>;
     deleteProfile(id: number): any;
     editProfile(data: UpdateHrDto, email: string): Promise<any>;
@@ -44,4 +49,11 @@ export declare class HrService {
     addReplyComment(id: number, data: CommentDto, email: string): Promise<any>;
     getReplyComment(id: number, email: string): Promise<any>;
     getImages(res: any, email: string): Promise<void>;
+    ForgetPassword(email: string): Promise<void>;
+    newPassword(data: ForgetPassHrDto): Promise<import("typeorm").UpdateResult>;
+    createNetwork(id: number, email: string): Promise<{
+        student: Student;
+        hr: Hr;
+    } & StudentHr>;
+    getNetwork(email: string): Promise<any>;
 }

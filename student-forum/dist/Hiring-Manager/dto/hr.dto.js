@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ForgetPassHrDto = exports.PasswordChangeHrDto = exports.HrLoginDto = exports.HrDto = void 0;
+exports.PasswordChangeHrDto = exports.HrLoginDto = exports.HrDto = void 0;
 const class_validator_1 = require("class-validator");
 class HrDto {
 }
@@ -59,11 +59,4 @@ __decorate([
     (0, class_validator_1.MinLength)(7),
     __metadata("design:type", String)
 ], PasswordChangeHrDto.prototype, "newPassword", void 0);
-class ForgetPassHrDto {
-}
-exports.ForgetPassHrDto = ForgetPassHrDto;
-__decorate([
-    (0, class_validator_1.IsEmail)({}, { message: 'Entered a wrong email' }),
-    __metadata("design:type", String)
-], ForgetPassHrDto.prototype, "email", void 0);
 //# sourceMappingURL=hr.dto.js.map

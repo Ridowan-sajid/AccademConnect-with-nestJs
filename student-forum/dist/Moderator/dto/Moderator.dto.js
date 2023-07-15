@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ForgetPassModeratorDto = exports.PasswordChangeModeratorDto = exports.ModeratorLoginDto = exports.ModeratorDto = void 0;
+exports.ForgetPassModeratorDto = exports.PasswordForgetModeratorDto = exports.PasswordChangeModeratorDto = exports.ModeratorLoginDto = exports.ModeratorDto = void 0;
 const class_validator_1 = require("class-validator");
 class ModeratorDto {
 }
@@ -59,11 +59,18 @@ __decorate([
     (0, class_validator_1.MinLength)(7),
     __metadata("design:type", String)
 ], PasswordChangeModeratorDto.prototype, "newPassword", void 0);
+class PasswordForgetModeratorDto {
+}
+exports.PasswordForgetModeratorDto = PasswordForgetModeratorDto;
+__decorate([
+    (0, class_validator_1.IsEmail)(),
+    __metadata("design:type", String)
+], PasswordForgetModeratorDto.prototype, "email", void 0);
 class ForgetPassModeratorDto {
 }
 exports.ForgetPassModeratorDto = ForgetPassModeratorDto;
 __decorate([
-    (0, class_validator_1.IsEmail)(),
+    (0, class_validator_1.MinLength)(7),
     __metadata("design:type", String)
-], ForgetPassModeratorDto.prototype, "email", void 0);
+], ForgetPassModeratorDto.prototype, "newPassword", void 0);
 //# sourceMappingURL=Moderator.dto.js.map

@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ForgetPassStudentDto = exports.PasswordChangeStudentDto = exports.StudentDto = void 0;
+exports.PasswordChangeStudentDto = exports.StudentDto = void 0;
 const class_validator_1 = require("class-validator");
 class StudentDto {
 }
@@ -46,11 +46,4 @@ __decorate([
     (0, class_validator_1.MinLength)(7),
     __metadata("design:type", String)
 ], PasswordChangeStudentDto.prototype, "newPassword", void 0);
-class ForgetPassStudentDto {
-}
-exports.ForgetPassStudentDto = ForgetPassStudentDto;
-__decorate([
-    (0, class_validator_1.IsEmail)(),
-    __metadata("design:type", String)
-], ForgetPassStudentDto.prototype, "email", void 0);
 //# sourceMappingURL=Student.dto.js.map
