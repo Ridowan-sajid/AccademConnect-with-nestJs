@@ -37,7 +37,7 @@ class PasswordForgetHrDto {
 }
 exports.PasswordForgetHrDto = PasswordForgetHrDto;
 __decorate([
-    (0, class_validator_1.IsEmail)(),
+    (0, class_validator_1.IsEmail)({}, { message: 'Enter a valid email' }),
     __metadata("design:type", String)
 ], PasswordForgetHrDto.prototype, "email", void 0);
 class ForgetPassHrDto {

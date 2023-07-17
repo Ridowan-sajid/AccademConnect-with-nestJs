@@ -3,6 +3,7 @@ import { Student } from './student.entity';
 import { Comment } from './comment.entity';
 import { Report } from './report.entity';
 import { Offer } from './offer.entity';
+import { HrProfile } from './hrProfile.entity';
 export declare class Hr {
     id: number;
     name: string;
@@ -21,4 +22,5 @@ export declare class Hr {
     reports: Report[];
     letters: Offer[];
     sthr: Student[];
+    hrProfile: HrProfile;
 }

@@ -17,9 +17,13 @@ exports.ModeratorDto = ModeratorDto;
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.Matches)(/^[A-Z][A-Za-z0-9_]+$/),
+    (0, class_validator_1.Matches)(/^[A-Z][A-Za-z ]+$/),
     __metadata("design:type", String)
 ], ModeratorDto.prototype, "name", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], ModeratorDto.prototype, "age", void 0);
 __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.Length)(11),
@@ -38,7 +42,9 @@ __decorate([
     __metadata("design:type", String)
 ], ModeratorDto.prototype, "education", void 0);
 __decorate([
-    (0, class_validator_1.MinLength)(7),
+    (0, class_validator_1.MinLength)(7, {
+        message: 'Minimum length of the password should be equal or greater than 7',
+    }),
     __metadata("design:type", String)
 ], ModeratorDto.prototype, "password", void 0);
 class ModeratorLoginDto {
@@ -50,27 +56,34 @@ __decorate([
 ], ModeratorLoginDto.prototype, "email", void 0);
 __decorate([
     (0, class_validator_1.IsString)({ message: 'It is not a string' }),
+    (0, class_validator_1.MinLength)(7, {
+        message: 'Minimum length of the password should be equal or greater than 7',
+    }),
     __metadata("design:type", String)
 ], ModeratorLoginDto.prototype, "password", void 0);
 class PasswordChangeModeratorDto {
 }
 exports.PasswordChangeModeratorDto = PasswordChangeModeratorDto;
 __decorate([
-    (0, class_validator_1.MinLength)(7),
+    (0, class_validator_1.MinLength)(7, {
+        message: 'Minimum length of the password should be equal or greater than 7',
+    }),
     __metadata("design:type", String)
 ], PasswordChangeModeratorDto.prototype, "newPassword", void 0);
 class PasswordForgetModeratorDto {
 }
 exports.PasswordForgetModeratorDto = PasswordForgetModeratorDto;
 __decorate([
-    (0, class_validator_1.IsEmail)(),
+    (0, class_validator_1.IsEmail)({}, { message: 'It is not an email' }),
     __metadata("design:type", String)
 ], PasswordForgetModeratorDto.prototype, "email", void 0);
 class ForgetPassModeratorDto {
 }
 exports.ForgetPassModeratorDto = ForgetPassModeratorDto;
 __decorate([
-    (0, class_validator_1.MinLength)(7),
+    (0, class_validator_1.MinLength)(7, {
+        message: 'Minimum length of the password should be equal or greater than 7',
+    }),
     __metadata("design:type", String)
 ], ForgetPassModeratorDto.prototype, "newPassword", void 0);
 //# sourceMappingURL=Moderator.dto.js.map

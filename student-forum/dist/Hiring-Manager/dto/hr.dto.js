@@ -38,7 +38,9 @@ __decorate([
     __metadata("design:type", String)
 ], HrDto.prototype, "gender", void 0);
 __decorate([
-    (0, class_validator_1.MinLength)(7),
+    (0, class_validator_1.MinLength)(7, {
+        message: 'Password length should be greater than or equal 7 ',
+    }),
     __metadata("design:type", String)
 ], HrDto.prototype, "password", void 0);
 class HrLoginDto {

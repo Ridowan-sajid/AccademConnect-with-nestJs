@@ -22,6 +22,7 @@ export declare class ModeratorService {
     private hrRepo;
     private tokenRepo;
     private mailService;
+    constructor(moderatorRepo: Repository<Moderator>, studentRepo: Repository<Student>, moderatorProfileRepo: Repository<ModeratorProfile>, postRepo: Repository<Post>, reportRepo: Repository<Report>, commentRepo: Repository<Comment>, hrRepo: Repository<Hr>, tokenRepo: Repository<Token>, mailService: MailerService);
     getHrComment(id: number, email: any): Promise<any>;
     getStudentComment(id: number, email: any): Promise<any>;
     getHrJobs(id: number, email: any): Promise<any>;
@@ -35,12 +36,8 @@ export declare class ModeratorService {
     deleteStudentByModeratorId(id: number, email: string): Promise<any>;
     updateStudentByModeratorId(id: number, student: UpdateStudentDto, email: string): Promise<any>;
     getStudentByModeratorId(id: number): Promise<any>;
-    constructor(moderatorRepo: Repository<Moderator>, studentRepo: Repository<Student>, moderatorProfileRepo: Repository<ModeratorProfile>, postRepo: Repository<Post>, reportRepo: Repository<Report>, commentRepo: Repository<Comment>, hrRepo: Repository<Hr>, tokenRepo: Repository<Token>, mailService: MailerService);
     addStudent(student: StudentDto, email: string): Promise<Student>;
-    deleteHr(id: number): string;
-    deleteStudent(id: number): string;
     passwordChange(changedPass: PasswordChangeModeratorDto, email: string): Promise<any>;
-    getDashboard(): any;
     deleteProfile(email: string): Promise<any>;
     editProfile(moderator: UpdateModeratorDto, email: string): Promise<any>;
     myProfile(email: string): Promise<ModeratorProfile>;

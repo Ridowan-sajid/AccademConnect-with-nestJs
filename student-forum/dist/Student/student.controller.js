@@ -56,9 +56,6 @@ let StudentController = exports.StudentController = class StudentController {
         student.updatedDate = new Date();
         return this.studentService.editProfile(student, session.email);
     }
-    deleteProfile(id) {
-        return this.studentService.deleteProfile(id);
-    }
     changePassword(student, session) {
         return this.studentService.passwordChange(student, session.email);
     }
@@ -153,6 +150,7 @@ __decorate([
             },
         }),
     })),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.UploadedFile)()),
     __metadata("design:type", Function),
@@ -161,6 +159,7 @@ __decorate([
 ], StudentController.prototype, "addStudent", null);
 __decorate([
     (0, common_1.Post)('/login'),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Session)()),
     __metadata("design:type", Function),
@@ -178,6 +177,7 @@ __decorate([
 __decorate([
     (0, common_1.Put)('/updateprofile'),
     (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Session)()),
     __metadata("design:type", Function),
@@ -185,15 +185,9 @@ __decorate([
     __metadata("design:returntype", Object)
 ], StudentController.prototype, "updateProfile", null);
 __decorate([
-    (0, common_1.Delete)('/deleteProfile/:id'),
-    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", Student_dto_1.StudentDto)
-], StudentController.prototype, "deleteProfile", null);
-__decorate([
     (0, common_1.Patch)('/changePassword'),
     (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Session)()),
     __metadata("design:type", Function),
@@ -211,6 +205,7 @@ __decorate([
 __decorate([
     (0, common_1.Post)('/post'),
     (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Session)()),
     __metadata("design:type", Function),
@@ -246,6 +241,7 @@ __decorate([
 __decorate([
     (0, common_1.Put)('/Post/:id'),
     (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(2, (0, common_1.Session)()),
@@ -273,6 +269,7 @@ __decorate([
 __decorate([
     (0, common_1.Post)('/comment/:id'),
     (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
     __param(2, (0, common_1.Session)()),
@@ -301,6 +298,7 @@ __decorate([
 __decorate([
     (0, common_1.Post)('/replycomment/:id'),
     (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
     __param(2, (0, common_1.Session)()),
@@ -320,6 +318,7 @@ __decorate([
 __decorate([
     (0, common_1.Post)('/createNetwork/:id'),
     (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Session)()),
     __metadata("design:type", Function),
@@ -329,6 +328,7 @@ __decorate([
 __decorate([
     (0, common_1.Post)('/report'),
     (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Session)()),
     __metadata("design:type", Function),
@@ -338,6 +338,7 @@ __decorate([
 __decorate([
     (0, common_1.Put)('/apply/:id'),
     (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Session)()),
     __metadata("design:type", Function),
@@ -362,6 +363,7 @@ __decorate([
 ], StudentController.prototype, "deleteStudent", null);
 __decorate([
     (0, common_1.Post)('/sentmail'),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [updateStudent_dto_1.PasswordForgetStudentDto]),
@@ -369,6 +371,7 @@ __decorate([
 ], StudentController.prototype, "sentMail", null);
 __decorate([
     (0, common_1.Patch)('/forgetPassword'),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [updateStudent_dto_1.ForgetPassStudentDto]),

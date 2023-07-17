@@ -5,6 +5,7 @@ import {
   ManyToMany,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Job } from './job.entity';
@@ -15,6 +16,7 @@ import { Comment } from './comment.entity';
 import { Report } from './report.entity';
 import { Offer } from './offer.entity';
 import { StudentHr } from './student_hr.entity';
+import { HrProfile } from './hrProfile.entity';
 
 @Entity('Hr')
 export class Hr {
@@ -63,4 +65,7 @@ export class Hr {
 
   @OneToMany(() => StudentHr, (sh) => sh.hr)
   sthr: Student[];
+
+  @OneToOne(() => HrProfile, (hrProfile) => hrProfile.hr)
+  hrProfile: HrProfile;
 }

@@ -87,11 +87,6 @@ export class HrController {
     }
   }
 
-  @Get('/')
-  getDashboard(): any {
-    return this.hrService.dashboard();
-  }
-
   @Get('/myprofile')
   @UseGuards(SessionGuard)
   myProfile(@Session() session): any {
@@ -104,12 +99,6 @@ export class HrController {
   updateProfile(@Body() data: UpdateHrDto, @Session() session): any {
     data.updatedDate = new Date();
     return this.hrService.editProfile(data, session.email);
-  }
-
-  @Delete('/deleteProfile/:id')
-  @UseGuards(SessionGuard)
-  deleteProfile(@Param('id', ParseIntPipe) id: number): any {
-    return this.hrService.deleteProfile(id);
   }
 
   @Patch('/changePassword')

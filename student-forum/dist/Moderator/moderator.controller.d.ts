@@ -13,7 +13,6 @@ export declare class ModeratorController {
     myProfile(session: any): any;
     updateProfile(data: UpdateModeratorDto, session: any): any;
     deleteProfile(session: any): any;
-    getDashboard(): any;
     changePassword(changedPass: PasswordChangeModeratorDto, session: any): any;
     addStudent(student: StudentDto, myfileobj: Express.Multer.File, session: any): any;
     getStudentByModeratorId(id: number): any;

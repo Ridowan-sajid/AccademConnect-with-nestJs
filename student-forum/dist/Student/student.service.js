@@ -26,7 +26,19 @@ const student_hr_entity_1 = require("../Db/student_hr.entity");
 const uuid_1 = require("uuid");
 const token_entity_1 = require("../Db/token.entity");
 const mailer_1 = require("@nestjs-modules/mailer");
+const studentProfile_entity_1 = require("../Db/studentProfile.entity");
 let StudentService = exports.StudentService = class StudentService {
+    constructor(studentRepo, postRepo, commentRepo, hrRepo, reportRepo, studentProfileRepo, studentHrRepo, tokenRepo, mailService) {
+        this.studentRepo = studentRepo;
+        this.postRepo = postRepo;
+        this.commentRepo = commentRepo;
+        this.hrRepo = hrRepo;
+        this.reportRepo = reportRepo;
+        this.studentProfileRepo = studentProfileRepo;
+        this.studentHrRepo = studentHrRepo;
+        this.tokenRepo = tokenRepo;
+        this.mailService = mailService;
+    }
     async deleteStudent(email) {
         const res = await this.studentRepo.delete({ email: email });
         if (res) {
@@ -196,16 +208,6 @@ let StudentService = exports.StudentService = class StudentService {
             });
         }
     }
-    constructor(studentRepo, postRepo, commentRepo, hrRepo, reportRepo, studentHrRepo, tokenRepo, mailService) {
-        this.studentRepo = studentRepo;
-        this.postRepo = postRepo;
-        this.commentRepo = commentRepo;
-        this.hrRepo = hrRepo;
-        this.reportRepo = reportRepo;
-        this.studentHrRepo = studentHrRepo;
-        this.tokenRepo = tokenRepo;
-        this.mailService = mailService;
-    }
     async addComment(id, data, email) {
         const student = await this.studentRepo.findOneBy({ email: email });
         if (student) {
@@ -337,15 +339,10 @@ let StudentService = exports.StudentService = class StudentService {
             }
         }
     }
-    getDashboard() {
-        return '';
-    }
-    deleteProfile(id) {
-        return '';
-    }
     async editProfile(student, email) {
         const res = await this.studentRepo.update({ email: email }, student);
-        if (res) {
+        const res2 = await this.studentProfileRepo.update({ email: email }, student);
+        if (res && res2) {
             return res;
         }
         else {
@@ -356,7 +353,7 @@ let StudentService = exports.StudentService = class StudentService {
         }
     }
     async myProfile(email) {
-        const student = await this.studentRepo.findOneBy({ email: email });
+        const student = await this.studentProfileRepo.findOneBy({ email: email });
         if (student) {
             return student;
         }
@@ -383,6 +380,14 @@ let StudentService = exports.StudentService = class StudentService {
         student.password = await bcrypt.hash(student.password, salt);
         const res = await this.studentRepo.save(student);
         if (res) {
+            await this.studentProfileRepo.save({
+                name: student.name,
+                age: student.age,
+                phone: student.phone,
+                email: student.email,
+                gender: student.gender,
+                student: res.id,
+            });
             return res;
         }
         else {
@@ -428,15 +433,27 @@ let StudentService = exports.StudentService = class StudentService {
     async newPassword(data) {
         const matchToken = await this.tokenRepo.findOneBy({ otp: data.otp });
         if (matchToken) {
-            const std = await this.studentRepo.findOneBy({ id: matchToken.userId });
-            const salt = await bcrypt.genSalt();
-            std.password = await bcrypt.hash(data.newPassword, salt);
-            return await this.studentRepo.update(std.id, std);
+            var currentDate = new Date();
+            var specifiedDate = new Date(matchToken.createdDate);
+            var difference = currentDate.getTime() - specifiedDate.getTime();
+            var differenceInMinutes = Math.floor(difference / 1000 / 60);
+            if (differenceInMinutes <= 5) {
+                const std = await this.studentRepo.findOneBy({ id: matchToken.userId });
+                const salt = await bcrypt.genSalt();
+                std.password = await bcrypt.hash(data.newPassword, salt);
+                return await this.studentRepo.update(std.id, std);
+            }
+            else {
+                throw new common_1.NotFoundException({
+                    status: common_1.HttpStatus.NOT_FOUND,
+                    message: 'you took more than 5 minute',
+                });
+            }
         }
         else {
             throw new common_1.NotFoundException({
                 status: common_1.HttpStatus.NOT_FOUND,
-                message: 'Tour token is not correct',
+                message: 'You may entered a wrong otp or you took more than 5 minute',
             });
         }
     }
@@ -471,9 +488,11 @@ exports.StudentService = StudentService = __decorate([
     __param(2, (0, typeorm_1.InjectRepository)(comment_entity_1.Comment)),
     __param(3, (0, typeorm_1.InjectRepository)(hiring_entity_1.Hr)),
     __param(4, (0, typeorm_1.InjectRepository)(report_entity_1.Report)),
-    __param(5, (0, typeorm_1.InjectRepository)(student_hr_entity_1.StudentHr)),
-    __param(6, (0, typeorm_1.InjectRepository)(token_entity_1.Token)),
+    __param(5, (0, typeorm_1.InjectRepository)(studentProfile_entity_1.StudentProfile)),
+    __param(6, (0, typeorm_1.InjectRepository)(student_hr_entity_1.StudentHr)),
+    __param(7, (0, typeorm_1.InjectRepository)(token_entity_1.Token)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,

@@ -14,15 +14,18 @@ import { Report } from 'src/Db/report.entity';
 import { StudentHr } from 'src/Db/student_hr.entity';
 import { Token } from 'src/Db/token.entity';
 import { MailerService } from '@nestjs-modules/mailer';
+import { StudentProfile } from 'src/Db/studentProfile.entity';
 export declare class StudentService {
     private studentRepo;
     private postRepo;
     private commentRepo;
     private hrRepo;
     private reportRepo;
+    private studentProfileRepo;
     private studentHrRepo;
     private tokenRepo;
     private mailService;
+    constructor(studentRepo: Repository<Student>, postRepo: Repository<Post>, commentRepo: Repository<Comment>, hrRepo: Repository<Hr>, reportRepo: Repository<Report>, studentProfileRepo: Repository<StudentProfile>, studentHrRepo: Repository<StudentHr>, tokenRepo: Repository<Token>, mailService: MailerService);
     deleteStudent(email: string): Promise<any>;
     getNetwork(email: string): Promise<any>;
     addApply(id: number, email: string): Promise<import("typeorm").UpdateResult>;
@@ -35,7 +38,6 @@ export declare class StudentService {
     addReplyComment(id: number, data: CommentDto, email: string): Promise<any>;
     deleteComment(id: number, email: string): Promise<any>;
     getPostComment(id: number, email: string): Promise<any>;
-    constructor(studentRepo: Repository<Student>, postRepo: Repository<Post>, commentRepo: Repository<Comment>, hrRepo: Repository<Hr>, reportRepo: Repository<Report>, studentHrRepo: Repository<StudentHr>, tokenRepo: Repository<Token>, mailService: MailerService);
     addComment(id: number, data: CommentDto, email: string): Promise<any>;
     getDetailsPost(id: number, email: any): Promise<any>;
     getAllPost(email: string): Promise<Post[]>;
@@ -44,10 +46,8 @@ export declare class StudentService {
     updatePost(id: number, data: UpdatePostDto, email: string): Promise<any>;
     passwordChange(changedPass: PasswordChangeStudentDto, email: string): Promise<any>;
     addPost(data: PostDto, email: string): Promise<any>;
-    getDashboard(): any;
-    deleteProfile(id: number): any;
     editProfile(student: UpdateStudentDto, email: string): Promise<any>;
-    myProfile(email: string): Promise<Student>;
+    myProfile(email: string): Promise<StudentProfile>;
     loginStudent(student: StudentLoginDto): Promise<any>;
     addStudent(student: StudentDto): Promise<any>;
     getImages(res: any, email: string): Promise<void>;

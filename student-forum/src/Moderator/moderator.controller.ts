@@ -111,11 +111,6 @@ export class ModeratorController {
     return this.moderatorService.deleteProfile(session.email);
   }
 
-  @Get('/')
-  getDashboard(): any {
-    return this.moderatorService.getDashboard();
-  }
-
   @Post('/changePassword')
   @UseGuards(SessionGuard)
   @UsePipes(new ValidationPipe())

@@ -6,6 +6,7 @@ import {
   ManyToMany,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -18,6 +19,7 @@ import { Offer } from './offer.entity';
 import { Report } from './report.entity';
 import { Job } from './job.entity';
 import { StudentHr } from './student_hr.entity';
+import { StudentProfile } from './studentProfile.entity';
 
 @Entity('Student')
 export class Student {
@@ -70,4 +72,7 @@ export class Student {
 
   @OneToMany(() => StudentHr, (sh) => sh.student)
   sthr: Student[];
+
+  @OneToOne(() => StudentProfile, (stdP) => stdP.student)
+  studentProfile: StudentProfile;
 }

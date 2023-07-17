@@ -9,27 +9,41 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Token = void 0;
+exports.StudentProfile = void 0;
 const typeorm_1 = require("typeorm");
-let Token = exports.Token = class Token {
+const student_entity_1 = require("./student.entity");
+let StudentProfile = exports.StudentProfile = class StudentProfile {
 };
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
-], Token.prototype, "id", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", Number)
-], Token.prototype, "userId", void 0);
+], StudentProfile.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], Token.prototype, "otp", void 0);
+], StudentProfile.prototype, "name", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
-    __metadata("design:type", Date)
-], Token.prototype, "createdDate", void 0);
-exports.Token = Token = __decorate([
-    (0, typeorm_1.Entity)('token')
-], Token);
-//# sourceMappingURL=token.entity.js.map
+    __metadata("design:type", String)
+], StudentProfile.prototype, "age", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], StudentProfile.prototype, "phone", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], StudentProfile.prototype, "email", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], StudentProfile.prototype, "gender", void 0);
+__decorate([
+    (0, typeorm_1.OneToOne)(() => student_entity_1.Student, (std) => std.studentProfile),
+    (0, typeorm_1.JoinColumn)(),
+    __metadata("design:type", Number)
+], StudentProfile.prototype, "student", void 0);
+exports.StudentProfile = StudentProfile = __decorate([
+    (0, typeorm_1.Entity)('StudentProfile')
+], StudentProfile);
+//# sourceMappingURL=studentProfile.entity.js.map

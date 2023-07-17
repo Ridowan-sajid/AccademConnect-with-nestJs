@@ -8,4 +8,6 @@ export class Token {
   userId: number;
   @Column()
   otp: string;
+  @Column()
+  createdDate: Date;
 }

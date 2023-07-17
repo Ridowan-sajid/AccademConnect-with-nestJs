@@ -9,27 +9,41 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Token = void 0;
+exports.HrProfile = void 0;
 const typeorm_1 = require("typeorm");
-let Token = exports.Token = class Token {
+const hiring_entity_1 = require("./hiring.entity");
+let HrProfile = exports.HrProfile = class HrProfile {
 };
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
-], Token.prototype, "id", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", Number)
-], Token.prototype, "userId", void 0);
+], HrProfile.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], Token.prototype, "otp", void 0);
+], HrProfile.prototype, "name", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
-    __metadata("design:type", Date)
-], Token.prototype, "createdDate", void 0);
-exports.Token = Token = __decorate([
-    (0, typeorm_1.Entity)('token')
-], Token);
-//# sourceMappingURL=token.entity.js.map
+    __metadata("design:type", String)
+], HrProfile.prototype, "age", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], HrProfile.prototype, "phone", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], HrProfile.prototype, "email", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], HrProfile.prototype, "gender", void 0);
+__decorate([
+    (0, typeorm_1.OneToOne)(() => hiring_entity_1.Hr, (hr) => hr.hrProfile),
+    (0, typeorm_1.JoinColumn)(),
+    __metadata("design:type", Number)
+], HrProfile.prototype, "hr", void 0);
+exports.HrProfile = HrProfile = __decorate([
+    (0, typeorm_1.Entity)('HrProfile')
+], HrProfile);
+//# sourceMappingURL=hrProfile.entity.js.map

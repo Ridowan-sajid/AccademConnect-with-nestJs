@@ -16,11 +16,16 @@ class StudentDto {
 exports.StudentDto = StudentDto;
 __decorate([
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Matches)(/^[A-Z][A-Za-z0-9_]+$/),
+    (0, class_validator_1.Matches)(/^[A-Z][A-Za-z ]+$/),
     __metadata("design:type", String)
 ], StudentDto.prototype, "name", void 0);
 __decorate([
     (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], StudentDto.prototype, "age", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.Length)(11),
     __metadata("design:type", String)
 ], StudentDto.prototype, "phone", void 0);
 __decorate([
@@ -32,7 +37,9 @@ __decorate([
     __metadata("design:type", String)
 ], StudentDto.prototype, "gender", void 0);
 __decorate([
-    (0, class_validator_1.MinLength)(7),
+    (0, class_validator_1.MinLength)(7, {
+        message: 'Password length should be equal or greater than 7',
+    }),
     __metadata("design:type", String)
 ], StudentDto.prototype, "password", void 0);
 class PasswordChangeStudentDto {
@@ -43,7 +50,9 @@ __decorate([
     __metadata("design:type", String)
 ], PasswordChangeStudentDto.prototype, "oldPassword", void 0);
 __decorate([
-    (0, class_validator_1.MinLength)(7),
+    (0, class_validator_1.MinLength)(7, {
+        message: 'Password length should be equal or greater than 7',
+    }),
     __metadata("design:type", String)
 ], PasswordChangeStudentDto.prototype, "newPassword", void 0);
 //# sourceMappingURL=Student.dto.js.map

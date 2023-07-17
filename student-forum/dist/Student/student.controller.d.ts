@@ -15,7 +15,6 @@ export declare class StudentController {
     loginStudent(student: StudentLoginDto, session: any): Promise<any>;
     myProfile(session: any): any;
     updateProfile(student: UpdateStudentDto, session: any): any;
-    deleteProfile(id: number): StudentDto;
     changePassword(student: PasswordChangeStudentDto, session: any): any;
     getDashboard(session: any): any;
     addPost(data: PostDto, session: any): Promise<any>;

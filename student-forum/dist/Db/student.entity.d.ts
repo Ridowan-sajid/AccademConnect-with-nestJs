@@ -2,6 +2,7 @@ import { Post } from './post.entity';
 import { Comment } from './comment.entity';
 import { Offer } from './offer.entity';
 import { Report } from './report.entity';
+import { StudentProfile } from './studentProfile.entity';
 export declare class Student {
     id: number;
     name: string;
@@ -21,4 +22,5 @@ export declare class Student {
     letters: Offer[];
     reports: Report[];
     sthr: Student[];
+    studentProfile: StudentProfile;
 }

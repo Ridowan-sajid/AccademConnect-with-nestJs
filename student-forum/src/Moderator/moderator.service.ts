@@ -35,6 +35,28 @@ import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class ModeratorService {
+  constructor(
+    @InjectRepository(Moderator) private moderatorRepo: Repository<Moderator>,
+    @InjectRepository(Student) private studentRepo: Repository<Student>,
+    @InjectRepository(ModeratorProfile)
+    private moderatorProfileRepo: Repository<ModeratorProfile>,
+
+    @InjectRepository(Post)
+    private postRepo: Repository<Post>,
+    @InjectRepository(Report)
+    private reportRepo: Repository<Report>,
+
+    @InjectRepository(Comment)
+    private commentRepo: Repository<Comment>,
+
+    @InjectRepository(Hr)
+    private hrRepo: Repository<Hr>,
+
+    @InjectRepository(Token)
+    private tokenRepo: Repository<Token>,
+
+    private mailService: MailerService,
+  ) {}
   async getHrComment(id: number, email: any): Promise<any> {
     const res = await this.hrRepo.find({
       where: { id: id },
@@ -218,28 +240,6 @@ export class ModeratorService {
       },
     });
   }
-  constructor(
-    @InjectRepository(Moderator) private moderatorRepo: Repository<Moderator>,
-    @InjectRepository(Student) private studentRepo: Repository<Student>,
-    @InjectRepository(ModeratorProfile)
-    private moderatorProfileRepo: Repository<ModeratorProfile>,
-
-    @InjectRepository(Post)
-    private postRepo: Repository<Post>,
-    @InjectRepository(Report)
-    private reportRepo: Repository<Report>,
-
-    @InjectRepository(Comment)
-    private commentRepo: Repository<Comment>,
-
-    @InjectRepository(Hr)
-    private hrRepo: Repository<Hr>,
-
-    @InjectRepository(Token)
-    private tokenRepo: Repository<Token>,
-
-    private mailService: MailerService,
-  ) {}
 
   async addStudent(student: StudentDto, email: string): Promise<Student> {
     {
@@ -254,12 +254,6 @@ export class ModeratorService {
 
       return this.studentRepo.save(student);
     }
-  }
-  deleteHr(id: number) {
-    return '';
-  }
-  deleteStudent(id: number) {
-    return '';
   }
 
   async passwordChange(
@@ -287,9 +281,7 @@ export class ModeratorService {
       });
     }
   }
-  getDashboard(): any {
-    return '';
-  }
+
   async deleteProfile(email: string): Promise<any> {
     const res2 = await this.moderatorProfileRepo.delete({ email: email });
     const res = await this.moderatorRepo.delete({ email: email });
@@ -420,16 +412,30 @@ export class ModeratorService {
     const matchToken = await this.tokenRepo.findOneBy({ otp: data.otp });
 
     if (matchToken) {
-      const mod = await this.moderatorRepo.findOneBy({ id: matchToken.userId });
+      var currentDate = new Date();
+      var specifiedDate = new Date(matchToken.createdDate);
+      var difference = currentDate.getTime() - specifiedDate.getTime();
+      var differenceInMinutes = Math.floor(difference / 1000 / 60);
 
-      const salt = await bcrypt.genSalt();
-      mod.password = await bcrypt.hash(data.newPassword, salt);
+      if (differenceInMinutes <= 5) {
+        const mod = await this.moderatorRepo.findOneBy({
+          id: matchToken.userId,
+        });
 
-      return await this.moderatorRepo.update(mod.id, mod);
+        const salt = await bcrypt.genSalt();
+        mod.password = await bcrypt.hash(data.newPassword, salt);
+
+        return await this.moderatorRepo.update(mod.id, mod);
+      } else {
+        throw new NotFoundException({
+          status: HttpStatus.NOT_FOUND,
+          message: 'you took more than 5 minute',
+        });
+      }
     } else {
       throw new NotFoundException({
         status: HttpStatus.NOT_FOUND,
-        message: 'Tour token is not correct',
+        message: 'You may entered a wrong otp or you took more than 5 minute',
       });
     }
   }

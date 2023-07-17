@@ -57,9 +57,6 @@ let ModeratorController = exports.ModeratorController = class ModeratorControlle
     deleteProfile(session) {
         return this.moderatorService.deleteProfile(session.email);
     }
-    getDashboard() {
-        return this.moderatorService.getDashboard();
-    }
     changePassword(changedPass, session) {
         return this.moderatorService.passwordChange(changedPass, session.email);
     }
@@ -143,6 +140,7 @@ __decorate([
             },
         }),
     })),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.UploadedFile)()),
     __metadata("design:type", Function),
@@ -151,6 +149,7 @@ __decorate([
 ], ModeratorController.prototype, "addModerator", null);
 __decorate([
     (0, common_1.Post)('/login'),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Session)()),
     __metadata("design:type", Function),
@@ -167,6 +166,7 @@ __decorate([
 ], ModeratorController.prototype, "myProfile", null);
 __decorate([
     (0, common_1.Put)('/updateprofile'),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     (0, common_1.UseGuards)(session_guard_1.SessionGuard),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Session)()),
@@ -183,14 +183,9 @@ __decorate([
     __metadata("design:returntype", Object)
 ], ModeratorController.prototype, "deleteProfile", null);
 __decorate([
-    (0, common_1.Get)('/'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Object)
-], ModeratorController.prototype, "getDashboard", null);
-__decorate([
     (0, common_1.Post)('/changePassword'),
     (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Session)()),
     __metadata("design:type", Function),
@@ -240,6 +235,7 @@ __decorate([
 ], ModeratorController.prototype, "deleteStudentByModeratorId", null);
 __decorate([
     (0, common_1.Put)('/studentwithModerator/:id'),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
     __param(2, (0, common_1.Session)()),
@@ -259,6 +255,7 @@ __decorate([
 __decorate([
     (0, common_1.Put)('/report/:id'),
     (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Session)()),
     __metadata("design:type", Function),
@@ -354,6 +351,7 @@ __decorate([
 ], ModeratorController.prototype, "getting", null);
 __decorate([
     (0, common_1.Post)('/sentmail'),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Moderator_dto_1.PasswordForgetModeratorDto]),
@@ -361,6 +359,7 @@ __decorate([
 ], ModeratorController.prototype, "sentMail", null);
 __decorate([
     (0, common_1.Patch)('/forgetPassword'),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Moderator_dto_1.ForgetPassModeratorDto]),

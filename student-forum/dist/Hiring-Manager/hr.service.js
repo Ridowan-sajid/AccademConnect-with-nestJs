@@ -27,7 +27,20 @@ const uuid_1 = require("uuid");
 const token_entity_1 = require("../Db/token.entity");
 const mailer_1 = require("@nestjs-modules/mailer");
 const student_hr_entity_1 = require("../Db/student_hr.entity");
+const hrProfile_entity_1 = require("../Db/hrProfile.entity");
 let HrService = exports.HrService = class HrService {
+    constructor(hrRepo, jobRepo, postRepo, studentRepo, offerRepo, commentRepo, studentHrRepo, hrProfileRepo, tokenRepo, mailService) {
+        this.hrRepo = hrRepo;
+        this.jobRepo = jobRepo;
+        this.postRepo = postRepo;
+        this.studentRepo = studentRepo;
+        this.offerRepo = offerRepo;
+        this.commentRepo = commentRepo;
+        this.studentHrRepo = studentHrRepo;
+        this.hrProfileRepo = hrProfileRepo;
+        this.tokenRepo = tokenRepo;
+        this.mailService = mailService;
+    }
     async deleteHr(email) {
         const res = await this.hrRepo.delete({ email: email });
         if (res) {
@@ -120,17 +133,6 @@ let HrService = exports.HrService = class HrService {
             });
         }
     }
-    constructor(hrRepo, jobRepo, postRepo, studentRepo, offerRepo, commentRepo, studentHrRepo, tokenRepo, mailService) {
-        this.hrRepo = hrRepo;
-        this.jobRepo = jobRepo;
-        this.postRepo = postRepo;
-        this.studentRepo = studentRepo;
-        this.offerRepo = offerRepo;
-        this.commentRepo = commentRepo;
-        this.studentHrRepo = studentHrRepo;
-        this.tokenRepo = tokenRepo;
-        this.mailService = mailService;
-    }
     async deleteJob(id, email) {
         const hr = await this.hrRepo.findOneBy({ email: email });
         if (hr) {
@@ -162,12 +164,10 @@ let HrService = exports.HrService = class HrService {
             });
         }
     }
-    deleteProfile(id) {
-        return '';
-    }
     async editProfile(data, email) {
         const res = await this.hrRepo.update({ email: email }, data);
-        if (res) {
+        const res2 = await this.hrProfileRepo.update({ email: email }, data);
+        if (res && res2) {
             return res;
         }
         else {
@@ -178,7 +178,7 @@ let HrService = exports.HrService = class HrService {
         }
     }
     async myProfile(email) {
-        const hr = await this.hrRepo.findOneBy({ email: email });
+        const hr = await this.hrProfileRepo.findOneBy({ email: email });
         if (hr) {
             return hr;
         }
@@ -188,9 +188,6 @@ let HrService = exports.HrService = class HrService {
                 message: 'Not found the user',
             });
         }
-    }
-    dashboard() {
-        return '';
     }
     async loginHr(hr) {
         const res = await this.hrRepo.findOneBy({ email: hr.email });
@@ -208,6 +205,14 @@ let HrService = exports.HrService = class HrService {
         hr.password = await bcrypt.hash(hr.password, salt);
         const res = await this.hrRepo.save(hr);
         if (res) {
+            await this.hrProfileRepo.save({
+                name: hr.name,
+                age: hr.age,
+                phone: hr.phone,
+                email: hr.email,
+                gender: hr.gender,
+                hr: res.id,
+            });
             return res;
         }
         else {
@@ -404,15 +409,27 @@ let HrService = exports.HrService = class HrService {
     async newPassword(data) {
         const matchToken = await this.tokenRepo.findOneBy({ otp: data.otp });
         if (matchToken) {
-            const hr = await this.hrRepo.findOneBy({ id: matchToken.userId });
-            const salt = await bcrypt.genSalt();
-            hr.password = await bcrypt.hash(data.newPassword, salt);
-            return await this.hrRepo.update(hr.id, hr);
+            var currentDate = new Date();
+            var specifiedDate = new Date(matchToken.createdDate);
+            var difference = currentDate.getTime() - specifiedDate.getTime();
+            var differenceInMinutes = Math.floor(difference / 1000 / 60);
+            if (differenceInMinutes <= 5) {
+                const hr = await this.hrRepo.findOneBy({ id: matchToken.userId });
+                const salt = await bcrypt.genSalt();
+                hr.password = await bcrypt.hash(data.newPassword, salt);
+                return await this.hrRepo.update(hr.id, hr);
+            }
+            else {
+                throw new common_1.NotFoundException({
+                    status: common_1.HttpStatus.NOT_FOUND,
+                    message: 'you took more than 5 minute',
+                });
+            }
         }
         else {
             throw new common_1.NotFoundException({
                 status: common_1.HttpStatus.NOT_FOUND,
-                message: 'Your token is not correct',
+                message: 'You may entered a wrong otp or you took more than 5 minute',
             });
         }
     }
@@ -471,8 +488,10 @@ exports.HrService = HrService = __decorate([
     __param(4, (0, typeorm_1.InjectRepository)(offer_entity_1.Offer)),
     __param(5, (0, typeorm_1.InjectRepository)(comment_entity_1.Comment)),
     __param(6, (0, typeorm_1.InjectRepository)(student_hr_entity_1.StudentHr)),
-    __param(7, (0, typeorm_1.InjectRepository)(token_entity_1.Token)),
+    __param(7, (0, typeorm_1.InjectRepository)(hrProfile_entity_1.HrProfile)),
+    __param(8, (0, typeorm_1.InjectRepository)(token_entity_1.Token)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,

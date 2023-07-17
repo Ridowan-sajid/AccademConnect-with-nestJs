@@ -22,6 +22,11 @@ __decorate([
 __decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
+], UpdateStudentDto.prototype, "age", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.Length)(11),
+    __metadata("design:type", String)
 ], UpdateStudentDto.prototype, "phone", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
@@ -38,7 +43,9 @@ class ForgetPassStudentDto {
 }
 exports.ForgetPassStudentDto = ForgetPassStudentDto;
 __decorate([
-    (0, class_validator_1.MinLength)(7),
+    (0, class_validator_1.MinLength)(7, {
+        message: 'Password length should be equal or greater than 7',
+    }),
     __metadata("design:type", String)
 ], ForgetPassStudentDto.prototype, "newPassword", void 0);
 //# sourceMappingURL=updateStudent.dto.js.map

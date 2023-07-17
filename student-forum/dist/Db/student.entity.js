@@ -19,6 +19,7 @@ const offer_entity_1 = require("./offer.entity");
 const report_entity_1 = require("./report.entity");
 const job_entity_1 = require("./job.entity");
 const student_hr_entity_1 = require("./student_hr.entity");
+const studentProfile_entity_1 = require("./studentProfile.entity");
 let Student = exports.Student = class Student {
 };
 __decorate([
@@ -93,6 +94,10 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => student_hr_entity_1.StudentHr, (sh) => sh.student),
     __metadata("design:type", Array)
 ], Student.prototype, "sthr", void 0);
+__decorate([
+    (0, typeorm_1.OneToOne)(() => studentProfile_entity_1.StudentProfile, (stdP) => stdP.student),
+    __metadata("design:type", studentProfile_entity_1.StudentProfile)
+], Student.prototype, "studentProfile", void 0);
 exports.Student = Student = __decorate([
     (0, typeorm_1.Entity)('Student')
 ], Student);

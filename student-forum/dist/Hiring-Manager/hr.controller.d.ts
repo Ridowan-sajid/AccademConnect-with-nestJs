@@ -12,10 +12,8 @@ export declare class HrController {
     constructor(hrService: HrService);
     addHr(hr: HrDto, myfileobj: Express.Multer.File): any;
     loginHr(hr: HrLoginDto, session: any): Promise<any>;
-    getDashboard(): any;
     myProfile(session: any): any;
     updateProfile(data: UpdateHrDto, session: any): any;
-    deleteProfile(id: number): any;
     changePassword(data: PasswordChangeHrDto, session: any): any;
     addJob(data: JobDto, session: any): Promise<JobDto & import("../Db/job.entity").Job>;
     getMyJobPost(session: any): any;

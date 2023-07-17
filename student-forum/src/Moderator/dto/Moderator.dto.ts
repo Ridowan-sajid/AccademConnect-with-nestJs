@@ -44,6 +44,9 @@ export class ModeratorLoginDto {
   @IsEmail({}, { message: 'It is not an email' })
   email: string;
   @IsString({ message: 'It is not a string' })
+  @MinLength(7, {
+    message: 'Minimum length of the password should be equal or greater than 7',
+  })
   password: string;
 }
 export class PasswordChangeModeratorDto {

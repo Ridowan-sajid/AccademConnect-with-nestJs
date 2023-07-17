@@ -16,6 +16,7 @@ class UpdateAdminDTO {
 exports.UpdateAdminDTO = UpdateAdminDTO;
 __decorate([
     (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Matches)(/^[A-Z][A-Za-z ]+$/),
     __metadata("design:type", String)
 ], UpdateAdminDTO.prototype, "name", void 0);
 __decorate([

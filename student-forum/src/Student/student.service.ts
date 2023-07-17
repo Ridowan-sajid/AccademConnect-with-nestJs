@@ -31,6 +31,7 @@ import { StudentHr } from 'src/Db/student_hr.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { Token } from 'src/Db/token.entity';
 import { MailerService } from '@nestjs-modules/mailer';
+import { StudentProfile } from 'src/Db/studentProfile.entity';
 
 @Injectable()
 export class StudentService {
@@ -40,6 +41,8 @@ export class StudentService {
     @InjectRepository(Comment) private commentRepo: Repository<Comment>,
     @InjectRepository(Hr) private hrRepo: Repository<Hr>,
     @InjectRepository(Report) private reportRepo: Repository<Report>,
+    @InjectRepository(StudentProfile)
+    private studentProfileRepo: Repository<StudentProfile>,
 
     @InjectRepository(StudentHr) private studentHrRepo: Repository<StudentHr>,
     @InjectRepository(Token) private tokenRepo: Repository<Token>,
@@ -364,16 +367,14 @@ export class StudentService {
       }
     }
   }
-  getDashboard(): any {
-    return '';
-  }
-  deleteProfile(id: number): any {
-    return '';
-  }
+
   async editProfile(student: UpdateStudentDto, email: string): Promise<any> {
     const res = await this.studentRepo.update({ email: email }, student);
-
-    if (res) {
+    const res2 = await this.studentProfileRepo.update(
+      { email: email },
+      student,
+    );
+    if (res && res2) {
       return res;
     } else {
       throw new NotFoundException({
@@ -382,8 +383,8 @@ export class StudentService {
       });
     }
   }
-  async myProfile(email: string): Promise<Student> {
-    const student = await this.studentRepo.findOneBy({ email: email });
+  async myProfile(email: string): Promise<StudentProfile> {
+    const student = await this.studentProfileRepo.findOneBy({ email: email });
 
     if (student) {
       return student;
@@ -414,6 +415,14 @@ export class StudentService {
     const res = await this.studentRepo.save(student);
 
     if (res) {
+      await this.studentProfileRepo.save({
+        name: student.name,
+        age: student.age,
+        phone: student.phone,
+        email: student.email,
+        gender: student.gender,
+        student: res.id,
+      });
       return res;
     } else {
       throw new InternalServerErrorException({
@@ -467,16 +476,28 @@ export class StudentService {
     const matchToken = await this.tokenRepo.findOneBy({ otp: data.otp });
 
     if (matchToken) {
-      const std = await this.studentRepo.findOneBy({ id: matchToken.userId });
+      var currentDate = new Date();
+      var specifiedDate = new Date(matchToken.createdDate);
+      var difference = currentDate.getTime() - specifiedDate.getTime();
+      var differenceInMinutes = Math.floor(difference / 1000 / 60);
 
-      const salt = await bcrypt.genSalt();
-      std.password = await bcrypt.hash(data.newPassword, salt);
+      if (differenceInMinutes <= 5) {
+        const std = await this.studentRepo.findOneBy({ id: matchToken.userId });
 
-      return await this.studentRepo.update(std.id, std);
+        const salt = await bcrypt.genSalt();
+        std.password = await bcrypt.hash(data.newPassword, salt);
+
+        return await this.studentRepo.update(std.id, std);
+      } else {
+        throw new NotFoundException({
+          status: HttpStatus.NOT_FOUND,
+          message: 'you took more than 5 minute',
+        });
+      }
     } else {
       throw new NotFoundException({
         status: HttpStatus.NOT_FOUND,
-        message: 'Tour token is not correct',
+        message: 'You may entered a wrong otp or you took more than 5 minute',
       });
     }
   }

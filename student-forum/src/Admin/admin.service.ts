@@ -70,7 +70,6 @@ export class AdminService {
       const salt = await bcrypt.genSalt();
       admin.password = await bcrypt.hash(changedPass.newPassword, salt);
       const res = await this.adminRepo.update(admin.id, admin);
-
       return res;
     } else {
       throw new NotFoundException({
@@ -536,6 +535,7 @@ export class AdminService {
       await this.tokenRepo.save({
         otp: uniqueId.substring(0, 6),
         userId: admin.id,
+        createdDate: new Date(),
       });
 
       await this.mailService.sendMail({
@@ -550,12 +550,29 @@ export class AdminService {
     const matchToken = await this.tokenRepo.findOneBy({ otp: data.otp });
 
     if (matchToken) {
-      const admin = await this.adminRepo.findOneBy({ id: matchToken.userId });
+      var currentDate = new Date();
+      var specifiedDate = new Date(matchToken.createdDate);
+      var difference = currentDate.getTime() - specifiedDate.getTime();
+      var differenceInMinutes = Math.floor(difference / 1000 / 60);
 
-      const salt = await bcrypt.genSalt();
-      admin.password = await bcrypt.hash(data.newPassword, salt);
+      if (differenceInMinutes <= 5) {
+        const admin = await this.adminRepo.findOneBy({ id: matchToken.userId });
 
-      return await this.adminRepo.update(admin.id, admin);
+        const salt = await bcrypt.genSalt();
+        admin.password = await bcrypt.hash(data.newPassword, salt);
+
+        return await this.adminRepo.update(admin.id, admin);
+      } else {
+        throw new NotFoundException({
+          status: HttpStatus.NOT_FOUND,
+          message: 'you took more than 5 minute',
+        });
+      }
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'You may entered a wrong otp or you took more than 5 minute',
+      });
     }
   }
 }

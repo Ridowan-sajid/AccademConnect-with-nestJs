@@ -13,6 +13,8 @@ import { ModeratorProfile } from './moderatorProfile.dto';
 import { StudentHr } from './student_hr.entity';
 import { AdminProfile } from './adminProfile.entity';
 import { Token } from './token.entity';
+import { HrProfile } from './hrProfile.entity';
+import { StudentProfile } from './studentProfile.entity';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -29,6 +31,8 @@ import { Token } from './token.entity';
       StudentHr,
       AdminProfile,
       Token,
+      HrProfile,
+      StudentProfile,
     ]),
   ],
   controllers: [],

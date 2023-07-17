@@ -397,6 +397,7 @@ __decorate([
 __decorate([
     (0, common_1.Patch)('moderatorAccess/:id'),
     (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
     __param(2, (0, common_1.Session)()),
@@ -423,6 +424,7 @@ __decorate([
 __decorate([
     (0, common_1.Post)('/changePassword'),
     (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Session)()),
     __metadata("design:type", Function),
@@ -440,6 +442,7 @@ __decorate([
 ], AdminController.prototype, "getting", null);
 __decorate([
     (0, common_1.Post)('/sentmail'),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [changePassAdmin_dto_1.PasswordForgetAdminDto]),
@@ -447,6 +450,7 @@ __decorate([
 ], AdminController.prototype, "sentMail", null);
 __decorate([
     (0, common_1.Patch)('/forgetPassword'),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [changePassAdmin_dto_1.ForgetPassAdminDto]),

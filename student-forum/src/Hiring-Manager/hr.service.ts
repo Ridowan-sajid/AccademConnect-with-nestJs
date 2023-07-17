@@ -25,9 +25,25 @@ import { v4 as uuidv4 } from 'uuid';
 import { Token } from 'src/Db/token.entity';
 import { MailerService } from '@nestjs-modules/mailer';
 import { StudentHr } from 'src/Db/student_hr.entity';
+import { HrProfile } from 'src/Db/hrProfile.entity';
 
 @Injectable()
 export class HrService {
+  constructor(
+    @InjectRepository(Hr) private hrRepo: Repository<Hr>,
+    @InjectRepository(Job) private jobRepo: Repository<Job>,
+    @InjectRepository(Post) private postRepo: Repository<Post>,
+    @InjectRepository(Student) private studentRepo: Repository<Student>,
+    @InjectRepository(Offer) private offerRepo: Repository<Offer>,
+
+    @InjectRepository(Comment) private commentRepo: Repository<Comment>,
+
+    @InjectRepository(StudentHr) private studentHrRepo: Repository<StudentHr>,
+    @InjectRepository(HrProfile) private hrProfileRepo: Repository<HrProfile>,
+    @InjectRepository(Token) private tokenRepo: Repository<Token>,
+    private mailService: MailerService,
+  ) {}
+
   async deleteHr(email: string): Promise<any> {
     const res = await this.hrRepo.delete({ email: email });
 
@@ -123,20 +139,6 @@ export class HrService {
       });
     }
   }
-  constructor(
-    @InjectRepository(Hr) private hrRepo: Repository<Hr>,
-    @InjectRepository(Job) private jobRepo: Repository<Job>,
-    @InjectRepository(Post) private postRepo: Repository<Post>,
-    @InjectRepository(Student) private studentRepo: Repository<Student>,
-    @InjectRepository(Offer) private offerRepo: Repository<Offer>,
-
-    @InjectRepository(Comment) private commentRepo: Repository<Comment>,
-
-    @InjectRepository(StudentHr) private studentHrRepo: Repository<StudentHr>,
-
-    @InjectRepository(Token) private tokenRepo: Repository<Token>,
-    private mailService: MailerService,
-  ) {}
 
   async deleteJob(id: number, email: string) {
     const hr = await this.hrRepo.findOneBy({ email: email });
@@ -176,13 +178,10 @@ export class HrService {
     }
   }
 
-  deleteProfile(id: number): any {
-    return '';
-  }
   async editProfile(data: UpdateHrDto, email: string): Promise<any> {
     const res = await this.hrRepo.update({ email: email }, data);
-
-    if (res) {
+    const res2 = await this.hrProfileRepo.update({ email: email }, data);
+    if (res && res2) {
       return res;
     } else {
       throw new NotFoundException({
@@ -192,8 +191,8 @@ export class HrService {
     }
   }
 
-  async myProfile(email: string): Promise<Hr> {
-    const hr = await this.hrRepo.findOneBy({ email: email });
+  async myProfile(email: string): Promise<HrProfile> {
+    const hr = await this.hrProfileRepo.findOneBy({ email: email });
 
     if (hr) {
       return hr;
@@ -204,9 +203,7 @@ export class HrService {
       });
     }
   }
-  dashboard(): any {
-    return '';
-  }
+
   async loginHr(hr: HrLoginDto): Promise<any> {
     const res = await this.hrRepo.findOneBy({ email: hr.email });
     if (res) {
@@ -223,6 +220,14 @@ export class HrService {
     const res = await this.hrRepo.save(hr);
 
     if (res) {
+      await this.hrProfileRepo.save({
+        name: hr.name,
+        age: hr.age,
+        phone: hr.phone,
+        email: hr.email,
+        gender: hr.gender,
+        hr: res.id,
+      });
       return res;
     } else {
       throw new InternalServerErrorException({
@@ -432,16 +437,28 @@ export class HrService {
     const matchToken = await this.tokenRepo.findOneBy({ otp: data.otp });
 
     if (matchToken) {
-      const hr = await this.hrRepo.findOneBy({ id: matchToken.userId });
+      var currentDate = new Date();
+      var specifiedDate = new Date(matchToken.createdDate);
+      var difference = currentDate.getTime() - specifiedDate.getTime();
+      var differenceInMinutes = Math.floor(difference / 1000 / 60);
 
-      const salt = await bcrypt.genSalt();
-      hr.password = await bcrypt.hash(data.newPassword, salt);
+      if (differenceInMinutes <= 5) {
+        const hr = await this.hrRepo.findOneBy({ id: matchToken.userId });
 
-      return await this.hrRepo.update(hr.id, hr);
+        const salt = await bcrypt.genSalt();
+        hr.password = await bcrypt.hash(data.newPassword, salt);
+
+        return await this.hrRepo.update(hr.id, hr);
+      } else {
+        throw new NotFoundException({
+          status: HttpStatus.NOT_FOUND,
+          message: 'you took more than 5 minute',
+        });
+      }
     } else {
       throw new NotFoundException({
         status: HttpStatus.NOT_FOUND,
-        message: 'Your token is not correct',
+        message: 'You may entered a wrong otp or you took more than 5 minute',
       });
     }
   }

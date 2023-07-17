@@ -17,7 +17,7 @@ exports.UpdateModeratorDto = UpdateModeratorDto;
 __decorate([
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.Matches)(/^[A-Z][A-Za-z0-9_]+$/),
+    (0, class_validator_1.Matches)(/^[A-Z][A-Za-z ]+$/),
     __metadata("design:type", String)
 ], UpdateModeratorDto.prototype, "name", void 0);
 __decorate([

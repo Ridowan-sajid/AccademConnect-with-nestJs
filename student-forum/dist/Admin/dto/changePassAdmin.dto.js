@@ -15,21 +15,21 @@ class PasswordChangeAdminDto {
 }
 exports.PasswordChangeAdminDto = PasswordChangeAdminDto;
 __decorate([
-    (0, class_validator_1.MinLength)(7),
+    (0, class_validator_1.MinLength)(7, { message: 'Password Length Should be More than 7' }),
     __metadata("design:type", String)
 ], PasswordChangeAdminDto.prototype, "newPassword", void 0);
 class PasswordForgetAdminDto {
 }
 exports.PasswordForgetAdminDto = PasswordForgetAdminDto;
 __decorate([
-    (0, class_validator_1.IsEmail)(),
+    (0, class_validator_1.IsEmail)({}, { message: 'Choose a valid email' }),
     __metadata("design:type", String)
 ], PasswordForgetAdminDto.prototype, "email", void 0);
 class ForgetPassAdminDto {
 }
 exports.ForgetPassAdminDto = ForgetPassAdminDto;
 __decorate([
-    (0, class_validator_1.MinLength)(7),
+    (0, class_validator_1.MinLength)(7, { message: 'Password Length Should be More than 7' }),
     __metadata("design:type", String)
 ], ForgetPassAdminDto.prototype, "newPassword", void 0);
 //# sourceMappingURL=changePassAdmin.dto.js.map

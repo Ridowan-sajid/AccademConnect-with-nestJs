@@ -48,18 +48,12 @@ let HrController = exports.HrController = class HrController {
             });
         }
     }
-    getDashboard() {
-        return this.hrService.dashboard();
-    }
     myProfile(session) {
         return this.hrService.myProfile(session.email);
     }
     updateProfile(data, session) {
         data.updatedDate = new Date();
         return this.hrService.editProfile(data, session.email);
-    }
-    deleteProfile(id) {
-        return this.hrService.deleteProfile(id);
     }
     changePassword(data, session) {
         return this.hrService.passwordChange(data, session.email);
@@ -155,6 +149,7 @@ __decorate([
             },
         }),
     })),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.UploadedFile)()),
     __metadata("design:type", Function),
@@ -163,18 +158,13 @@ __decorate([
 ], HrController.prototype, "addHr", null);
 __decorate([
     (0, common_1.Post)('/login'),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Session)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [hr_dto_1.HrLoginDto, Object]),
     __metadata("design:returntype", Promise)
 ], HrController.prototype, "loginHr", null);
-__decorate([
-    (0, common_1.Get)('/'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Object)
-], HrController.prototype, "getDashboard", null);
 __decorate([
     (0, common_1.Get)('/myprofile'),
     (0, common_1.UseGuards)(session_guard_1.SessionGuard),
@@ -186,6 +176,7 @@ __decorate([
 __decorate([
     (0, common_1.Put)('/updateprofile'),
     (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Session)()),
     __metadata("design:type", Function),
@@ -193,16 +184,9 @@ __decorate([
     __metadata("design:returntype", Object)
 ], HrController.prototype, "updateProfile", null);
 __decorate([
-    (0, common_1.Delete)('/deleteProfile/:id'),
-    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
-    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", Object)
-], HrController.prototype, "deleteProfile", null);
-__decorate([
     (0, common_1.Patch)('/changePassword'),
     (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Session)()),
     __metadata("design:type", Function),
@@ -212,6 +196,7 @@ __decorate([
 __decorate([
     (0, common_1.Post)('/job'),
     (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Session)()),
     __metadata("design:type", Function),
@@ -247,6 +232,7 @@ __decorate([
 __decorate([
     (0, common_1.Put)('/job/:id'),
     (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(2, (0, common_1.Session)()),
@@ -281,6 +267,7 @@ __decorate([
 __decorate([
     (0, common_1.Post)('/offerLetter/:id'),
     (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
     __param(2, (0, common_1.Session)()),
@@ -300,6 +287,7 @@ __decorate([
 __decorate([
     (0, common_1.Post)('/comment/:id'),
     (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
     __param(2, (0, common_1.Session)()),
@@ -328,6 +316,7 @@ __decorate([
 __decorate([
     (0, common_1.Post)('/replycomment/:id'),
     (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
     __param(2, (0, common_1.Session)()),
@@ -363,6 +352,7 @@ __decorate([
 ], HrController.prototype, "deleteStudent", null);
 __decorate([
     (0, common_1.Post)('/sentmail'),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [updatehr_dto_1.PasswordForgetHrDto]),
@@ -370,6 +360,7 @@ __decorate([
 ], HrController.prototype, "sentMail", null);
 __decorate([
     (0, common_1.Patch)('/forgetPassword'),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [updatehr_dto_1.ForgetPassHrDto]),
@@ -378,6 +369,7 @@ __decorate([
 __decorate([
     (0, common_1.Post)('/createNetwork/:id'),
     (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Session)()),
     __metadata("design:type", Function),

@@ -20,6 +20,7 @@ __decorate([
 ], AdminLoginDto.prototype, "email", void 0);
 __decorate([
     (0, class_validator_1.IsString)({ message: 'It is not an string' }),
+    (0, class_validator_1.MinLength)(7, { message: 'Password Length Should be More than 7' }),
     __metadata("design:type", String)
 ], AdminLoginDto.prototype, "password", void 0);
 //# sourceMappingURL=adminLogin.dto.js.map

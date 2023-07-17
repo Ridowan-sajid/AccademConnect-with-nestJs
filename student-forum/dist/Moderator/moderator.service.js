@@ -28,6 +28,17 @@ const token_entity_1 = require("../Db/token.entity");
 const uuid_1 = require("uuid");
 const mailer_1 = require("@nestjs-modules/mailer");
 let ModeratorService = exports.ModeratorService = class ModeratorService {
+    constructor(moderatorRepo, studentRepo, moderatorProfileRepo, postRepo, reportRepo, commentRepo, hrRepo, tokenRepo, mailService) {
+        this.moderatorRepo = moderatorRepo;
+        this.studentRepo = studentRepo;
+        this.moderatorProfileRepo = moderatorProfileRepo;
+        this.postRepo = postRepo;
+        this.reportRepo = reportRepo;
+        this.commentRepo = commentRepo;
+        this.hrRepo = hrRepo;
+        this.tokenRepo = tokenRepo;
+        this.mailService = mailService;
+    }
     async getHrComment(id, email) {
         const res = await this.hrRepo.find({
             where: { id: id },
@@ -206,17 +217,6 @@ let ModeratorService = exports.ModeratorService = class ModeratorService {
             },
         });
     }
-    constructor(moderatorRepo, studentRepo, moderatorProfileRepo, postRepo, reportRepo, commentRepo, hrRepo, tokenRepo, mailService) {
-        this.moderatorRepo = moderatorRepo;
-        this.studentRepo = studentRepo;
-        this.moderatorProfileRepo = moderatorProfileRepo;
-        this.postRepo = postRepo;
-        this.reportRepo = reportRepo;
-        this.commentRepo = commentRepo;
-        this.hrRepo = hrRepo;
-        this.tokenRepo = tokenRepo;
-        this.mailService = mailService;
-    }
     async addStudent(student, email) {
         {
             const moderator = await this.moderatorRepo.findOneBy({ email: email });
@@ -228,12 +228,6 @@ let ModeratorService = exports.ModeratorService = class ModeratorService {
             student.password = hassedpassed;
             return this.studentRepo.save(student);
         }
-    }
-    deleteHr(id) {
-        return '';
-    }
-    deleteStudent(id) {
-        return '';
     }
     async passwordChange(changedPass, email) {
         const mod = await this.moderatorRepo.findOneBy({
@@ -252,9 +246,6 @@ let ModeratorService = exports.ModeratorService = class ModeratorService {
                 message: 'Not found the user',
             });
         }
-    }
-    getDashboard() {
-        return '';
     }
     async deleteProfile(email) {
         const res2 = await this.moderatorProfileRepo.delete({ email: email });
@@ -368,15 +359,29 @@ let ModeratorService = exports.ModeratorService = class ModeratorService {
     async newPassword(data) {
         const matchToken = await this.tokenRepo.findOneBy({ otp: data.otp });
         if (matchToken) {
-            const mod = await this.moderatorRepo.findOneBy({ id: matchToken.userId });
-            const salt = await bcrypt.genSalt();
-            mod.password = await bcrypt.hash(data.newPassword, salt);
-            return await this.moderatorRepo.update(mod.id, mod);
+            var currentDate = new Date();
+            var specifiedDate = new Date(matchToken.createdDate);
+            var difference = currentDate.getTime() - specifiedDate.getTime();
+            var differenceInMinutes = Math.floor(difference / 1000 / 60);
+            if (differenceInMinutes <= 5) {
+                const mod = await this.moderatorRepo.findOneBy({
+                    id: matchToken.userId,
+                });
+                const salt = await bcrypt.genSalt();
+                mod.password = await bcrypt.hash(data.newPassword, salt);
+                return await this.moderatorRepo.update(mod.id, mod);
+            }
+            else {
+                throw new common_1.NotFoundException({
+                    status: common_1.HttpStatus.NOT_FOUND,
+                    message: 'you took more than 5 minute',
+                });
+            }
         }
         else {
             throw new common_1.NotFoundException({
                 status: common_1.HttpStatus.NOT_FOUND,
-                message: 'Tour token is not correct',
+                message: 'You may entered a wrong otp or you took more than 5 minute',
             });
         }
     }

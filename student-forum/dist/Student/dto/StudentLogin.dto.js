@@ -20,6 +20,9 @@ __decorate([
 ], StudentLoginDto.prototype, "email", void 0);
 __decorate([
     (0, class_validator_1.IsString)({ message: 'It is not an string' }),
+    (0, class_validator_1.MinLength)(7, {
+        message: 'Password length should be equal or greater than 7',
+    }),
     __metadata("design:type", String)
 ], StudentLoginDto.prototype, "password", void 0);
 //# sourceMappingURL=StudentLogin.dto.js.map
