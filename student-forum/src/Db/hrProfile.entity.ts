@@ -33,6 +33,8 @@ export class HrProfile {
   email: string;
   @Column()
   gender: string;
+  @Column()
+  updatedDate: Date;
   @OneToOne(() => Hr, (hr) => hr.hrProfile)
   @JoinColumn()
   hr: number;

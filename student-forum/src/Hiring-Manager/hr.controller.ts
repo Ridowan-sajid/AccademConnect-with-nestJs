@@ -265,7 +265,7 @@ export class HrController {
     return this.hrService.newPassword(data);
   }
 
-  @Post('/createNetwork/:id')
+  @Get('/createNetwork/:id')
   @UseGuards(SessionGuard)
   @UsePipes(new ValidationPipe())
   createNetwork(@Param('id', ParseIntPipe) id: number, @Session() session) {

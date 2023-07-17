@@ -316,7 +316,7 @@ __decorate([
     __metadata("design:returntype", Object)
 ], StudentController.prototype, "getReplyComment", null);
 __decorate([
-    (0, common_1.Post)('/createNetwork/:id'),
+    (0, common_1.Get)('/createNetwork/:id'),
     (0, common_1.UseGuards)(session_guard_1.SessionGuard),
     (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),

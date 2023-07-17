@@ -23,10 +23,6 @@ __decorate([
     __metadata("design:type", String)
 ], OfferDTO.prototype, "letter", void 0);
 __decorate([
-    (0, class_validator_1.IsDate)(),
-    __metadata("design:type", Date)
-], OfferDTO.prototype, "createdDate", void 0);
-__decorate([
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Number)
 ], OfferDTO.prototype, "job", void 0);

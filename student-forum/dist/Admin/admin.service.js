@@ -25,14 +25,20 @@ const adminProfile_entity_1 = require("../Db/adminProfile.entity");
 const mailer_1 = require("@nestjs-modules/mailer");
 const uuid_1 = require("uuid");
 const token_entity_1 = require("../Db/token.entity");
+const hrProfile_entity_1 = require("../Db/hrProfile.entity");
+const studentProfile_entity_1 = require("../Db/studentProfile.entity");
+const moderatorProfile_dto_1 = require("../Db/moderatorProfile.dto");
 let AdminService = exports.AdminService = class AdminService {
-    constructor(adminRepo, moderatorRepo, studentRepo, hrRepo, adminProfileRepo, tokenRepo, mailService) {
+    constructor(adminRepo, moderatorRepo, studentRepo, hrRepo, adminProfileRepo, tokenRepo, hrProfileRepo, studentProfileRepo, moderatorProfileRepo, mailService) {
         this.adminRepo = adminRepo;
         this.moderatorRepo = moderatorRepo;
         this.studentRepo = studentRepo;
         this.hrRepo = hrRepo;
         this.adminProfileRepo = adminProfileRepo;
         this.tokenRepo = tokenRepo;
+        this.hrProfileRepo = hrProfileRepo;
+        this.studentProfileRepo = studentProfileRepo;
+        this.moderatorProfileRepo = moderatorProfileRepo;
         this.mailService = mailService;
     }
     async changePassword(changedPass, email) {
@@ -128,8 +134,9 @@ let AdminService = exports.AdminService = class AdminService {
     async updateHr(id, hr, email) {
         const admin = await this.adminRepo.findOneBy({ email: email });
         if (admin) {
-            const res = await this.hrRepo.update(id, hr);
-            if (res) {
+            const res = await this.hrRepo.update({ email: email }, hr);
+            const res2 = await this.hrProfileRepo.update({ email: email }, hr);
+            if (res && res2) {
                 return res;
             }
             else {
@@ -196,8 +203,17 @@ let AdminService = exports.AdminService = class AdminService {
             const salt = await bcrypt.genSalt();
             const hassedpassed = await bcrypt.hash(hr.password, salt);
             hr.password = hassedpassed;
-            const res = this.hrRepo.save(hr);
+            const res = await this.hrRepo.save(hr);
             if (res) {
+                await this.hrProfileRepo.save({
+                    name: hr.name,
+                    age: hr.age,
+                    phone: hr.phone,
+                    email: hr.email,
+                    gender: hr.gender,
+                    updatedDate: hr.updatedDate,
+                    hr: res.id,
+                });
                 return res;
             }
             else {
@@ -304,6 +320,19 @@ let AdminService = exports.AdminService = class AdminService {
             moderator.password = hassedpassed;
             const res = await this.moderatorRepo.save(moderator);
             if (res) {
+                const profile = {
+                    name: res.name,
+                    age: res.age,
+                    phone: res.phone,
+                    email: res.email,
+                    gender: res.gender,
+                    createdDate: res.createdDate,
+                    education: res.education,
+                    updatedDate: res.updatedDate,
+                    status: res.status,
+                    moderator: res.id,
+                };
+                await this.moderatorProfileRepo.save(profile);
                 return res;
             }
             else {
@@ -336,8 +365,9 @@ let AdminService = exports.AdminService = class AdminService {
         const admin = await this.adminRepo.findOneBy({ email: email });
         console.log(email);
         if (admin) {
-            const res = await this.studentRepo.update(id, student);
-            if (res) {
+            const res = await this.studentRepo.update({ email: email }, student);
+            const res2 = await this.studentProfileRepo.update({ email: email }, student);
+            if (res && res2) {
                 return res;
             }
             else {
@@ -383,6 +413,15 @@ let AdminService = exports.AdminService = class AdminService {
         student.createdByAdmin = adm.id;
         const res = await this.studentRepo.save(student);
         if (res) {
+            await this.studentProfileRepo.save({
+                name: student.name,
+                age: student.age,
+                phone: student.phone,
+                email: student.email,
+                gender: student.gender,
+                updatedDate: student.updatedDate,
+                student: res.id,
+            });
             return res;
         }
         else {
@@ -440,8 +479,9 @@ let AdminService = exports.AdminService = class AdminService {
     async updateModeratorByAdminId(id, moderator, email) {
         const admin = await this.adminRepo.findOneBy({ email: email });
         if (admin) {
-            const res = await this.moderatorRepo.update(id, moderator);
-            if (res) {
+            const res = await this.moderatorRepo.update({ email: email }, moderator);
+            const res2 = await this.moderatorProfileRepo.update({ email: email }, moderator);
+            if (res && res2) {
                 return res;
             }
             else {
@@ -545,7 +585,13 @@ exports.AdminService = AdminService = __decorate([
     __param(3, (0, typeorm_1.InjectRepository)(hiring_entity_1.Hr)),
     __param(4, (0, typeorm_1.InjectRepository)(adminProfile_entity_1.AdminProfile)),
     __param(5, (0, typeorm_1.InjectRepository)(token_entity_1.Token)),
+    __param(6, (0, typeorm_1.InjectRepository)(hrProfile_entity_1.HrProfile)),
+    __param(7, (0, typeorm_1.InjectRepository)(studentProfile_entity_1.StudentProfile)),
+    __param(8, (0, typeorm_1.InjectRepository)(moderatorProfile_dto_1.ModeratorProfile)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,

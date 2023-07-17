@@ -421,6 +421,7 @@ export class StudentService {
         phone: student.phone,
         email: student.email,
         gender: student.gender,
+        updatedDate: student.updatedDate,
         student: res.id,
       });
       return res;

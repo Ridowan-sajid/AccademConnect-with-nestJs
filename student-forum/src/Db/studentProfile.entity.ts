@@ -27,6 +27,8 @@ export class StudentProfile {
   email: string;
   @Column()
   gender: string;
+  @Column()
+  updatedDate: Date;
   @OneToOne(() => Student, (std) => std.studentProfile)
   @JoinColumn()
   student: number;

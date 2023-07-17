@@ -28,6 +28,8 @@ export class ModeratorProfile {
   education: string;
   @Column()
   status: string;
+  @Column()
+  updatedDate: Date;
 
   @OneToOne(() => Moderator, (moderator) => moderator.moderatorProfile)
   @JoinColumn()

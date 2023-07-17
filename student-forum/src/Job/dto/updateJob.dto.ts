@@ -5,6 +5,5 @@ export class UpdateJobDto {
   title: string;
   @IsString()
   details: string;
-  @IsDate()
   updatedDate: Date;
 }

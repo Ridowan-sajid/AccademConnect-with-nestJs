@@ -22,12 +22,4 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], JobDto.prototype, "details", void 0);
-__decorate([
-    (0, class_validator_1.IsDate)(),
-    __metadata("design:type", Date)
-], JobDto.prototype, "createdDate", void 0);
-__decorate([
-    (0, class_validator_1.IsDate)(),
-    __metadata("design:type", Date)
-], JobDto.prototype, "updatedDate", void 0);
 //# sourceMappingURL=job.dto.js.map

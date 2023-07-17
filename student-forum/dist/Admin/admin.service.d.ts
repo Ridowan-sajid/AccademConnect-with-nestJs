@@ -16,6 +16,9 @@ import { ForgetPassAdminDto, PasswordChangeAdminDto } from './dto/changePassAdmi
 import { AdminProfile } from 'src/Db/adminProfile.entity';
 import { MailerService } from '@nestjs-modules/mailer';
 import { Token } from 'src/Db/token.entity';
+import { HrProfile } from 'src/Db/hrProfile.entity';
+import { StudentProfile } from 'src/Db/studentProfile.entity';
+import { ModeratorProfile } from 'src/Db/moderatorProfile.dto';
 export declare class AdminService {
     private adminRepo;
     private moderatorRepo;
@@ -23,8 +26,11 @@ export declare class AdminService {
     private hrRepo;
     private adminProfileRepo;
     private tokenRepo;
+    private hrProfileRepo;
+    private studentProfileRepo;
+    private moderatorProfileRepo;
     private mailService;
-    constructor(adminRepo: Repository<Admin>, moderatorRepo: Repository<Moderator>, studentRepo: Repository<Student>, hrRepo: Repository<Hr>, adminProfileRepo: Repository<AdminProfile>, tokenRepo: Repository<Token>, mailService: MailerService);
+    constructor(adminRepo: Repository<Admin>, moderatorRepo: Repository<Moderator>, studentRepo: Repository<Student>, hrRepo: Repository<Hr>, adminProfileRepo: Repository<AdminProfile>, tokenRepo: Repository<Token>, hrProfileRepo: Repository<HrProfile>, studentProfileRepo: Repository<StudentProfile>, moderatorProfileRepo: Repository<ModeratorProfile>, mailService: MailerService);
     changePassword(changedPass: PasswordChangeAdminDto, email: string): Promise<any>;
     getStudentByAdminId(email: string): Promise<Admin[]>;
     adminProfile(email: string): Promise<any>;

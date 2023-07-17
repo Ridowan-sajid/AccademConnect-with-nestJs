@@ -39,6 +39,10 @@ __decorate([
     __metadata("design:type", String)
 ], StudentProfile.prototype, "gender", void 0);
 __decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Date)
+], StudentProfile.prototype, "updatedDate", void 0);
+__decorate([
     (0, typeorm_1.OneToOne)(() => student_entity_1.Student, (std) => std.studentProfile),
     (0, typeorm_1.JoinColumn)(),
     __metadata("design:type", Number)

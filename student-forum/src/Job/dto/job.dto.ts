@@ -5,9 +5,9 @@ export class JobDto {
   title: string;
   @IsString()
   details: string;
-  @IsDate()
+
   createdDate: Date;
-  @IsDate()
+
   updatedDate: Date;
   hr: number;
 }

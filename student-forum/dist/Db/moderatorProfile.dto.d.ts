@@ -7,5 +7,6 @@ export declare class ModeratorProfile {
     gender: string;
     education: string;
     status: string;
+    updatedDate: Date;
     moderator: number;
 }

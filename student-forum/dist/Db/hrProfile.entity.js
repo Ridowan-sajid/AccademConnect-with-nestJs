@@ -39,6 +39,10 @@ __decorate([
     __metadata("design:type", String)
 ], HrProfile.prototype, "gender", void 0);
 __decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Date)
+], HrProfile.prototype, "updatedDate", void 0);
+__decorate([
     (0, typeorm_1.OneToOne)(() => hiring_entity_1.Hr, (hr) => hr.hrProfile),
     (0, typeorm_1.JoinColumn)(),
     __metadata("design:type", Number)

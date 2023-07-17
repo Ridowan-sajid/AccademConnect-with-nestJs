@@ -5,5 +5,6 @@ export declare class AdminProfile {
     phone: string;
     email: string;
     gender: string;
+    updatedDate: Date;
     admin: number;
 }

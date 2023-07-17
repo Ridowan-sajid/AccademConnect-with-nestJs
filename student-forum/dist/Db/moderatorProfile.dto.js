@@ -47,6 +47,10 @@ __decorate([
     __metadata("design:type", String)
 ], ModeratorProfile.prototype, "status", void 0);
 __decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Date)
+], ModeratorProfile.prototype, "updatedDate", void 0);
+__decorate([
     (0, typeorm_1.OneToOne)(() => moderator_entity_1.Moderator, (moderator) => moderator.moderatorProfile),
     (0, typeorm_1.JoinColumn)(),
     __metadata("design:type", Number)

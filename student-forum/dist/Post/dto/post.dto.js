@@ -22,12 +22,4 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], PostDto.prototype, "details", void 0);
-__decorate([
-    (0, class_validator_1.IsDate)(),
-    __metadata("design:type", Date)
-], PostDto.prototype, "createdDate", void 0);
-__decorate([
-    (0, class_validator_1.IsDate)(),
-    __metadata("design:type", Date)
-], PostDto.prototype, "updatedDate", void 0);
 //# sourceMappingURL=post.dto.js.map

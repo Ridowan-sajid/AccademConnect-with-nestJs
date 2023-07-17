@@ -6,9 +6,6 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Moderator } from './moderator.entity';
-import { Student } from './student.entity';
-import { Hr } from './hiring.entity';
 import { Admin } from './admin.entity';
 
 @Entity('adminProfile')
@@ -25,6 +22,8 @@ export class AdminProfile {
   email: string;
   @Column()
   gender: string;
+  @Column()
+  updatedDate: Date;
 
   @OneToOne(() => Admin, (admin) => admin.adminProfile)
   @JoinColumn()

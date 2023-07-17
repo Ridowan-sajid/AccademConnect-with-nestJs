@@ -12,7 +12,10 @@ import { StudentDto } from 'src/Student/dto/Student.dto';
 import { AdminLoginDto } from './dto/adminLogin.dto';
 import { ModeratorDto } from 'src/Moderator/dto/Moderator.dto';
 import { UpdateAdminDTO } from './dto/updateAdmin.dto';
-import { UpdateModeratorDto } from 'src/Moderator/dto/updateModerator.dto';
+import {
+  ProfileModeratorDto,
+  UpdateModeratorDto,
+} from 'src/Moderator/dto/updateModerator.dto';
 import { HrDto } from 'src/Hiring-Manager/dto/hr.dto';
 import { UpdateHrDto } from 'src/Hiring-Manager/dto/updatehr.dto';
 import { ModeratorAccessDto } from 'src/Moderator/dto/moderatorAccess.dto';
@@ -32,6 +35,9 @@ import { AdminProfile } from 'src/Db/adminProfile.entity';
 import { MailerService } from '@nestjs-modules/mailer';
 import { v4 as uuidv4 } from 'uuid';
 import { Token } from 'src/Db/token.entity';
+import { HrProfile } from 'src/Db/hrProfile.entity';
+import { StudentProfile } from 'src/Db/studentProfile.entity';
+import { ModeratorProfile } from 'src/Db/moderatorProfile.dto';
 
 @Injectable()
 export class AdminService {
@@ -49,7 +55,13 @@ export class AdminService {
 
     @InjectRepository(Token)
     private tokenRepo: Repository<Token>,
+    @InjectRepository(HrProfile)
+    private hrProfileRepo: Repository<HrProfile>,
+    @InjectRepository(StudentProfile)
+    private studentProfileRepo: Repository<StudentProfile>,
 
+    @InjectRepository(ModeratorProfile)
+    private moderatorProfileRepo: Repository<ModeratorProfile>,
     private mailService: MailerService,
   ) {}
 
@@ -155,10 +167,10 @@ export class AdminService {
   }
   async updateHr(id: number, hr: UpdateHrDto, email: string): Promise<any> {
     const admin = await this.adminRepo.findOneBy({ email: email });
-
     if (admin) {
-      const res = await this.hrRepo.update(id, hr);
-      if (res) {
+      const res = await this.hrRepo.update({ email: email }, hr);
+      const res2 = await this.hrProfileRepo.update({ email: email }, hr);
+      if (res && res2) {
         return res;
       } else {
         throw new NotFoundException({
@@ -223,8 +235,18 @@ export class AdminService {
       const hassedpassed = await bcrypt.hash(hr.password, salt);
       hr.password = hassedpassed;
 
-      const res = this.hrRepo.save(hr);
+      const res = await this.hrRepo.save(hr);
+
       if (res) {
+        await this.hrProfileRepo.save({
+          name: hr.name,
+          age: hr.age,
+          phone: hr.phone,
+          email: hr.email,
+          gender: hr.gender,
+          updatedDate: hr.updatedDate,
+          hr: res.id,
+        });
         return res;
       } else {
         throw new ServiceUnavailableException({
@@ -334,6 +356,19 @@ export class AdminService {
 
       const res = await this.moderatorRepo.save(moderator);
       if (res) {
+        const profile: ProfileModeratorDto = {
+          name: res.name,
+          age: res.age,
+          phone: res.phone,
+          email: res.email,
+          gender: res.gender,
+          createdDate: res.createdDate,
+          education: res.education,
+          updatedDate: res.updatedDate,
+          status: res.status,
+          moderator: res.id,
+        };
+        await this.moderatorProfileRepo.save(profile);
         return res;
       } else {
         throw new ServiceUnavailableException({
@@ -369,8 +404,12 @@ export class AdminService {
     console.log(email);
 
     if (admin) {
-      const res = await this.studentRepo.update(id, student);
-      if (res) {
+      const res = await this.studentRepo.update({ email: email }, student);
+      const res2 = await this.studentProfileRepo.update(
+        { email: email },
+        student,
+      );
+      if (res && res2) {
         return res;
       } else {
         throw new NotFoundException({
@@ -414,6 +453,15 @@ export class AdminService {
     const res = await this.studentRepo.save(student);
 
     if (res) {
+      await this.studentProfileRepo.save({
+        name: student.name,
+        age: student.age,
+        phone: student.phone,
+        email: student.email,
+        gender: student.gender,
+        updatedDate: student.updatedDate,
+        student: res.id,
+      });
       return res;
     } else {
       throw new InternalServerErrorException({
@@ -478,8 +526,12 @@ export class AdminService {
     const admin = await this.adminRepo.findOneBy({ email: email });
 
     if (admin) {
-      const res = await this.moderatorRepo.update(id, moderator);
-      if (res) {
+      const res = await this.moderatorRepo.update({ email: email }, moderator);
+      const res2 = await this.moderatorProfileRepo.update(
+        { email: email },
+        moderator,
+      );
+      if (res && res2) {
         return res;
       } else {
         throw new NotFoundException({

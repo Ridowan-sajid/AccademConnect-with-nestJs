@@ -39,6 +39,10 @@ __decorate([
     __metadata("design:type", String)
 ], AdminProfile.prototype, "gender", void 0);
 __decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Date)
+], AdminProfile.prototype, "updatedDate", void 0);
+__decorate([
     (0, typeorm_1.OneToOne)(() => admin_entity_1.Admin, (admin) => admin.adminProfile),
     (0, typeorm_1.JoinColumn)(),
     __metadata("design:type", Number)

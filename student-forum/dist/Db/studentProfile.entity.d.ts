@@ -5,5 +5,6 @@ export declare class StudentProfile {
     phone: string;
     email: string;
     gender: string;
+    updatedDate: Date;
     student: number;
 }

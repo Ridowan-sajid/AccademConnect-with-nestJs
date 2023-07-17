@@ -5,7 +5,6 @@ export class OfferDTO {
   title: string;
   @IsString()
   letter: string;
-  @IsDate()
   createdDate: Date;
   student: number;
   @IsNotEmpty()

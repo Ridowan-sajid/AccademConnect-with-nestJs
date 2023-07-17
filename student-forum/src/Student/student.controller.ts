@@ -231,7 +231,7 @@ export class StudentController {
     return this.studentService.getReplyComment(id, session.email);
   }
 
-  @Post('/createNetwork/:id')
+  @Get('/createNetwork/:id')
   @UseGuards(SessionGuard)
   @UsePipes(new ValidationPipe())
   createNetwork(@Param('id', ParseIntPipe) id: number, @Session() session) {

@@ -226,6 +226,7 @@ export class HrService {
         phone: hr.phone,
         email: hr.email,
         gender: hr.gender,
+        updatedDate: hr.updatedDate,
         hr: res.id,
       });
       return res;

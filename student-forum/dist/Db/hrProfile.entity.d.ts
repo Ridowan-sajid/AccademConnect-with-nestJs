@@ -5,5 +5,6 @@ export declare class HrProfile {
     phone: string;
     email: string;
     gender: string;
+    updatedDate: Date;
     hr: number;
 }

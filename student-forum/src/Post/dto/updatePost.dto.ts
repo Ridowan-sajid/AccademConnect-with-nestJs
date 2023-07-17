@@ -5,6 +5,5 @@ export class UpdatePostDto {
   title: string;
   @IsString()
   details: string;
-  @IsDate()
   updatedDate: Date;
 }

@@ -5,9 +5,9 @@ export class PostDto {
   title: string;
   @IsString()
   details: string;
-  @IsDate()
+
   createdDate: Date;
-  @IsDate()
+
   updatedDate: Date;
   student: number;
 }
