@@ -4,7 +4,6 @@ import { ForgetPassModeratorDto, ModeratorDto, PasswordChangeModeratorDto, Passw
 import { ModeratorLoginDto } from './dto/Moderator.dto';
 import { UpdateModeratorDto } from './dto/updateModerator.dto';
 import { StudentDto } from 'src/Student/dto/Student.dto';
-import { UpdateStudentDto } from 'src/Student/dto/updateStudent.dto';
 export declare class ModeratorController {
     private readonly moderatorService;
     constructor(moderatorService: ModeratorService);
@@ -15,9 +14,11 @@ export declare class ModeratorController {
     deleteProfile(session: any): any;
     changePassword(changedPass: PasswordChangeModeratorDto, session: any): any;
     addStudent(student: StudentDto, myfileobj: Express.Multer.File, session: any): any;
-    getStudentByModeratorId(id: number): any;
+    getStudentByModerator(session: any): any;
     deleteStudentByModeratorId(id: number, session: any): any;
-    updateStudentByModeratorId(id: number, student: UpdateStudentDto, session: any): any;
+    addHr(student: StudentDto, myfileobj: Express.Multer.File, session: any): any;
+    gethrByModerator(session: any): any;
+    deleteHrByModeratorId(id: number, session: any): any;
     deletePost(id: number, session: any): any;
     reportHandling(id: number, session: any): any;
     allpost(session: any): any;

@@ -33,6 +33,8 @@ import { Token } from 'src/Db/token.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { MailerService } from '@nestjs-modules/mailer';
 import { StudentProfile } from 'src/Db/studentProfile.entity';
+import { HrDto } from 'src/Hiring-Manager/dto/hr.dto';
+import { HrProfile } from 'src/Db/hrProfile.entity';
 
 @Injectable()
 export class ModeratorService {
@@ -52,6 +54,9 @@ export class ModeratorService {
 
     @InjectRepository(StudentProfile)
     private studentProfileRepo: Repository<StudentProfile>,
+
+    @InjectRepository(HrProfile)
+    private hrProfileRepo: Repository<HrProfile>,
 
     @InjectRepository(Hr)
     private hrRepo: Repository<Hr>,
@@ -219,48 +224,169 @@ export class ModeratorService {
   }
   async deleteStudentByModeratorId(id: number, email: string): Promise<any> {
     const mod = await this.moderatorRepo.findOneBy({ email: email });
+
     if (mod) {
-      return this.studentRepo.delete({ id: id, createdByModerator: mod.id });
+      const std = await this.studentRepo.findOneBy({
+        id: id,
+        createdByModerator: mod.id,
+      });
+      const res2 = await this.studentProfileRepo.delete({
+        email: std.email,
+      });
+
+      const res = await this.studentRepo.delete({
+        id: id,
+        createdByModerator: mod.id,
+      });
+
+      if (res && res2) {
+        return res;
+      } else {
+        throw new NotFoundException({
+          status: HttpStatus.NOT_FOUND,
+          message: 'Not found the User',
+        });
+      }
     } else {
-      return 'Should be a moderator';
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'Not found the Moderator',
+      });
     }
   }
-  async updateStudentByModeratorId(
-    id: number,
-    student: UpdateStudentDto,
-    email: string,
-  ): Promise<any> {
+
+  async deleteHrByModeratorId(id: number, email: string): Promise<any> {
     const mod = await this.moderatorRepo.findOneBy({ email: email });
+    if (mod) {
+      const hrD = await this.hrRepo.findOneBy({
+        id: id,
+        createdByModerator: mod.id,
+      });
+      const res2 = await this.hrProfileRepo.delete({
+        email: hrD.email,
+      });
 
-    return this.studentRepo.update(
-      { id: id, createdByModerator: mod.id },
-      student,
-    );
-    // const n = this.studentProfileRepo.findOneBy({ id: id });
-
-    // this.studentProfileRepo.update({ email: (await n).email }, student);
+      const res = await this.hrRepo.delete({
+        id: id,
+        createdByModerator: mod.id,
+      });
+      if (res && res2) {
+        return res;
+      } else {
+        throw new NotFoundException({
+          status: HttpStatus.NOT_FOUND,
+          message: 'Not found the User',
+        });
+      }
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'Not found the Moderator',
+      });
+    }
   }
-  async getStudentByModeratorId(id: number): Promise<any> {
-    return this.moderatorRepo.find({
-      where: { id: id },
+
+  async getStudentByModerator(email: string): Promise<any> {
+    const res = await this.moderatorRepo.find({
+      where: { email: email },
       relations: {
         students: true,
       },
     });
+    if (res) {
+      return res;
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'Not found the Moderator',
+      });
+    }
+  }
+
+  async getHrByModerator(email: string): Promise<any> {
+    const res = await this.moderatorRepo.find({
+      where: { email: email },
+      relations: {
+        hrs: true,
+      },
+    });
+    if (res) {
+      return res;
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'Not found the Moderator',
+      });
+    }
   }
 
   async addStudent(student: StudentDto, email: string): Promise<Student> {
     {
-      const moderator = await this.moderatorRepo.findOneBy({ email: email });
-      student.createdByModerator = moderator.id;
-      student.createdDate = new Date();
-      student.updatedDate = new Date();
+      try {
+        const moderator = await this.moderatorRepo.findOneBy({ email: email });
+        student.createdByModerator = moderator.id;
+        student.createdDate = new Date();
+        student.updatedDate = new Date();
 
-      const salt = await bcrypt.genSalt();
-      const hassedpassed = await bcrypt.hash(student.password, salt);
-      student.password = hassedpassed;
+        const salt = await bcrypt.genSalt();
+        const hassedpassed = await bcrypt.hash(student.password, salt);
+        student.password = hassedpassed;
 
-      return this.studentRepo.save(student);
+        const res = await this.studentRepo.save(student);
+
+        if (res) {
+          await this.studentProfileRepo.save({
+            name: student.name,
+            age: student.age,
+            phone: student.phone,
+            email: student.email,
+            gender: student.gender,
+            updatedDate: student.updatedDate,
+            student: res.id,
+          });
+          return res;
+        }
+      } catch (err) {
+        throw new NotFoundException({
+          status: HttpStatus.NOT_FOUND,
+          message: 'Something Wrong',
+        });
+      }
+    }
+  }
+
+  async addHr(data: HrDto, email: string): Promise<Hr> {
+    {
+      try {
+        const moderator = await this.moderatorRepo.findOneBy({ email: email });
+        data.createdByModerator = moderator.id;
+        data.createdDate = new Date();
+        data.updatedDate = new Date();
+
+        const salt = await bcrypt.genSalt();
+        const hassedpassed = await bcrypt.hash(data.password, salt);
+        data.password = hassedpassed;
+
+        const res = await this.hrRepo.save(data);
+
+        if (res) {
+          await this.hrProfileRepo.save({
+            name: data.name,
+            age: data.age,
+            phone: data.phone,
+            email: data.email,
+            gender: data.gender,
+            updatedDate: data.updatedDate,
+            hr: res.id,
+          });
+          return res;
+        }
+      } catch (err) {
+        throw new NotFoundException({
+          status: HttpStatus.NOT_FOUND,
+          message: 'Something Wrong',
+        });
+      }
     }
   }
 

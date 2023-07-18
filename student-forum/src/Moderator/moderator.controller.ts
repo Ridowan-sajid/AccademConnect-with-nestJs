@@ -121,20 +121,7 @@ export class ModeratorController {
     return this.moderatorService.passwordChange(changedPass, session.email);
   }
 
-  // @Delete('/deletestudent/:id')
-  // deletStudent(@Param('id', ParseIntPipe) id: number) {
-  //   return this.moderatorService.deleteStudent(id);
-  // }
-
-  // @Delete('/deleteHr/:id')
-  // deletHr(@Param('id', ParseIntPipe) id: number) {
-  //   return this.moderatorService.deleteHr(id);
-  // }
-
-  // @Post('/createpost')
-  // addPost(@Body() data: PostDto) {
-  //   return this.moderatorService.createPost(data);
-  // }
+  //
 
   @Post('/RegisterStudent')
   @UseInterceptors(
@@ -155,6 +142,7 @@ export class ModeratorController {
       }),
     }),
   )
+  @UseGuards(SessionGuard)
   @UsePipes(new ValidationPipe())
   addStudent(
     @Body()
@@ -167,12 +155,14 @@ export class ModeratorController {
     return this.moderatorService.addStudent(student, session.email);
   }
 
-  @Get('/studentwithModerator/:id')
-  getStudentByModeratorId(@Param('id', ParseIntPipe) id: number): any {
-    return this.moderatorService.getStudentByModeratorId(id);
+  @Get('/studentwithModerator')
+  @UseGuards(SessionGuard)
+  getStudentByModerator(@Session() session): any {
+    return this.moderatorService.getStudentByModerator(session.email);
   }
 
   @Delete('/studentwithModerator/:id')
+  @UseGuards(SessionGuard)
   deleteStudentByModeratorId(
     @Param('id', ParseIntPipe) id: number,
     @Session() session,
@@ -180,20 +170,53 @@ export class ModeratorController {
     return this.moderatorService.deleteStudentByModeratorId(id, session.email);
   }
 
-  @Put('/studentwithModerator/:id')
+  @Post('/RegisterHr')
+  @UseInterceptors(
+    FileInterceptor('myfile', {
+      fileFilter: (req, file, cb) => {
+        if (file.originalname.match(/^.*\.(jpg|webp|png|jpeg)$/))
+          cb(null, true);
+        else {
+          cb(new MulterError('LIMIT_UNEXPECTED_FILE', 'image'), false);
+        }
+      },
+      limits: { fileSize: 200000 },
+      storage: diskStorage({
+        destination: './uploads/hr',
+        filename: function (req, file, cb) {
+          cb(null, Date.now() + file.originalname);
+        },
+      }),
+    }),
+  )
+  @UseGuards(SessionGuard)
   @UsePipes(new ValidationPipe())
-  updateStudentByModeratorId(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() student: UpdateStudentDto,
-
+  addHr(
+    @Body()
+    student: StudentDto,
+    @UploadedFile() myfileobj: Express.Multer.File,
     @Session() session,
   ): any {
-    return this.moderatorService.updateStudentByModeratorId(
-      id,
-      student,
-      session.email,
-    );
+    student.profileImg = myfileobj.filename;
+
+    return this.moderatorService.addHr(student, session.email);
   }
+
+  @Get('/hrwithModerator')
+  @UseGuards(SessionGuard)
+  gethrByModerator(@Session() session): any {
+    return this.moderatorService.getHrByModerator(session.email);
+  }
+
+  @Delete('/hrwithmoderator/:id')
+  @UseGuards(SessionGuard)
+  deleteHrByModeratorId(
+    @Param('id', ParseIntPipe) id: number,
+    @Session() session,
+  ): any {
+    return this.moderatorService.deleteHrByModeratorId(id, session.email);
+  }
+
   //
   @Delete('/post/:id')
   @UseGuards(SessionGuard)

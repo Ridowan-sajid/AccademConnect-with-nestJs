@@ -21,7 +21,6 @@ const platform_express_1 = require("@nestjs/platform-express");
 const multer_1 = require("multer");
 const updateModerator_dto_1 = require("./dto/updateModerator.dto");
 const Student_dto_1 = require("../Student/dto/Student.dto");
-const updateStudent_dto_1 = require("../Student/dto/updateStudent.dto");
 const session_guard_1 = require("../Guards/session.guard");
 let ModeratorController = exports.ModeratorController = class ModeratorController {
     constructor(moderatorService) {
@@ -64,14 +63,21 @@ let ModeratorController = exports.ModeratorController = class ModeratorControlle
         student.profileImg = myfileobj.filename;
         return this.moderatorService.addStudent(student, session.email);
     }
-    getStudentByModeratorId(id) {
-        return this.moderatorService.getStudentByModeratorId(id);
+    getStudentByModerator(session) {
+        return this.moderatorService.getStudentByModerator(session.email);
     }
     deleteStudentByModeratorId(id, session) {
         return this.moderatorService.deleteStudentByModeratorId(id, session.email);
     }
-    updateStudentByModeratorId(id, student, session) {
-        return this.moderatorService.updateStudentByModeratorId(id, student, session.email);
+    addHr(student, myfileobj, session) {
+        student.profileImg = myfileobj.filename;
+        return this.moderatorService.addHr(student, session.email);
+    }
+    gethrByModerator(session) {
+        return this.moderatorService.getHrByModerator(session.email);
+    }
+    deleteHrByModeratorId(id, session) {
+        return this.moderatorService.deleteHrByModeratorId(id, session.email);
     }
     deletePost(id, session) {
         console.log(id);
@@ -210,6 +216,7 @@ __decorate([
             },
         }),
     })),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
     (0, common_1.UsePipes)(new common_1.ValidationPipe()),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.UploadedFile)()),
@@ -219,14 +226,16 @@ __decorate([
     __metadata("design:returntype", Object)
 ], ModeratorController.prototype, "addStudent", null);
 __decorate([
-    (0, common_1.Get)('/studentwithModerator/:id'),
-    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    (0, common_1.Get)('/studentwithModerator'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Session)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Object)
-], ModeratorController.prototype, "getStudentByModeratorId", null);
+], ModeratorController.prototype, "getStudentByModerator", null);
 __decorate([
     (0, common_1.Delete)('/studentwithModerator/:id'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Session)()),
     __metadata("design:type", Function),
@@ -234,15 +243,49 @@ __decorate([
     __metadata("design:returntype", Object)
 ], ModeratorController.prototype, "deleteStudentByModeratorId", null);
 __decorate([
-    (0, common_1.Put)('/studentwithModerator/:id'),
+    (0, common_1.Post)('/RegisterHr'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('myfile', {
+        fileFilter: (req, file, cb) => {
+            if (file.originalname.match(/^.*\.(jpg|webp|png|jpeg)$/))
+                cb(null, true);
+            else {
+                cb(new multer_1.MulterError('LIMIT_UNEXPECTED_FILE', 'image'), false);
+            }
+        },
+        limits: { fileSize: 200000 },
+        storage: (0, multer_1.diskStorage)({
+            destination: './uploads/hr',
+            filename: function (req, file, cb) {
+                cb(null, Date.now() + file.originalname);
+            },
+        }),
+    })),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
     (0, common_1.UsePipes)(new common_1.ValidationPipe()),
-    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
-    __param(1, (0, common_1.Body)()),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.UploadedFile)()),
     __param(2, (0, common_1.Session)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, updateStudent_dto_1.UpdateStudentDto, Object]),
+    __metadata("design:paramtypes", [Student_dto_1.StudentDto, Object, Object]),
     __metadata("design:returntype", Object)
-], ModeratorController.prototype, "updateStudentByModeratorId", null);
+], ModeratorController.prototype, "addHr", null);
+__decorate([
+    (0, common_1.Get)('/hrwithModerator'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Session)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Object)
+], ModeratorController.prototype, "gethrByModerator", null);
+__decorate([
+    (0, common_1.Delete)('/hrwithmoderator/:id'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Session)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", Object)
+], ModeratorController.prototype, "deleteHrByModeratorId", null);
 __decorate([
     (0, common_1.Delete)('/post/:id'),
     (0, common_1.UseGuards)(session_guard_1.SessionGuard),
