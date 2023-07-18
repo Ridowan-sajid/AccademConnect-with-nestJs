@@ -40,6 +40,7 @@ let StudentService = exports.StudentService = class StudentService {
         this.mailService = mailService;
     }
     async deleteStudent(email) {
+        const res2 = await this.studentProfileRepo.delete({ email: email });
         const res = await this.studentRepo.delete({ email: email });
         if (res) {
             return res;
@@ -417,6 +418,7 @@ let StudentService = exports.StudentService = class StudentService {
             await this.tokenRepo.save({
                 otp: uniqueId.substring(0, 6),
                 userId: std.id,
+                createdDate: new Date(),
             });
             await this.mailService.sendMail({
                 to: email,

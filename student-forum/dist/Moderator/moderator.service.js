@@ -27,14 +27,16 @@ const hiring_entity_1 = require("../Db/hiring.entity");
 const token_entity_1 = require("../Db/token.entity");
 const uuid_1 = require("uuid");
 const mailer_1 = require("@nestjs-modules/mailer");
+const studentProfile_entity_1 = require("../Db/studentProfile.entity");
 let ModeratorService = exports.ModeratorService = class ModeratorService {
-    constructor(moderatorRepo, studentRepo, moderatorProfileRepo, postRepo, reportRepo, commentRepo, hrRepo, tokenRepo, mailService) {
+    constructor(moderatorRepo, studentRepo, moderatorProfileRepo, postRepo, reportRepo, commentRepo, studentProfileRepo, hrRepo, tokenRepo, mailService) {
         this.moderatorRepo = moderatorRepo;
         this.studentRepo = studentRepo;
         this.moderatorProfileRepo = moderatorProfileRepo;
         this.postRepo = postRepo;
         this.reportRepo = reportRepo;
         this.commentRepo = commentRepo;
+        this.studentProfileRepo = studentProfileRepo;
         this.hrRepo = hrRepo;
         this.tokenRepo = tokenRepo;
         this.mailService = mailService;
@@ -342,6 +344,7 @@ let ModeratorService = exports.ModeratorService = class ModeratorService {
             await this.tokenRepo.save({
                 otp: uniqueId.substring(0, 6),
                 userId: moderator.id,
+                createdDate: new Date(),
             });
             await this.mailService.sendMail({
                 to: email,
@@ -400,9 +403,11 @@ exports.ModeratorService = ModeratorService = __decorate([
     __param(3, (0, typeorm_1.InjectRepository)(post_entity_1.Post)),
     __param(4, (0, typeorm_1.InjectRepository)(report_entity_1.Report)),
     __param(5, (0, typeorm_1.InjectRepository)(comment_entity_1.Comment)),
-    __param(6, (0, typeorm_1.InjectRepository)(hiring_entity_1.Hr)),
-    __param(7, (0, typeorm_1.InjectRepository)(token_entity_1.Token)),
+    __param(6, (0, typeorm_1.InjectRepository)(studentProfile_entity_1.StudentProfile)),
+    __param(7, (0, typeorm_1.InjectRepository)(hiring_entity_1.Hr)),
+    __param(8, (0, typeorm_1.InjectRepository)(token_entity_1.Token)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,

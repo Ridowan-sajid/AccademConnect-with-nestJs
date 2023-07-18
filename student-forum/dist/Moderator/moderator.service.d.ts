@@ -12,6 +12,7 @@ import { Comment } from 'src/Db/comment.entity';
 import { Hr } from 'src/Db/hiring.entity';
 import { Token } from 'src/Db/token.entity';
 import { MailerService } from '@nestjs-modules/mailer';
+import { StudentProfile } from 'src/Db/studentProfile.entity';
 export declare class ModeratorService {
     private moderatorRepo;
     private studentRepo;
@@ -19,10 +20,11 @@ export declare class ModeratorService {
     private postRepo;
     private reportRepo;
     private commentRepo;
+    private studentProfileRepo;
     private hrRepo;
     private tokenRepo;
     private mailService;
-    constructor(moderatorRepo: Repository<Moderator>, studentRepo: Repository<Student>, moderatorProfileRepo: Repository<ModeratorProfile>, postRepo: Repository<Post>, reportRepo: Repository<Report>, commentRepo: Repository<Comment>, hrRepo: Repository<Hr>, tokenRepo: Repository<Token>, mailService: MailerService);
+    constructor(moderatorRepo: Repository<Moderator>, studentRepo: Repository<Student>, moderatorProfileRepo: Repository<ModeratorProfile>, postRepo: Repository<Post>, reportRepo: Repository<Report>, commentRepo: Repository<Comment>, studentProfileRepo: Repository<StudentProfile>, hrRepo: Repository<Hr>, tokenRepo: Repository<Token>, mailService: MailerService);
     getHrComment(id: number, email: any): Promise<any>;
     getStudentComment(id: number, email: any): Promise<any>;
     getHrJobs(id: number, email: any): Promise<any>;

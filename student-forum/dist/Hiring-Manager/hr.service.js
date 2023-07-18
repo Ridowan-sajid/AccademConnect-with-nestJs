@@ -42,8 +42,9 @@ let HrService = exports.HrService = class HrService {
         this.mailService = mailService;
     }
     async deleteHr(email) {
+        const res2 = await this.hrProfileRepo.delete({ email: email });
         const res = await this.hrRepo.delete({ email: email });
-        if (res) {
+        if (res && res2) {
             return res;
         }
         else {
@@ -393,6 +394,7 @@ let HrService = exports.HrService = class HrService {
             await this.tokenRepo.save({
                 otp: uniqueId.substring(0, 6),
                 userId: hr.id,
+                createdDate: new Date(),
             });
             await this.mailService.sendMail({
                 to: email,

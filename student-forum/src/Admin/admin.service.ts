@@ -147,7 +147,10 @@ export class AdminService {
   }
   async deleteHr(id: number, email: string): Promise<any> {
     const admin = await this.adminRepo.findOneBy({ email: email });
+
+    const hrId = await this.hrRepo.findOneBy({ id: id });
     if (admin) {
+      const res2 = await this.hrProfileRepo.delete({ email: hrId.email });
       const res = await this.hrRepo.delete(id);
 
       if (res) {
@@ -167,9 +170,13 @@ export class AdminService {
   }
   async updateHr(id: number, hr: UpdateHrDto, email: string): Promise<any> {
     const admin = await this.adminRepo.findOneBy({ email: email });
+
     if (admin) {
-      const res = await this.hrRepo.update({ email: email }, hr);
-      const res2 = await this.hrProfileRepo.update({ email: email }, hr);
+      const res = await this.hrRepo.update({ id: id }, hr);
+
+      const num = await this.hrRepo.findOneBy({ id: id });
+
+      const res2 = await this.hrProfileRepo.update({ email: num.email }, hr);
       if (res && res2) {
         return res;
       } else {
@@ -448,7 +455,7 @@ export class AdminService {
   async addStudent(student: StudentDto, email: string): Promise<any> {
     const salt = await bcrypt.genSalt();
     student.password = await bcrypt.hash(student.password, salt);
-    const adm = await this.studentRepo.findOneBy({ email: email });
+    const adm = await this.adminRepo.findOneBy({ email: email });
     student.createdByAdmin = adm.id;
     const res = await this.studentRepo.save(student);
 
@@ -498,7 +505,12 @@ export class AdminService {
   }
   async deleteModeratorByAdminId(id: number, email: string): Promise<any> {
     const admin = await this.adminRepo.findOneBy({ email: email });
+
+    const mrId = await this.moderatorRepo.findOneBy({ id: id });
     if (admin) {
+      const res2 = await this.moderatorProfileRepo.delete({
+        email: mrId.email,
+      });
       const res = await this.moderatorRepo.delete(id);
 
       if (res) {
@@ -526,9 +538,12 @@ export class AdminService {
     const admin = await this.adminRepo.findOneBy({ email: email });
 
     if (admin) {
-      const res = await this.moderatorRepo.update({ email: email }, moderator);
+      const res = await this.moderatorRepo.update(id, moderator);
+
+      const name = await this.moderatorRepo.findOneBy({ id: id });
+
       const res2 = await this.moderatorProfileRepo.update(
-        { email: email },
+        { email: name.email },
         moderator,
       );
       if (res && res2) {
@@ -593,7 +608,10 @@ export class AdminService {
       await this.mailService.sendMail({
         to: email,
         subject: 'Student Forum',
-        text: `Hello User. Here is your otp: ${uniqueId.substring(0, 6)}`,
+        text: `Hello ${admin.name}. Here is your otp: ${uniqueId.substring(
+          0,
+          6,
+        )}`,
       });
     }
   }

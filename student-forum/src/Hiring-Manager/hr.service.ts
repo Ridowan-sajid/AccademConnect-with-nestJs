@@ -45,9 +45,11 @@ export class HrService {
   ) {}
 
   async deleteHr(email: string): Promise<any> {
+    const res2 = await this.hrProfileRepo.delete({ email: email });
+
     const res = await this.hrRepo.delete({ email: email });
 
-    if (res) {
+    if (res && res2) {
       return res;
     } else {
       throw new NotFoundException({
@@ -419,6 +421,7 @@ export class HrService {
       await this.tokenRepo.save({
         otp: uniqueId.substring(0, 6),
         userId: hr.id,
+        createdDate: new Date(),
       });
 
       await this.mailService.sendMail({

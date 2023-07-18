@@ -32,6 +32,7 @@ import { Hr } from 'src/Db/hiring.entity';
 import { Token } from 'src/Db/token.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { MailerService } from '@nestjs-modules/mailer';
+import { StudentProfile } from 'src/Db/studentProfile.entity';
 
 @Injectable()
 export class ModeratorService {
@@ -48,6 +49,9 @@ export class ModeratorService {
 
     @InjectRepository(Comment)
     private commentRepo: Repository<Comment>,
+
+    @InjectRepository(StudentProfile)
+    private studentProfileRepo: Repository<StudentProfile>,
 
     @InjectRepository(Hr)
     private hrRepo: Repository<Hr>,
@@ -227,10 +231,14 @@ export class ModeratorService {
     email: string,
   ): Promise<any> {
     const mod = await this.moderatorRepo.findOneBy({ email: email });
+
     return this.studentRepo.update(
       { id: id, createdByModerator: mod.id },
       student,
     );
+    // const n = this.studentProfileRepo.findOneBy({ id: id });
+
+    // this.studentProfileRepo.update({ email: (await n).email }, student);
   }
   async getStudentByModeratorId(id: number): Promise<any> {
     return this.moderatorRepo.find({
@@ -390,6 +398,7 @@ export class ModeratorService {
       await this.tokenRepo.save({
         otp: uniqueId.substring(0, 6),
         userId: moderator.id,
+        createdDate: new Date(),
       });
 
       await this.mailService.sendMail({

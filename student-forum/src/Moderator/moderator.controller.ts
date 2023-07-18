@@ -136,7 +136,6 @@ export class ModeratorController {
   //   return this.moderatorService.createPost(data);
   // }
 
-  //
   @Post('/RegisterStudent')
   @UseInterceptors(
     FileInterceptor('myfile', {
