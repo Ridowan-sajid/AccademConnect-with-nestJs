@@ -112,11 +112,11 @@ let AdminService = exports.AdminService = class AdminService {
     }
     async deleteHr(id, email) {
         const admin = await this.adminRepo.findOneBy({ email: email });
-        const hrId = await this.hrRepo.findOneBy({ id: id });
         if (admin) {
+            const hrId = await this.hrRepo.findOneBy({ id: id });
             const res2 = await this.hrProfileRepo.delete({ email: hrId.email });
             const res = await this.hrRepo.delete(id);
-            if (res) {
+            if (res && res2) {
                 return res;
             }
             else {
@@ -236,8 +236,10 @@ let AdminService = exports.AdminService = class AdminService {
     async deleteStudent(id, email) {
         const admin = await this.adminRepo.findOneBy({ email: email });
         if (admin) {
+            const std = await this.studentRepo.findOneBy({ id: id });
+            const res2 = await this.studentProfileRepo.delete({ email: std.email });
             const res = await this.studentRepo.delete(id);
-            if (res) {
+            if (res && res2) {
                 return res;
             }
             else {
@@ -366,10 +368,10 @@ let AdminService = exports.AdminService = class AdminService {
     }
     async updateStudent(id, student, email) {
         const admin = await this.adminRepo.findOneBy({ email: email });
-        console.log(email);
         if (admin) {
-            const res = await this.studentRepo.update({ email: email }, student);
-            const res2 = await this.studentProfileRepo.update({ email: email }, student);
+            const std = await this.studentRepo.findOneBy({ id: id });
+            const res = await this.studentRepo.update({ id: id }, student);
+            const res2 = await this.studentProfileRepo.update({ email: std.email }, student);
             if (res && res2) {
                 return res;
             }
