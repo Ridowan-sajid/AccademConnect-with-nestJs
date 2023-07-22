@@ -5,7 +5,6 @@ import { StudentLoginDto } from './dto/StudentLogin.dto';
 import { PostDto } from '../Post/dto/post.dto';
 import { ForgetPassStudentDto, PasswordForgetStudentDto, UpdateStudentDto } from './dto/updateStudent.dto';
 import { UpdatePostDto } from 'src/Post/dto/updatePost.dto';
-import { Student } from 'src/Db/student.entity';
 import { CommentDto } from 'src/Comment/dto/comment.dto';
 import { ReportDto } from 'src/Report/dto/report.dto';
 export declare class StudentController {
@@ -30,7 +29,7 @@ export declare class StudentController {
     addReplyComment(id: number, data: CommentDto, session: any): Promise<any>;
     getReplyComment(id: number, session: any): any;
     createNetwork(id: number, session: any): Promise<{
-        student: Student;
+        student: import("../Db/student.entity").Student;
         hr: import("../Db/hiring.entity").Hr;
     } & import("../Db/student_hr.entity").StudentHr>;
     addReport(data: ReportDto, session: any): Promise<ReportDto & import("../Db/report.entity").Report>;

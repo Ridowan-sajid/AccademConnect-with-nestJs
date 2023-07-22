@@ -7,7 +7,7 @@ export class OfferDTO {
   letter: string;
   createdDate: Date;
   student: number;
-  @IsNotEmpty()
+  //@IsNotEmpty()
   job: number;
   hr: number;
 }

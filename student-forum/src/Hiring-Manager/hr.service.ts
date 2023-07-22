@@ -45,6 +45,12 @@ export class HrService {
   ) {}
 
   async deleteHr(email: string): Promise<any> {
+    // const user = await this.hrRepo.findOneBy({ email: email });
+
+    // await this.offerRepo.delete({ hr: user.id });
+    // await this.jobRepo.delete({ hr: user.id });
+    // await this.commentRepo.delete({ hr: user.id });
+
     const res2 = await this.hrProfileRepo.delete({ email: email });
 
     const res = await this.hrRepo.delete({ email: email });
@@ -80,6 +86,7 @@ export class HrService {
     const res = await this.jobRepo.findOneBy({ id: id });
 
     const res2 = await this.hrRepo.findOneBy({ email: email });
+    console.log(res);
 
     if (res && res2) {
       data.hr = res2.id;

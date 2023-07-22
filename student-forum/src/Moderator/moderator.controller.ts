@@ -28,14 +28,9 @@ import {
 import { ModeratorLoginDto } from './dto/Moderator.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MulterError, diskStorage } from 'multer';
-import { PostDto } from 'src/Post/dto/post.dto';
 import { UpdateModeratorDto } from './dto/updateModerator.dto';
-import { Student } from 'src/Db/student.entity';
 import { StudentDto } from 'src/Student/dto/Student.dto';
-import { UpdateStudentDto } from 'src/Student/dto/updateStudent.dto';
 import { SessionGuard } from 'src/Guards/session.guard';
-import { Moderator } from 'src/Db/moderator.entity';
-import { ModeratorProfile } from 'src/Db/moderatorProfile.dto';
 
 @Controller('moderator')
 export class ModeratorController {

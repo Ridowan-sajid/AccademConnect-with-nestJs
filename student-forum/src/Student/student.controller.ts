@@ -30,11 +30,9 @@ import {
   UpdateStudentDto,
 } from './dto/updateStudent.dto';
 import { UpdatePostDto } from 'src/Post/dto/updatePost.dto';
-import { Student } from 'src/Db/student.entity';
 import { SessionGuard } from 'src/Guards/session.guard';
 import { CommentDto } from 'src/Comment/dto/comment.dto';
 import { ReportDto } from 'src/Report/dto/report.dto';
-import { ApplyDto } from './dto/apply.dto';
 
 @Controller('student')
 export class StudentController {

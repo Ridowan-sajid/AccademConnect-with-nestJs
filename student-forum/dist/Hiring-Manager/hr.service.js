@@ -74,6 +74,7 @@ let HrService = exports.HrService = class HrService {
     async addLetter(id, data, email) {
         const res = await this.jobRepo.findOneBy({ id: id });
         const res2 = await this.hrRepo.findOneBy({ email: email });
+        console.log(res);
         if (res && res2) {
             data.hr = res2.id;
             data.job = res.id;
