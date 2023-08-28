@@ -131,6 +131,9 @@ let StudentController = exports.StudentController = class StudentController {
     getMyLetter(session) {
         return this.studentService.getMyLetter(session.email);
     }
+    getAllJob(session) {
+        return this.studentService.getAllJob(session.email);
+    }
 };
 __decorate([
     (0, common_1.Post)('/Register'),
@@ -385,6 +388,14 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Object)
 ], StudentController.prototype, "getMyLetter", null);
+__decorate([
+    (0, common_1.Get)('/allJob'),
+    (0, common_1.UseGuards)(session_guard_1.SessionGuard),
+    __param(0, (0, common_1.Session)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Object)
+], StudentController.prototype, "getAllJob", null);
 exports.StudentController = StudentController = __decorate([
     (0, common_1.Controller)('student'),
     __metadata("design:paramtypes", [student_service_1.StudentService])

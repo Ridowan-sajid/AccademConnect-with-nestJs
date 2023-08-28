@@ -11,6 +11,7 @@ const common_1 = require("@nestjs/common");
 let SessionGuard = exports.SessionGuard = class SessionGuard {
     canActivate(context) {
         const request = context.switchToHttp().getRequest();
+        console.log(request.session.email);
         return request.session.email !== undefined;
     }
 };

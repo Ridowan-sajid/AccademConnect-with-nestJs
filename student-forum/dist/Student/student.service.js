@@ -27,8 +27,21 @@ const uuid_1 = require("uuid");
 const token_entity_1 = require("../Db/token.entity");
 const mailer_1 = require("@nestjs-modules/mailer");
 const studentProfile_entity_1 = require("../Db/studentProfile.entity");
+const job_entity_1 = require("../Db/job.entity");
 let StudentService = exports.StudentService = class StudentService {
-    constructor(studentRepo, postRepo, commentRepo, hrRepo, reportRepo, studentProfileRepo, studentHrRepo, tokenRepo, mailService) {
+    async getAllJob(email) {
+        const res = await this.jobRepo.find({});
+        if (res) {
+            return res;
+        }
+        else {
+            throw new common_1.NotFoundException({
+                status: common_1.HttpStatus.NOT_FOUND,
+                message: 'There is something wrong',
+            });
+        }
+    }
+    constructor(studentRepo, postRepo, commentRepo, hrRepo, reportRepo, studentProfileRepo, studentHrRepo, tokenRepo, mailService, jobRepo) {
         this.studentRepo = studentRepo;
         this.postRepo = postRepo;
         this.commentRepo = commentRepo;
@@ -38,6 +51,7 @@ let StudentService = exports.StudentService = class StudentService {
         this.studentHrRepo = studentHrRepo;
         this.tokenRepo = tokenRepo;
         this.mailService = mailService;
+        this.jobRepo = jobRepo;
     }
     async deleteStudent(email) {
         const res2 = await this.studentProfileRepo.delete({ email: email });
@@ -260,9 +274,9 @@ let StudentService = exports.StudentService = class StudentService {
         }
     }
     async deletePostByStudentId(id, email) {
-        const stud = await this.studentRepo.findOneBy({ email: email });
+        const stud = true;
         if (stud) {
-            const res = await this.postRepo.delete({ id: id, student: stud.id });
+            const res = await this.postRepo.delete({ id: id });
             return res;
         }
         else {
@@ -494,6 +508,7 @@ exports.StudentService = StudentService = __decorate([
     __param(5, (0, typeorm_1.InjectRepository)(studentProfile_entity_1.StudentProfile)),
     __param(6, (0, typeorm_1.InjectRepository)(student_hr_entity_1.StudentHr)),
     __param(7, (0, typeorm_1.InjectRepository)(token_entity_1.Token)),
+    __param(9, (0, typeorm_1.InjectRepository)(job_entity_1.Job)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
@@ -502,6 +517,7 @@ exports.StudentService = StudentService = __decorate([
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
-        mailer_1.MailerService])
+        mailer_1.MailerService,
+        typeorm_2.Repository])
 ], StudentService);
 //# sourceMappingURL=student.service.js.map

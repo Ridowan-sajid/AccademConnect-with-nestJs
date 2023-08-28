@@ -15,6 +15,7 @@ import { StudentHr } from 'src/Db/student_hr.entity';
 import { Token } from 'src/Db/token.entity';
 import { MailerService } from '@nestjs-modules/mailer';
 import { StudentProfile } from 'src/Db/studentProfile.entity';
+import { Job } from 'src/Db/job.entity';
 export declare class StudentService {
     private studentRepo;
     private postRepo;
@@ -25,7 +26,9 @@ export declare class StudentService {
     private studentHrRepo;
     private tokenRepo;
     private mailService;
-    constructor(studentRepo: Repository<Student>, postRepo: Repository<Post>, commentRepo: Repository<Comment>, hrRepo: Repository<Hr>, reportRepo: Repository<Report>, studentProfileRepo: Repository<StudentProfile>, studentHrRepo: Repository<StudentHr>, tokenRepo: Repository<Token>, mailService: MailerService);
+    private jobRepo;
+    getAllJob(email: string): Promise<any>;
+    constructor(studentRepo: Repository<Student>, postRepo: Repository<Post>, commentRepo: Repository<Comment>, hrRepo: Repository<Hr>, reportRepo: Repository<Report>, studentProfileRepo: Repository<StudentProfile>, studentHrRepo: Repository<StudentHr>, tokenRepo: Repository<Token>, mailService: MailerService, jobRepo: Repository<Job>);
     deleteStudent(email: string): Promise<any>;
     getNetwork(email: string): Promise<any>;
     addApply(id: number, email: string): Promise<import("typeorm").UpdateResult>;

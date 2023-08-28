@@ -37,7 +37,7 @@ export class Hr {
   @Column()
   updatedDate: Date;
 
-  @Column()
+  @Column({ nullable: true })
   profileImg: string;
   @Column()
   password: string;

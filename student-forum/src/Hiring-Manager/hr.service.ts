@@ -130,7 +130,6 @@ export class HrService {
 
   async getJobDetails(id: number, email: string): Promise<any> {
     const hr = await this.hrRepo.findOneBy({ email: email });
-
     if (hr) {
       const res = await this.jobRepo.findOneBy({ id: id });
       if (res) {
@@ -153,8 +152,8 @@ export class HrService {
     const hr = await this.hrRepo.findOneBy({ email: email });
 
     if (hr) {
-      const res = await this.jobRepo.delete({ id: id, hr: hr.id });
-
+      //const res = await this.jobRepo.delete({ id: id, hr: hr.id });
+      const res = await this.jobRepo.delete({ id: id });
       return res;
     } else {
       throw new NotFoundException({
@@ -420,7 +419,6 @@ export class HrService {
 
   async ForgetPassword(email: string) {
     const uniqueId = uuidv4();
-    //import { v4 as uuidv4 } from 'uuid';
 
     const hr = await this.hrRepo.findOneBy({ email: email });
 

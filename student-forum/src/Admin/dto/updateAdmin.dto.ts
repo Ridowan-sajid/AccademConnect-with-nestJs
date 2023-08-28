@@ -14,7 +14,7 @@ export class UpdateAdminDTO {
   @IsString()
   @Matches(/^[A-Z][A-Za-z ]+$/)
   name: string;
-  @IsNumber()
+  //@IsString()
   age: number;
   @Length(11)
   phone: string;

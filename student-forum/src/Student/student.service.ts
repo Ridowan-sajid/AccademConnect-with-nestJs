@@ -32,9 +32,22 @@ import { v4 as uuidv4 } from 'uuid';
 import { Token } from 'src/Db/token.entity';
 import { MailerService } from '@nestjs-modules/mailer';
 import { StudentProfile } from 'src/Db/studentProfile.entity';
+import { Job } from 'src/Db/job.entity';
 
 @Injectable()
 export class StudentService {
+  async getAllJob(email: string): Promise<any> {
+    const res = await this.jobRepo.find({});
+
+    if (res) {
+      return res;
+    } else {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        message: 'There is something wrong',
+      });
+    }
+  }
   constructor(
     @InjectRepository(Student) private studentRepo: Repository<Student>,
     @InjectRepository(Post) private postRepo: Repository<Post>,
@@ -47,6 +60,7 @@ export class StudentService {
     @InjectRepository(StudentHr) private studentHrRepo: Repository<StudentHr>,
     @InjectRepository(Token) private tokenRepo: Repository<Token>,
     private mailService: MailerService,
+    @InjectRepository(Job) private jobRepo: Repository<Job>,
   ) {}
   async deleteStudent(email: string): Promise<any> {
     const res2 = await this.studentProfileRepo.delete({ email: email });
@@ -270,10 +284,12 @@ export class StudentService {
   }
 
   async deletePostByStudentId(id: number, email: string): Promise<any> {
-    const stud = await this.studentRepo.findOneBy({ email: email });
+    //const stud = await this.studentRepo.findOneBy({ email: email });
+    const stud = true;
 
     if (stud) {
-      const res = await this.postRepo.delete({ id: id, student: stud.id });
+      // const res = await this.postRepo.delete({ id: id, student: stud.id });
+      const res = await this.postRepo.delete({ id: id });
 
       return res;
     } else {

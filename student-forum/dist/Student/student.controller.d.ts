@@ -39,4 +39,5 @@ export declare class StudentController {
     sentMail(data: PasswordForgetStudentDto): any;
     forgetPass(data: ForgetPassStudentDto): any;
     getMyLetter(session: any): any;
+    getAllJob(session: any): any;
 }

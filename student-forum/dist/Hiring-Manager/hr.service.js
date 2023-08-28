@@ -138,7 +138,7 @@ let HrService = exports.HrService = class HrService {
     async deleteJob(id, email) {
         const hr = await this.hrRepo.findOneBy({ email: email });
         if (hr) {
-            const res = await this.jobRepo.delete({ id: id, hr: hr.id });
+            const res = await this.jobRepo.delete({ id: id });
             return res;
         }
         else {

@@ -33,6 +33,7 @@ import { UpdatePostDto } from 'src/Post/dto/updatePost.dto';
 import { SessionGuard } from 'src/Guards/session.guard';
 import { CommentDto } from 'src/Comment/dto/comment.dto';
 import { ReportDto } from 'src/Report/dto/report.dto';
+import { ModeratorService } from 'src/Moderator/moderator.service';
 
 @Controller('student')
 export class StudentController {
@@ -279,5 +280,11 @@ export class StudentController {
   @UseGuards(SessionGuard)
   getMyLetter(@Session() session): any {
     return this.studentService.getMyLetter(session.email);
+  }
+
+  @Get('/allJob')
+  @UseGuards(SessionGuard)
+  getAllJob(@Session() session): any {
+    return this.studentService.getAllJob(session.email);
   }
 }

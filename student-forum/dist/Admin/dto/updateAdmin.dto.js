@@ -20,10 +20,6 @@ __decorate([
     __metadata("design:type", String)
 ], UpdateAdminDTO.prototype, "name", void 0);
 __decorate([
-    (0, class_validator_1.IsNumber)(),
-    __metadata("design:type", Number)
-], UpdateAdminDTO.prototype, "age", void 0);
-__decorate([
     (0, class_validator_1.Length)(11),
     __metadata("design:type", String)
 ], UpdateAdminDTO.prototype, "phone", void 0);
